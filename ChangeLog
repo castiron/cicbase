@@ -1,0 +1,8 @@
+2010-11-19 Zachary Davis, Cast Iron Coding Inc  <zach@castironcoding.com>
+
+	* initial code generated with kickstarter
+
+2011-02-17 Michael McManus, Cast Iron Coding Ince <michael@castironcoding.com>
+
+	* Added getMultipleByPaths() method to the DigitalAssetRepository. With this method you can use the output of the TCA "group" field with "internal_type" set to "folder." Dig?
+	* Added $additionalWhere argument to the getByPath() method in the DigitalAssetRepository. This argument is an SQL query string part that should begin with AND.
