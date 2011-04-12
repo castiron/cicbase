@@ -29,7 +29,7 @@
  * @copyright Copyright belongs to the respective authors
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class Tx_Cicservices_Domain_Repository_StateRepository extends Tx_Extbase_Persistence_Repository {
+class Tx_Cicbase_Domain_Repository_StateRepository extends Tx_Extbase_Persistence_Repository {
 	
 	
 	public function findAll() {

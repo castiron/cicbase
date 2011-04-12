@@ -26,7 +26,7 @@
 /**
 * A repository for Blogs
 */
-class Tx_Cicservices_Domain_Repository_DigitalAssetRepository extends Tx_Extbase_Persistence_Repository {
+class Tx_Cicbase_Domain_Repository_DigitalAssetRepository extends Tx_Extbase_Persistence_Repository {
 
 	/**
 	 * Per call cache of the objects taken from the db.
@@ -57,7 +57,7 @@ class Tx_Cicservices_Domain_Repository_DigitalAssetRepository extends Tx_Extbase
 		if (count($rows) > 0) {
 			// dataMapper is a singleton
 			$dataMapper = t3lib_div::makeInstance('Tx_Extbase_Persistence_Mapper_DataMapper');
-			$objects = $dataMapper->map('Tx_Cicservices_Domain_Model_DigitalAsset', $rows);
+			$objects = $dataMapper->map('Tx_Cicbase_Domain_Model_DigitalAsset', $rows);
 			
 			// cache the function call
 			self::$objectStorage['ref'][$table][$uid][$ident][$orderBy][$limit] = $objects;
@@ -113,7 +113,7 @@ class Tx_Cicservices_Domain_Repository_DigitalAssetRepository extends Tx_Extbase
 		if (count($rows) > 0) {
 			// dataMapper is a singleton
 			$dataMapper = t3lib_div::makeInstance('Tx_Extbase_Persistence_Mapper_DataMapper');
-			$objects = $dataMapper->map('Tx_Cicservices_Domain_Model_DigitalAsset', $rows);
+			$objects = $dataMapper->map('Tx_Cicbase_Domain_Model_DigitalAsset', $rows);
 			
 			// cache the function call
 			self::$objectStorage['path'][$path][$orderBy][$limit] = $objects;

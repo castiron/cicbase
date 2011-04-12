@@ -25,7 +25,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-class Tx_Cicservices_Domain_Model_State extends Tx_Extbase_DomainObject_AbstractEntity {
+class Tx_Cicbase_Domain_Model_State extends Tx_Extbase_DomainObject_AbstractEntity {
 
 	/**
 	* name

@@ -33,7 +33,7 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 
-class Tx_Cicservices_Service_GeolocationService {
+class Tx_Cicbase_Service_GeolocationService {
 	
 	protected $apiKey = false;
 	protected $cache = false;
@@ -55,8 +55,8 @@ class Tx_Cicservices_Service_GeolocationService {
 	/**
 	 * Returns Latitude and Longitude for an Address Object
 	 *
-	 * @param Tx_Cicservices_Domain_Model_Address $address The address to geocode
-	 * @return Tx_Cicservices_Domain_Model_LatLng
+	 * @param Tx_Cicbase_Domain_Model_Address $address The address to geocode
+	 * @return Tx_Cicbase_Domain_Model_LatLng
 	 */
 	public function getLatLng($address) {
 		
@@ -64,7 +64,7 @@ class Tx_Cicservices_Service_GeolocationService {
 		$addressString = $address->getFullAddressOneLine();
 		
 		// construct the latLng object to return	
-		$latLng = t3lib_div::makeInstance('Tx_Cicservices_Domain_Model_LatLng');
+		$latLng = t3lib_div::makeInstance('Tx_Cicbase_Domain_Model_LatLng');
 		
 		// do the query
 		$res = $this->geocode($addressString);
@@ -82,8 +82,8 @@ class Tx_Cicservices_Service_GeolocationService {
 				$GLOBALS['typo3CacheFactory']->create(
 					'cictwit',
 					't3lib_cache_frontend_VariableFrontend',
-					$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['cicservices']['backend'],
-					$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['cicservices']['options']
+					$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['cicbase']['backend'],
+					$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['cicbase']['options']
 				);
 			} catch(t3lib_cache_exception_DuplicateIdentifier $e) {
 				// do nothing, the cache already exists

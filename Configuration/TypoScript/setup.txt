@@ -1,4 +1,4 @@
-tx_cicservices_pi1 {
+tx_cicbase_pi1 {
     settings {
 	}
 	persistence {
@@ -8,12 +8,12 @@ tx_cicservices_pi1 {
 }
 
 config.tx_extbase.persistence.classes {
-    Tx_Cicservices_Domain_Model_DigitalAsset {
+    Tx_Cicbase_Domain_Model_DigitalAsset {
 	    mapping {
 		    tableName = tx_dam
 	    }
     }
-    Tx_Cicservices_Domain_Model_State {
+    Tx_Cicbase_Domain_Model_State {
         mapping {
             tableName = static_country_zones
             columns {
@@ -22,9 +22,9 @@ config.tx_extbase.persistence.classes {
             }
         }
     }
-    Tx_Cicservices_Domain_Model_Zip {
+    Tx_Cicbase_Domain_Model_Zip {
         mapping {
-            tableName = tx_cicservices_zipcodes
+            tableName = tx_cicbase_zipcodes
             columns {
                 latitude.mapOnProperty = lat
                 longitude.mapOnProperty = lng
