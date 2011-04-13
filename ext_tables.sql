@@ -1,4 +1,4 @@
-CREATE TABLE tx_cicservices_cache (
+CREATE TABLE tx_cicbase_cache (
   id int(11) NOT NULL auto_increment,
   identifier varchar(128) NOT NULL DEFAULT '',
   crdate int(11) unsigned NOT NULL DEFAULT '0',
@@ -8,7 +8,7 @@ CREATE TABLE tx_cicservices_cache (
   KEY cache_id (`identifier`)
 );
 
-CREATE TABLE tx_cicservices_cache_tags (
+CREATE TABLE tx_cicbase_cache_tags (
   id int(11) NOT NULL auto_increment,
   identifier varchar(128) NOT NULL DEFAULT '',
   tag varchar(128) NOT NULL DEFAULT '',
@@ -17,7 +17,7 @@ CREATE TABLE tx_cicservices_cache_tags (
   KEY cache_tag (`tag`)
 );
 
-CREATE TABLE tx_cicservices_zipcodes (
+CREATE TABLE tx_cicbase_zipcodes (
   zipcode INT NOT NULL PRIMARY KEY,
   latitude FLOAT(12,8),
   longitude FLOAT(12,8),
