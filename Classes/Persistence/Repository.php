@@ -123,7 +123,7 @@ class Tx_Cicbase_Persistence_Repository extends Tx_Extbase_Persistence_Repositor
 	 */
 	public function getPaginationInformation() {
 		$out = new stdClass;
-		$out->rangeStart = $this->resultsPerPage * ($this->page - 1) + 1;
+		$out->rangeStart = $this->totalCount ? $this->resultsPerPage * ($this->page - 1) + 1 : 0;
 		$out->rangeEnd = ($out->rangeStart + $this->resultsPerPage - 1) > $this->totalCount ? $this->totalCount : ($out->rangeStart + $this->resultsPerPage - 1);
 		$out->resultsPerPage = $this->resultsPerPage;
 		$out->page = $this->page;
