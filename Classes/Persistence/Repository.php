@@ -154,5 +154,23 @@ class Tx_Cicbase_Persistence_Repository extends Tx_Extbase_Persistence_Repositor
 		return $this->getQueryByParams($params)->execute()->count();
 	}
 
+	/**
+	 * @param mixed a query result or a collection, something that we can call ->getUid() on each item of
+	 * @param string a comma list of uids
+	 * @return Tx_Extbase_Persistence_ObjectStorage
+	 */
+	protected function orderResultsByUids($iterable,$uidArray) {
+		$objectStorage = t3lib_div::makeInstance('Tx_Extbase_Persistence_ObjectStorage');
+
+		foreach($uidArray as $uid) {
+			foreach($iterable as $item) {
+				if($item->getUid() == $uid) {
+					$objectStorage->attach($item);
+				}
+			}
+		}
+		return $objectStorage;
+	}
+
 }
 ?>
