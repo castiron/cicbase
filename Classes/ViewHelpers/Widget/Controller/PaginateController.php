@@ -79,6 +79,10 @@ class Tx_Cicbase_ViewHelpers_Widget_Controller_PaginateController extends Tx_Flu
 		$this->view->assign('contentArguments', array(
 			$this->widgetConfiguration['as'] => $modifiedObjects
 		));
+
+		foreach($this->widgetConfiguration['arguments'] as $name => $value) {
+			$this->view->assign($name,$value);
+		}
 		$this->view->assign('configuration', $this->configuration);
 		$this->view->assign('pagination', $this->buildPagination());
 	}

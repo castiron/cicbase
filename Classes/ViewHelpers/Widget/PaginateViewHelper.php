@@ -35,6 +35,18 @@ class Tx_Cicbase_ViewHelpers_Widget_PaginateViewHelper extends Tx_Fluid_ViewHelp
 	public function injectController(Tx_Cicbase_ViewHelpers_Widget_Controller_PaginateController $controller) {
 		$this->controller = $controller;
 	}
+
+	/**
+	 *
+	 * @param Tx_Extbase_Persistence_QueryResultInterface $objects
+	 * @param string $as
+	 * @param array $configuration
+	 * @param array $arguments
+	 * @return string
+	 */
+	public function render(Tx_Extbase_Persistence_QueryResultInterface $objects, $as, array $configuration = array('itemsPerPage' => 10, 'insertAbove' => FALSE, 'insertBelow' => TRUE),$arguments = array()) {
+		return $this->initiateSubRequest();
+	}
 }
 
 ?>
