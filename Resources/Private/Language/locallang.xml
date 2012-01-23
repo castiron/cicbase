@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for cicbase in the FRONTEND</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="task.action">CommandController Command</label>
+			<label index="task.name">Extbase CommandController Task</label>
+			<label index="task.description">Allows Extbase CommandController commands to be configured and executed through the scheduler framework.</label>
+		</languageKey>
+	</data>
+</T3locallang>
