@@ -40,12 +40,13 @@ class Tx_Cicbase_ViewHelpers_RelativeTimeViewHelper extends Tx_Fluid_Core_ViewHe
 			if($quantity > 59) {
 				$quantity = $quantity / 60; // hours
 				$increment = 'hour';
+
+				if ($quantity > 23) {
+					$quantity = $quantity / 24;
+					$increment = 'day';
+				}
 			}
 
-			if($quantity > 23) {
-				$quantity = $quantity / 24;
-				$increment = 'day';
-			}
 			$quantity = round($quantity);
 
 			// TODO: localize
