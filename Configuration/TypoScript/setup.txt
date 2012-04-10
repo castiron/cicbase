@@ -2,7 +2,7 @@ tx_cicbase_pi1 {
     settings {
 	}
 	persistence {
-	}        
+	}
 	view {
 	}
 }
@@ -32,3 +32,7 @@ config.tx_extbase.persistence.classes {
         }
     }
 }
+
+# A short parsefunc for headers and things where you don't want a bunch of paragraph tags.
+lib.parseFunc_title < lib.parseFunc_RTE
+lib.parseFunc_title.nonTypoTagStdWrap.encapsLines >
