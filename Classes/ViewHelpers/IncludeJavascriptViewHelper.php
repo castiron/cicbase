@@ -52,37 +52,60 @@ class Tx_Cicbase_ViewHelpers_IncludeJavascriptViewHelper extends Tx_Fluid_Core_V
 		$this->registerArgument('forceOnTop', 'boolean', 'ForceOnTop argument - see PageRenderer documentation', FALSE, FALSE);
 		$this->registerArgument('allWrap', 'string', 'AllWrap argument - see PageRenderer documentation', FALSE, '');
 		$this->registerArgument('excludeFromConcatenation', 'string', 'ExcludeFromConcatenation argument - see PageRenderer documentation', FALSE, FALSE);
+		$this->registerArgument('extensionName', 'string', 'Extension containing the javascript file', FALSE, FALSE);
+		$this->registerArgument('where', 'string', 'Tells the page renderer where to insert the javascript, can be header, footer, or footerLibs', FALSE, 'footer');
+		$this->registerArgument('key', 'string', 'Only relevant for footer libraries, in which case its the key that identifies them', FALSE, FALSE);
 	}
 
 	/**
 	 * Render the URI to the resource. The filename is used from child content.
 	 *
-	 * @param string $path The path and filename of the resource (relative to Public resource directory of the extension).
-	 * @param string $extensionName Target extension name. If not set, the current extension name will be used
-	 * @param boolean $absolute If set, an absolute URI is rendered
-	 * @param string $file Same as path, present only for backwards compatibility.
+	 * @param string $file The relative path of the resource (relative to Public resource directory of the extension).
 	 */
-	public function render($path = NULL, $extensionName = NULL, $absolute = FALSE, $file = NULL) {
+	public function render($file = NULL) {
 
-		// early versions of this view helper used $file instead of $path. Leaving this in for backwards compatibility.
-		if($file) {
-			$uri = $file;
-		} else {
-			if ($extensionName === NULL) {
-				$extensionName = $this->controllerContext->getRequest()->getControllerExtensionName();
-			}
-			$uri = 'EXT:' . t3lib_div::camelCaseToLowerCaseUnderscored($extensionName) . '/Resources/Public/' . $path;
-			$uri = t3lib_div::getFileAbsFileName($uri);
-			$uri = substr($uri, strlen(PATH_site));
+		if(!$this->arguments['extensionName']) {
+			$this->arguments['extensionName'] = $this->controllerContext->getRequest()->getControllerExtensionName();
 		}
 
-		$this->pageRenderer->addJsFile(
-			$uri,
-  			$this->arguments['type'],
-			$this->arguments['compress'],
-			$this->arguments['forceOnTop'],
-			$this->arguments['allWrap'],
-			$this->arguments['excludeFromConcatenation']
-		);
+		$uri = 'EXT:' . t3lib_div::camelCaseToLowerCaseUnderscored($this->arguments['extensionName']) . '/Resources/Public/' . $file;
+		$uri = t3lib_div::getFileAbsFileName($uri);
+		$uri = substr($uri, strlen(PATH_site));
+		switch ($this->arguments['where']) {
+			case 'footer':
+				$this->pageRenderer->addJsFooterFile(
+					$uri,
+					$this->arguments['type'],
+					$this->arguments['compress'],
+					$this->arguments['forceOnTop'],
+					$this->arguments['allWrap'],
+					$this->arguments['excludeFromConcatenation']
+				);
+			break;
+
+			case 'footerLibs':
+				$this->pageRenderer->addJsFooterLibrary(
+					$this->arguments['key'],
+					$uri,
+					$this->arguments['type'],
+					$this->arguments['compress'],
+					$this->arguments['forceOnTop'],
+					$this->arguments['allWrap'],
+					$this->arguments['excludeFromConcatenation']
+				);
+			break;
+
+			default:
+				$this->pageRenderer->addJsFile(
+					$uri,
+					$this->arguments['type'],
+					$this->arguments['compress'],
+					$this->arguments['forceOnTop'],
+					$this->arguments['allWrap'],
+					$this->arguments['excludeFromConcatenation']
+				);
+			break;
+		}
+
 	}
 }
