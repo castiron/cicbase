@@ -55,12 +55,29 @@ class Tx_Cicbase_ViewHelpers_IncludeJavascriptViewHelper extends Tx_Fluid_Core_V
 	}
 
 	/**
-	 * @param string $file
+	 * Render the URI to the resource. The filename is used from child content.
+	 *
+	 * @param string $path The path and filename of the resource (relative to Public resource directory of the extension).
+	 * @param string $extensionName Target extension name. If not set, the current extension name will be used
+	 * @param boolean $absolute If set, an absolute URI is rendered
+	 * @param string $file Same as path, present only for backwards compatibility.
 	 */
-	public function render($file = NULL) {
-		// TODO: Would be nice if the file could begin with EXT:Sumpsink/ and return a relative path
+	public function render($path = NULL, $extensionName = NULL, $absolute = FALSE, $file = NULL) {
+
+		// early versions of this view helper used $file instead of $path. Leaving this in for backwards compatibility.
+		if($file) {
+			$uri = $file;
+		} else {
+			if ($extensionName === NULL) {
+				$extensionName = $this->controllerContext->getRequest()->getControllerExtensionName();
+			}
+			$uri = 'EXT:' . t3lib_div::camelCaseToLowerCaseUnderscored($extensionName) . '/Resources/Public/' . $path;
+			$uri = t3lib_div::getFileAbsFileName($uri);
+			$uri = substr($uri, strlen(PATH_site));
+		}
+
 		$this->pageRenderer->addJsFile(
-			$file,
+			$uri,
   			$this->arguments['type'],
 			$this->arguments['compress'],
 			$this->arguments['forceOnTop'],
