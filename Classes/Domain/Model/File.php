@@ -24,23 +24,32 @@
  ***************************************************************/
 
 class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntity {
-	
+
 	/**
 	 * @var string
 	 */
 	protected $filename;
-	
+
 	/**
 	 * @var string
 	 */
 	protected $originalFilename;
-	
+
 	/**
 	 * @var string
 	 */
 	protected $path;
-	
-	
+
+	/**
+	 * @var string
+	 */
+	protected $mimeType;
+
+	/**
+	 * @var integer
+	 */
+	protected $size;
+
 	/**
 	 * Returns the filename
 	 *
@@ -49,7 +58,7 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	public function getFilename() {
 		return $this->filename;
 	}
-	
+
 	/**
 	 * Sets the filename
 	 *
@@ -59,7 +68,7 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	public function setFilename($filename) {
 		$this->filename = $filename;
 	}
-	
+
 	/**
 	 * Returns the originalFilename
 	 *
@@ -68,7 +77,7 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	public function getOriginalFilename() {
 		return $this->originalFilename;
 	}
-	
+
 	/**
 	 * Sets the originalFilename
 	 *
@@ -78,8 +87,8 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	public function setOriginalFilename($originalFilename) {
 		$this->originalFilename = $originalFilename;
 	}
-	
-	
+
+
 	/**
 	 * Returns the path
 	 *
@@ -88,7 +97,7 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	public function getPath() {
 		return $this->path;
 	}
-	
+
 	/**
 	 * Sets the path
 	 *
@@ -97,6 +106,44 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	 */
 	public function setPath($path) {
 		$this->path = $path;
+	}
+
+	/**
+	 * Returns the mimeType
+	 *
+	 * @return string $mimeType
+	 */
+	public function getMimeType() {
+		return $this->mimeType;
+	}
+
+	/**
+	 * Sets the mimeType
+	 *
+	 * @param string $mimeType
+	 * @return void
+	 */
+	public function setMimeType($mimeType) {
+		$this->mimeType = $mimeType;
+	}
+
+	/**
+	 * Returns the size
+	 *
+	 * @return integer $size
+	 */
+	public function getSize() {
+		return $this->size;
+	}
+
+	/**
+	 * Sets the size
+	 *
+	 * @param integer $size
+	 * @return void
+	 */
+	public function setSize($size) {
+		$this->size = $size;
 	}
 }
 
