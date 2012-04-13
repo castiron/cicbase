@@ -47,7 +47,8 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 	 *
 	 * The $info array must have the following keys:
 	 *   'fileNameInForm' - The name of the upload element in the form.
-	 *   'pluginNamespace' - The name of the plugin namespace (i.e. if the generated form has this: name="Tx_MyPlugin[myName]", then the namespace is Tx_MyPlugin.)
+	 *   'pluginNamespace' - The name of the plugin namespace (i.e. if the generated form has this: name="Tx_MyPlugin[myName]", then the namespace is Tx_MyPlugin.
+	 * 	 'argumentName' - The name of the argument passed into the generated html (i.e. if the generated form as this: name="Tx_MyPlugin[myFileObj][myName]", then the argument is called 'myFileObj'.)
 	 *   'rootDirectory' - The path to store the files in.
 	 *   'allowedMimesAndExtensions' - An array of permissible mime types and their extensions: 'extension' => 'mime/type'.
 	 * 	 'maxFileSize' - Specifies the maximum file size.
@@ -66,17 +67,26 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 		// Get info variables.
 		$pluginNamespace = $info['pluginNamespace'];
 		$fileNameInForm = $info['fileNameInForm'];
+		$argument = $info['argumentName'];
 		$root = $info['rootDirectory'];
 		$allowedMimes = $info['allowedMimesAndExtensions'];
 		$maxSize = $info['maxFileSize'];
 
 		// Get $_FILES variables.
 		$post = $_FILES[$pluginNamespace];
-		$error = $post['error'][$fileNameInForm];
-		$mime = $post['type'][$fileNameInForm];
-		$original = $post['name'][$fileNameInForm];
-		$size = $post['size'][$fileNameInForm];
-		$source = $post['tmp_name'][$fileNameInForm];
+		if(!$argument) {
+			$error = $post['error'][$fileNameInForm];
+			$mime = $post['type'][$fileNameInForm];
+			$original = $post['name'][$fileNameInForm];
+			$size = $post['size'][$fileNameInForm];
+			$source = $post['tmp_name'][$fileNameInForm];
+		} else {
+			$error = $post['error'][$argument][$fileNameInForm];
+			$mime = $post['type'][$argument][$fileNameInForm];
+			$original = $post['name'][$argument][$fileNameInForm];
+			$size = $post['size'][$argument][$fileNameInForm];
+			$source = $post['tmp_name'][$argument][$fileNameInForm];
+		}
 
 		// Check for upload errors.
 		if($error) {
