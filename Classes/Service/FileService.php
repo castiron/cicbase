@@ -92,17 +92,20 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 		if($error) {
 			switch($error) {
 				case 1:
-				case 2: $this->errors['messages'][] = 'The file was not uploaded because it was too big. Upload error code: '.$error.'.';
+				case 2: $errors['messages'][] = 'The file was not uploaded because it was too big.';
 					break;
-				case 3: $this->errors['messages'][] = 'The file was only partially uploaded. Please try again. Upload error code: '.$error.'.';
+				case 3: $errors['messages'][] = 'The file was only partially uploaded. Please try again.';
 					break;
-				case 4: $this->errors['messages'][] = 'No file was uploaded. Upload error code: '.$error.'.';
+				case 4: $errors['messages'][] = 'No file was uploaded.';
 					break;
 				case 5:
 				case 6:
-				case 7: $this->errors['messages'][] = 'The PHP configuration for uploading files is not correct. Check permissions and temporary folders. Upload error code: '.$error.'.';
+				case 7: $errors['messages'][] = 'The PHP configuration for uploading files is not correct. Check permissions and temporary folders.';
 					break;
+				default:
+					$errors['messages'][] = 'Unrecognized file upload error.';
 			}
+			$errors['errorCode'] = $error;
 			return null;
 		}
 
