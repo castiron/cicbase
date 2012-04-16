@@ -90,6 +90,7 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 
 		// Check for upload errors.
 		if($error) {
+			$errors['errorCode'] = $error;
 			switch($error) {
 				case 1:
 				case 2: $errors['messages'][] = 'The file was not uploaded because it was too big.';
@@ -105,7 +106,6 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 				default:
 					$errors['messages'][] = 'Unrecognized file upload error.';
 			}
-			$errors['errorCode'] = $error;
 			return null;
 		}
 
@@ -122,13 +122,6 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 		}
 		$filename = $leftovers.$now.'.'.$ext;
 		$dest = t3lib_div::getFileAbsFileName($path);
-
-		// Save data to error variable, in case of failure.
-		$errors['filename'] = $filename;
-		$errors['originalFilename'] = $original;
-		$errors['mimeType'] = $mime;
-		$errors['size'] = $size;
-		$errors['path'] = $dest;
 
 		// Validate mime and size.
 		if(!self::validMime($mime, $ext, $allowedMimes, $errors) ||
@@ -152,6 +145,14 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 			return null;
 		}
 
+
+		// Save data to error variable
+		$errors['filename'] = $filename;
+		$errors['originalFilename'] = $original;
+		$errors['mimeType'] = $mime;
+		$errors['size'] = $size;
+		$errors['path'] = $dest;
+
 		// Create and/or update the file object.
 		if(!$file)
 			$file = $this->objectManager->create('Tx_Cicbase_Domain_Model_File');
@@ -164,6 +165,52 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 	}
 
 
+	/**
+	 * Create a file object given an array of data about the object.
+	 *
+	 * The $info array must contain these keys:
+	 * 'filename' => the name to give the file
+	 * 'originalFilename' => the name that the user may have had for this file
+	 * 'path' => the current location of this file
+	 * 'size' => the size of the file
+	 * 'mimeType' => the mimeType of the file
+	 *
+	 * @param array $info
+	 *  @return Tx_Cicbase_Domain_Model_File|null
+	 */
+	public function createFileObjectFromData(array $info) {
+		$file = $this->objectManager->create('Tx_Cicbase_Domain_Model_File');
+		$file->setFilename($info['filename']);
+		$file->setOriginalFilename($info['originalFilename']);
+		$file->setPath($info['path']);
+		$file->setMimeType($info['mimeType']);
+		$file->setSize($info['setSize']);
+		return $file;
+	}
+
+	/**
+	 * Move the given file to the given destination. This will not only change
+	 * the path property of the file, but the filename will also be updated to
+	 * match the time of modification.
+	 *
+	 * @param Tx_Cicbase_Domain_Model_File $file
+	 * @param string $destFolder
+	 * @return boolean
+	 */
+	public function move(Tx_Cicbase_Domain_Model_File &$file, $destFolder) {
+		$curPath = $file->getPath();
+		$original = $file->getOriginalFilename();
+		$ext = self::getExtension($original, $leftovers);
+		$newFilename = $leftovers.time().'.'.$ext;
+		$newPath = $destFolder.'/'.$newFilename;
+
+		if(!t3lib_div::upload_copy_move($curPath, $newPath)) {
+			$file->setFilename($newFilename);
+			$file->setPath($newPath);
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 * @static
