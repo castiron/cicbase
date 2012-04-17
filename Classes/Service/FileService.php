@@ -174,7 +174,6 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 		$file->setOriginalFilename($original);
 		$file->setPath($dest);
 		$file->setSize($size);
-//		$this->fileRepository->add($file);
 		return $file;
 	}
 
@@ -199,7 +198,6 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 		$file->setPath($info['path']);
 		$file->setMimeType($info['mimeType']);
 		$file->setSize($info['setSize']);
-//		$this->fileRepository->add($file);
 		return $file;
 	}
 
@@ -222,7 +220,6 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 		if(!t3lib_div::upload_copy_move($curPath, $newPath)) {
 			$file->setFilename($newFilename);
 			$file->setPath($newPath);
-//			$this->fileRepository->update($file);
 			return true;
 		}
 		return false;

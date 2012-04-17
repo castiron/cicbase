@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>database</type>
+		<description>Language labels for database tables/fields belonging to extension 'cicbase'</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="tx_cicevents_domain_model_file">File</label>
+			<label index="tx_cicevents_domain_model_file.filename">Filename</label>
+			<label index="tx_cicevents_domain_model_file.originalFilename">Original Filename</label>
+			<label index="tx_cicevents_domain_model_file.path">Path</label>
+			<label index="tx_cicevents_domain_model_file.mimeType">Mime Type</label>
+			<label index="tx_cicevents_domain_model_file.size">Size</label>
+		</languageKey>
+	</data>
+</T3locallang>
