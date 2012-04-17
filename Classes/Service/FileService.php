@@ -32,6 +32,11 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 	protected $objectManager;
 
 	/**
+	 * @var Tx_Cicbase_Domain_Repository_FileRepository
+	 */
+	protected $fileRepository;
+
+	/**
 	 * inject the objectManager
 	 *
 	 * @param Tx_Extbase_Object_ObjectManager objectManager
@@ -39,6 +44,16 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 	 */
 	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager) {
 		$this->objectManager = $objectManager;
+	}
+
+	/**
+	 * inject the fileRepository
+	 *
+	 * @param Tx_Cicbase_Domain_Repository_FileRepository fileRepository
+	 * @return void
+	 */
+	public function injectFileRepository(Tx_Cicbase_Domain_Repository_FileRepository $fileRepository) {
+		$this->fileRepository = $fileRepository;
 	}
 
 	/**
@@ -54,13 +69,12 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 	 * 	 'maxFileSize' - Specifies the maximum file size.
 	 *
 	 * @param array $info An array containing the necessary info for getting the file from the form and validating.
-	 * @param Tx_Cicbase_Domain_Model_File $file A pre-existing file object that needs to be uploaded from a form. Can be null.
 	 * @param array $errors An array that will contain any errors if no file object is created.
 	 * @param boolean $useDateSorting If true, files will be sorted into directories by date ( i.e. "root/2012/4/24/file3895023.pdf")
 	 * @return Tx_Cicbase_Domain_Model_File|null A null object is returned, if there were errors.
 	 * // TODO: look up the plugin namespace dynamically.
 	 */
-	public function createFileObjectFromForm(array $info, Tx_Cicbase_Domain_Model_File &$file = null, &$errors = array(), $useDateSorting = true) {
+	public function createFileObjectFromForm(array $info, &$errors = array(), $useDateSorting = true) {
 
 		$errors['messages'] = array();
 
@@ -153,14 +167,14 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 		$errors['size'] = $size;
 		$errors['path'] = $dest;
 
-		// Create and/or update the file object.
-		if(!$file)
-			$file = $this->objectManager->create('Tx_Cicbase_Domain_Model_File');
+		// Create the file object.
+		$file = $this->objectManager->create('Tx_Cicbase_Domain_Model_File');
 		$file->setFilename($filename);
 		$file->setMimeType($mime);
 		$file->setOriginalFilename($original);
 		$file->setPath($dest);
 		$file->setSize($size);
+//		$this->fileRepository->add($file);
 		return $file;
 	}
 
@@ -185,6 +199,7 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 		$file->setPath($info['path']);
 		$file->setMimeType($info['mimeType']);
 		$file->setSize($info['setSize']);
+//		$this->fileRepository->add($file);
 		return $file;
 	}
 
@@ -207,6 +222,7 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 		if(!t3lib_div::upload_copy_move($curPath, $newPath)) {
 			$file->setFilename($newFilename);
 			$file->setPath($newPath);
+//			$this->fileRepository->update($file);
 			return true;
 		}
 		return false;

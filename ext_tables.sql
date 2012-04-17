@@ -26,7 +26,7 @@ CREATE TABLE tx_cicbase_zipcodes (
   county VARCHAR(128)
 );
 
-CREATE TABLE tx_cicbase_file (
+CREATE TABLE tx_cicbase_domain_model_file (
   uid int(11) NOT NULL auto_increment,
   pid int(11) DEFAULT '0' NOT NULL,
 
