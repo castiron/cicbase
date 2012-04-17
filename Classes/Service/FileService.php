@@ -69,12 +69,15 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 	 * 	 'maxFileSize' - Specifies the maximum file size.
 	 *
 	 * @param array $info An array containing the necessary info for getting the file from the form and validating.
+	 * @param string $title
+	 * @param string $description
+	 * @param Tx_Cicbase_Domain_Model_File $file A possible pre-existing file that should be modified.
 	 * @param array $errors An array that will contain any errors if no file object is created.
 	 * @param boolean $useDateSorting If true, files will be sorted into directories by date ( i.e. "root/2012/4/24/file3895023.pdf")
 	 * @return Tx_Cicbase_Domain_Model_File|null A null object is returned, if there were errors.
 	 * // TODO: look up the plugin namespace dynamically.
 	 */
-	public function createFileObjectFromForm(array $info, &$errors = array(), $useDateSorting = true) {
+	public function createFileObjectFromForm(array $info, $title = null, $description = null, Tx_Cicbase_Domain_Model_File &$file = null, &$errors = array(), $useDateSorting = true) {
 
 		$errors['messages'] = array();
 
@@ -168,49 +171,30 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 		$errors['path'] = $dest;
 
 		// Create the file object.
-		$file = $this->objectManager->create('Tx_Cicbase_Domain_Model_File');
+		if(is_null($file))
+			$file = $this->objectManager->create('Tx_Cicbase_Domain_Model_File');
 		$file->setFilename($filename);
 		$file->setMimeType($mime);
 		$file->setOriginalFilename($original);
 		$file->setPath($dest);
 		$file->setSize($size);
+		$file->setTitle($title);
+		$file->setDescription($description);
 		return $file;
 	}
 
-
-	/**
-	 * Create a file object given an array of data about the object.
-	 *
-	 * The $info array must contain these keys:
-	 * 'filename' => the name to give the file
-	 * 'originalFilename' => the name that the user may have had for this file
-	 * 'path' => the current location of this file
-	 * 'size' => the size of the file
-	 * 'mimeType' => the mimeType of the file
-	 *
-	 * @param array $info
-	 *  @return Tx_Cicbase_Domain_Model_File|null
-	 */
-	public function createFileObjectFromData(array $info) {
-		$file = $this->objectManager->create('Tx_Cicbase_Domain_Model_File');
-		$file->setFilename($info['filename']);
-		$file->setOriginalFilename($info['originalFilename']);
-		$file->setPath($info['path']);
-		$file->setMimeType($info['mimeType']);
-		$file->setSize($info['setSize']);
-		return $file;
-	}
 
 	/**
 	 * Move the given file to the given destination. This will not only change
 	 * the path property of the file, but the filename will also be updated to
 	 * match the time of modification.
 	 *
+	 * @static
 	 * @param Tx_Cicbase_Domain_Model_File $file
 	 * @param string $destFolder
 	 * @return boolean
 	 */
-	public function move(Tx_Cicbase_Domain_Model_File &$file, $destFolder) {
+	public static function move(Tx_Cicbase_Domain_Model_File &$file, $destFolder) {
 		$curPath = $file->getPath();
 		$original = $file->getOriginalFilename();
 		$ext = self::getExtension($original, $leftovers);

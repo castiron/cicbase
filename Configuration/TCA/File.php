@@ -6,10 +6,10 @@ if (!defined ('TYPO3_MODE')) {
 $TCA['tx_cicbase_domain_model_file'] = array(
 	'ctrl' => $TCA['tx_cicbase_domain_model_file']['ctrl'],
 	'interface' => array(
-		'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, filename, original_filename, path, mime_type, size',
+		'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, title, description, filename, original_filename, path, mime_type, size',
 	),
 	'types' => array(
-		'1' => array('showitem' => 'sys_language_uid;;;;1-1-1, l10n_parent, l10n_diffsource, hidden;;1, filename, original_filename, path, mime_type, size --div--;LLL:EXT:cms/locallang_ttc.xml:tabs.access, starttime, endtime'),
+		'1' => array('showitem' => 'sys_language_uid;;;;1-1-1, l10n_parent, l10n_diffsource, hidden;;1, title, description, filename, original_filename, path, mime_type, size --div--;LLL:EXT:cms/locallang_ttc.xml:tabs.access, starttime, endtime'),
 	),
 	'palettes' => array(
 		'1' => array('showitem' => ''),
@@ -105,6 +105,37 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 				'size' => 30,
 				'eval' => 'trim,required'
 			),
+		),
+		'title' => array(
+			'exclude' => 0,
+			'label' => 'LLL:EXT:sjcert/Resources/Private/Language/locallang_db.xml:tx_sjcert_domain_model_document.title',
+			'config' => array(
+				'type' => 'text',
+				'cols' => 40,
+				'rows' => 15,
+				'eval' => 'trim'
+			),
+		),
+		'description' => array(
+			'exclude' => 0,
+			'label' => 'LLL:EXT:sjcert/Resources/Private/Language/locallang_db.xml:tx_sjcert_domain_model_document.description',
+			'config' => array(
+				'type' => 'text',
+				'cols' => 40,
+				'rows' => 15,
+				'eval' => 'trim',
+				'wizards' => array(
+					'RTE' => array(
+						'icon' => 'wizard_rte2.gif',
+						'notNewRecords'=> 1,
+						'RTEonly' => 1,
+						'script' => 'wizard_rte.php',
+						'title' => 'LLL:EXT:cms/locallang_ttc.xml:bodytext.W.RTE',
+						'type' => 'script'
+					)
+				)
+			),
+			'defaultExtras' => 'richtext[]',
 		),
 	),
 );
