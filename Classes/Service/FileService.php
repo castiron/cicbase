@@ -110,18 +110,18 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 			$errors['errorCode'] = $error;
 			switch($error) {
 				case 1:
-				case 2: $errors['messages'][] = 'The file was not uploaded because it was too big.';
+				case 2: $errors['messages'][] = self::translate('errorTooBig');
 					break;
-				case 3: $errors['messages'][] = 'The file was only partially uploaded. Please try again.';
+				case 3: $errors['messages'][] = self::translate('errorPartialFile');
 					break;
-				case 4: $errors['messages'][] = 'No file was uploaded.';
+				case 4: $errors['messages'][] = self::translate('errorNoFile');
 					break;
 				case 5:
 				case 6:
-				case 7: $errors['messages'][] = 'The PHP configuration for uploading files is not correct. Check permissions and temporary folders.';
+				case 7: $errors['messages'][] = self::translate('errorBadConfig');
 					break;
 				default:
-					$errors['messages'][] = 'Unrecognized file upload error.';
+					$errors['messages'][] = self::translate('errorUnknown');
 			}
 			return null;
 		}
@@ -158,7 +158,7 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 		}
 		$dest .= '/'.$filename;
 		if(!t3lib_div::upload_copy_move($source, $dest)) {
-			$errors['messages'][] = 'The file could not be saved for no apparent reason. Try again.';
+			$errors['messages'][] = self::translate('errorNotSaved');
 			return null;
 		}
 
@@ -219,11 +219,11 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 	 */
 	protected static function validMime($mimeType, $extension, array $allowedMimes, array &$errors) {
 		if(!$ext =  array_search($mimeType, $allowedMimes)) {
-			$errors['messages'][] = 'The file type, '.$mimeType.', is not allowed.';
+			$errors['messages'][] = self::translate('errorForbiddenMime');
 			return false;
 		}
 		if($ext != $extension) {
-			$errors['messages'][] = 'The file type, '.$mimeType.', should end in '.$ext.'.';
+			$errors['messages'][] = self::translate('errorMimeExtensionBadMatch');
 			return false;
 		}
 		return true;
@@ -239,7 +239,7 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 	 */
 	protected static function validSize($size, $max, array &$errors) {
 		if ($size > $max) {
-			$errors['messages'][] = 'The file cannot be saved because it is bigger than '.$max.' bytes.';
+			$errors['messages'][] = self::translate('errorTooBig');
 			return false;
 		}
 		return true;
@@ -258,6 +258,18 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 		preg_match('/(.*)\.(.*)$/', $filename, $matches);
 		$leftover = $matches[1];
 		return $matches[2] ? $matches[2] : null;
+	}
+
+
+	/**
+	 * Grabs string values from the locallang.xml file.
+	 *
+	 * @static
+	 * @param string $string The name of the key in the locallang.xml file.
+	 * @return string The value of that key
+	 */
+	protected static function translate($string) {
+		return Tx_Extbase_Utility_Localization::translate('tx_cicbase_domain_model_file.'.$string, 'cicbase');
 	}
 }
 
