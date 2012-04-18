@@ -269,7 +269,7 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 	 * @return string The value of that key
 	 */
 	protected static function translate($string) {
-		return Tx_Extbase_Utility_Localization::translate('tx_cicbase_domain_model_file.'.$string, 'cicbase');
+		return htmlspecialchars(Tx_Extbase_Utility_Localization::translate('tx_cicbase_domain_model_file.'.$string, 'cicbase'));
 	}
 }
 
