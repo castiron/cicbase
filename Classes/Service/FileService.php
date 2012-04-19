@@ -37,6 +37,21 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 	protected $fileRepository;
 
 	/**
+	 * @var Tx_Extbase_Configuration_ConfigurationManager
+	 */
+	protected $configurationManager;
+
+	/**
+	 * @var array
+	 */
+	protected $allowedMimesAndExtensions = array();
+
+	/**
+	 * @var int
+	 */
+	protected $maxSize;
+
+	/**
 	 * inject the objectManager
 	 *
 	 * @param Tx_Extbase_Object_ObjectManager objectManager
@@ -57,52 +72,89 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 	}
 
 	/**
+	 * inject the configurationManager
+	 *
+	 * @param Tx_Extbase_Configuration_ConfigurationManager configurationManager
+	 * @return void
+	 */
+	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManager $configurationManager) {
+		$this->configurationManager = $configurationManager;
+	}
+
+	/**
+	 * Returns the allowedMimesAndExtensions.
+	 *
+	 * The array will be in the form: 'extension' => 'mime/type'
+	 *
+	 * @return array $allowedMimesAndExtensions
+	 */
+	public function getAllowedMimesAndExtensions() {
+		return $this->allowedMimesAndExtensions;
+	}
+
+	/**
+	 * Sets the allowedMimesAndExtensions.
+	 *
+	 * The array should be in the form: 'extension' => 'mime/type'
+	 *
+	 * @param array $allowedMimesAndExtensions
+	 * @return void
+	 */
+	public function setAllowedMimesAndExtensions(array $allowedMimesAndExtensions) {
+		$this->allowedMimesAndExtensions = $allowedMimesAndExtensions;
+	}
+
+
+	/**
+	 * Returns the maxSize
+	 *
+	 * @return int $maxSize
+	 */
+	public function getMaxSize() {
+		return $this->maxSize;
+	}
+
+	/**
+	 * Sets the maxSize
+	 *
+	 * @param int $maxSize
+	 * @return void
+	 */
+	public function setMaxSize($maxSize) {
+		$this->maxSize = $maxSize;
+	}
+
+	/**
 	 * This function creates a File object.
 	 *
 	 *
-	 * The $info array must have the following keys:
-	 *   'fileNameInForm' - The name of the upload element in the form.
-	 *   'pluginNamespace' - The name of the plugin namespace (i.e. if the generated form has this: name="Tx_MyPlugin[myName]", then the namespace is Tx_MyPlugin.
-	 * 	 'argumentName' - The name of the argument passed into the generated html (i.e. if the generated form as this: name="Tx_MyPlugin[myFileObj][myName]", then the argument is called 'myFileObj'.)
-	 *   'rootDirectory' - The path to store the files in.
-	 *   'allowedMimesAndExtensions' - An array of permissible mime types and their extensions: 'extension' => 'mime/type'.
-	 * 	 'maxFileSize' - Specifies the maximum file size.
-	 *
-	 * @param array $info An array containing the necessary info for getting the file from the form and validating.
-	 * @param string $title
-	 * @param string $description
-	 * @param Tx_Cicbase_Domain_Model_File $file A possible pre-existing file that should be modified.
+	 * @param string $uploadElementName The name of the upload element in the html form.
+	 * @param string $rootDirectory The directory to save the uploaded file.
 	 * @param array $errors An array that will contain any errors if no file object is created.
 	 * @param boolean $useDateSorting If true, files will be sorted into directories by date ( i.e. "root/2012/4/24/file3895023.pdf")
 	 * @return Tx_Cicbase_Domain_Model_File|null A null object is returned, if there were errors.
-	 * // TODO: look up the plugin namespace dynamically.
 	 */
-	public function createFileObjectFromForm(array $info, $title = null, $description = null, Tx_Cicbase_Domain_Model_File &$file = null, &$errors = array(), $useDateSorting = true) {
+	public function createFileObjectFromForm($uploadElementName, $rootDirectory, &$errors = array(), $useDateSorting = true) {
 
 		$errors['messages'] = array();
 
-		// Get info variables.
-		$pluginNamespace = $info['pluginNamespace'];
-		$fileNameInForm = $info['fileNameInForm'];
-		$argument = $info['argumentName'];
-		$root = $info['rootDirectory'];
-		$allowedMimes = $info['allowedMimesAndExtensions'];
-		$maxSize = $info['maxFileSize'];
 
 		// Get $_FILES variables.
+		$pluginNamespace = $this->getNamespace();
 		$post = $_FILES[$pluginNamespace];
+		$argument = $this->getArgument($post, $uploadElementName);
 		if(!$argument) {
-			$error = $post['error'][$fileNameInForm];
-			$mime = $post['type'][$fileNameInForm];
-			$original = $post['name'][$fileNameInForm];
-			$size = $post['size'][$fileNameInForm];
-			$source = $post['tmp_name'][$fileNameInForm];
+			$error = $post['error'][$uploadElementName];
+			$mime = $post['type'][$uploadElementName];
+			$original = $post['name'][$uploadElementName];
+			$size = $post['size'][$uploadElementName];
+			$source = $post['tmp_name'][$uploadElementName];
 		} else {
-			$error = $post['error'][$argument][$fileNameInForm];
-			$mime = $post['type'][$argument][$fileNameInForm];
-			$original = $post['name'][$argument][$fileNameInForm];
-			$size = $post['size'][$argument][$fileNameInForm];
-			$source = $post['tmp_name'][$argument][$fileNameInForm];
+			$error = $post['error'][$argument][$uploadElementName];
+			$mime = $post['type'][$argument][$uploadElementName];
+			$original = $post['name'][$argument][$uploadElementName];
+			$size = $post['size'][$argument][$uploadElementName];
+			$source = $post['tmp_name'][$argument][$uploadElementName];
 		}
 
 		// Check for upload errors.
@@ -133,16 +185,25 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 			$year = date('Y', $now);
 			$month = date('n', $now);
 			$day = date('j', $now);
-			$path = sprintf("%s/%s/%s/%s",$root, $year, $month, $day);
+			$path = sprintf("%s/%s/%s/%s",$rootDirectory, $year, $month, $day);
 		} else {
-			$path = $root;
+			$path = $rootDirectory;
 		}
 		$filename = $leftovers.$now.'.'.$ext;
 		$dest = t3lib_div::getFileAbsFileName($path);
 
 		// Validate mime and size.
-		if(!self::validMime($mime, $ext, $allowedMimes, $errors) ||
-			!self::validSize($size, $maxSize, $errors)) {
+		if(!self::validMime($mime, $ext, $forbidden, $wrong)) {
+			if($forbidden) {
+				$errors['messages'][] = self::translate('errorForbiddenMime');
+			}
+			if($wrong) {
+				$errors['messages'][] = self::translate('errorMimeExtensionBadMatch');
+			}
+			return null;
+		}
+		if (!self::validSize($size)) {
+			$errors['messages'][] = self::translate('errorTooBig');
 			return null;
 		}
 
@@ -171,16 +232,56 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 		$errors['path'] = $dest;
 
 		// Create the file object.
-		if(is_null($file))
-			$file = $this->objectManager->create('Tx_Cicbase_Domain_Model_File');
+		$file = $this->objectManager->create('Tx_Cicbase_Domain_Model_File');
 		$file->setFilename($filename);
 		$file->setMimeType($mime);
 		$file->setOriginalFilename($original);
 		$file->setPath($dest);
 		$file->setSize($size);
-		$file->setTitle($title);
-		$file->setDescription($description);
 		return $file;
+	}
+
+	/**
+	 * This function creates a file object from an array with the keys:
+	 * 'filename', 'originalFilename', 'path', 'mimeType', 'size',
+	 * 'title', and 'description'.
+	 *
+	 * @param array $form
+	 */
+	public function createFileFromArray(array $form) {
+		$file = $this->objectManager->create('Tx_Cicbase_Domain_Model_File');
+		$file->setFilename($form['filename']);
+		$file->setOriginalFilename($form['originalFilename']);
+		$file->setPath($form['path']);
+		$file->setMimeType($form['mimeType']);
+		$file->setSize($form['size']);
+		$file->setTitle($form['title']);
+		$file->setDescription($form['description']);
+	}
+
+
+	protected function getArgument($post, $elementName) {
+		$keys = array_keys($post['name']);
+		$arg = $keys[0];
+		if($arg == $elementName) {
+			return null;
+		} else {
+			return $arg;
+		}
+	}
+
+
+	/**
+	 * // TODO: This may need to be adjusted in the future
+	 *
+	 * @return string The namespace of the file
+	 */
+	protected function getNamespace() {
+		$framework = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
+		$extension = $framework['extensionName'];
+		$plugin = $framework['pluginName'];
+		$namespace = 'tx_'.strtolower($extension).'_'.strtolower($plugin);
+		return $namespace;
 	}
 
 
@@ -213,33 +314,37 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 	 * @static
 	 * @param string $mimeType
 	 * @param string $extension
-	 * @param array $allowedMimes
-	 * @param array $errors
+	 * @param bool $forbidden True if mime is forbidden.
+	 * @param bool $wrong True if mime extension doesn't match mime type.
 	 * @return bool
 	 */
-	protected static function validMime($mimeType, $extension, array $allowedMimes, array &$errors) {
+	protected function validMime($mimeType, $extension, &$forbidden = false, &$wrong = false) {
+		$allowedMimes = $this->allowedMimesAndExtensions;
+		if(!$allowedMimes) {
+			return true;
+		}
 		if(!$ext =  array_search($mimeType, $allowedMimes)) {
-			$errors['messages'][] = self::translate('errorForbiddenMime');
+			$forbidden = true;
 			return false;
 		}
 		if($ext != $extension) {
-			$errors['messages'][] = self::translate('errorMimeExtensionBadMatch');
+			$wrong = true;
 			return false;
 		}
 		return true;
 	}
 
-
 	/**
 	 * @static
 	 * @param integer $size
-	 * @param integer $max
-	 * @param array $errors
 	 * @return bool
 	 */
-	protected static function validSize($size, $max, array &$errors) {
+	protected function validSize($size) {
+		$max = $this->maxSize;
+		if(!$max) {
+			return true;
+		}
 		if ($size > $max) {
-			$errors['messages'][] = self::translate('errorTooBig');
 			return false;
 		}
 		return true;
