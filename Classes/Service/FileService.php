@@ -128,13 +128,12 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 	 * This function creates a File object.
 	 *
 	 *
-	 * @param string $uploadElementName The name of the upload element in the html form.
 	 * @param string $rootDirectory The directory to save the uploaded file.
 	 * @param array $errors An array that will contain any errors if no file object is created.
 	 * @param boolean $useDateSorting If true, files will be sorted into directories by date ( i.e. "root/2012/4/24/file3895023.pdf")
 	 * @return Tx_Cicbase_Domain_Model_File|null A null object is returned, if there were errors.
 	 */
-	public function createFileObjectFromForm($uploadElementName, $rootDirectory, &$errors = array(), $useDateSorting = true) {
+	public function createFileObjectFromForm($rootDirectory, &$errors = array(), $useDateSorting = true) {
 
 		$errors['messages'] = array();
 
@@ -142,20 +141,14 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 		// Get $_FILES variables.
 		$pluginNamespace = $this->getNamespace();
 		$post = $_FILES[$pluginNamespace];
-		$argument = $this->getArgument($post, $uploadElementName);
-		if(!$argument) {
-			$error = $post['error'][$uploadElementName];
-			$mime = $post['type'][$uploadElementName];
-			$original = $post['name'][$uploadElementName];
-			$size = $post['size'][$uploadElementName];
-			$source = $post['tmp_name'][$uploadElementName];
-		} else {
-			$error = $post['error'][$argument][$uploadElementName];
-			$mime = $post['type'][$argument][$uploadElementName];
-			$original = $post['name'][$argument][$uploadElementName];
-			$size = $post['size'][$argument][$uploadElementName];
-			$source = $post['tmp_name'][$argument][$uploadElementName];
-		}
+
+		$fd = $this->getFileData($post);
+		$error = $fd['error'][0];
+		$mime = $fd['mime'][0];
+		$original = $fd['original'][0];
+		$size = $fd['size'][0];
+		$source = $fd['source'][0];
+
 
 		// Check for upload errors.
 		if($error) {
@@ -259,15 +252,33 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 		$file->setDescription($form['description']);
 	}
 
+	/**
+	 * Returns an array with these keys:
+	 *
+	 * 'error', 'mime', 'original', 'size', 'source'
+	 *
+	 * @static
+	 * @param $post An array of File form data that needs to be parsed
+	 * @return array
+	 */
+	protected static function getFileData(array $post) {
+		$data = array();
+		$data['error'] = self::getFirstDeepValues($post['error']);
+		$data['mime'] = self::getFirstDeepValues($post['type']);
+		$data['original'] = self::getFirstDeepValues($post['name']);
+		$data['size'] = self::getFirstDeepValues($post['size']);
+		$data['source'] = self::getFirstDeepValues($post['tmp_name']);
+		return $data;
+	}
 
-	protected function getArgument($post, $elementName) {
-		$keys = array_keys($post['name']);
-		$arg = $keys[0];
-		if($arg == $elementName) {
-			return null;
-		} else {
-			return $arg;
+	protected static function getFirstDeepValues(array $array) {
+		while(is_array($array)) {
+			$keys = array_keys($array);
+			$vals = array_values($array);
+			$key = $keys[0];
+			$array = $array[$key];
 		}
+		return $vals;
 	}
 
 
