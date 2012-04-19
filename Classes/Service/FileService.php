@@ -131,107 +131,112 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 	 * @param string $rootDirectory The directory to save the uploaded file.
 	 * @param array $errors An array that will contain any errors if no file object is created.
 	 * @param boolean $useDateSorting If true, files will be sorted into directories by date ( i.e. "root/2012/4/24/file3895023.pdf")
-	 * @return Tx_Cicbase_Domain_Model_File|null A null object is returned, if there were errors.
+	 * @return array An array of Tx_Cicbase_Domain_Model_File objects.
 	 */
 	public function createFileObjectFromForm($rootDirectory, &$errors = array(), $useDateSorting = true) {
-
-		$errors['messages'] = array();
-
 
 		// Get $_FILES variables.
 		$pluginNamespace = $this->getNamespace();
 		$post = $_FILES[$pluginNamespace];
 
+		$files = array();
 		$fd = $this->getFileData($post);
-		$error = $fd['error'][0];
-		$mime = $fd['mime'][0];
-		$original = $fd['original'][0];
-		$size = $fd['size'][0];
-		$source = $fd['source'][0];
+		$count = count($fd['error']);
+		for($i = 0; $i < $count; ++$i) {
+			$errors[$i] = array();
+			$errors[$i]['messages'] = array();
+
+			$error = $fd['error'][$i];
+			$mime = $fd['mime'][$i];
+			$original = $fd['original'][$i];
+			$size = $fd['size'][$i];
+			$source = $fd['source'][$i];
 
 
-		// Check for upload errors.
-		if($error) {
-			$errors['errorCode'] = $error;
-			switch($error) {
-				case 1:
-				case 2: $errors['messages'][] = self::translate('errorTooBig');
-					break;
-				case 3: $errors['messages'][] = self::translate('errorPartialFile');
-					break;
-				case 4: $errors['messages'][] = self::translate('errorNoFile');
-					break;
-				case 5:
-				case 6:
-				case 7: $errors['messages'][] = self::translate('errorBadConfig');
-					break;
-				default:
-					$errors['messages'][] = self::translate('errorUnknown');
+			// Check for upload errors.
+			if($error) {
+				$errors[$i]['errorCode'] = $error;
+				switch($error) {
+					case 1:
+					case 2: $errors[$i]['messages'][] = self::translate('errorTooBig');
+						break;
+					case 3: $errors[$i]['messages'][] = self::translate('errorPartialFile');
+						break;
+					case 4: $errors[$i]['messages'][] = self::translate('errorNoFile');
+						break;
+					case 5:
+					case 6:
+					case 7: $errors[$i]['messages'][] = self::translate('errorBadConfig');
+						break;
+					default:
+						$errors[$i]['messages'][] = self::translate('errorUnknown');
+				}
+				$files[$i] = null;
+				continue;
 			}
-			return null;
-		}
 
-		// Get other variables.
-		$ext = self::getExtension($original, $leftovers);
-		$now = time();
-		if($useDateSorting) {
-			$year = date('Y', $now);
-			$month = date('n', $now);
-			$day = date('j', $now);
-			$path = sprintf("%s/%s/%s/%s",$rootDirectory, $year, $month, $day);
-		} else {
-			$path = $rootDirectory;
-		}
-		$filename = $leftovers.$now.'.'.$ext;
-		$dest = t3lib_div::getFileAbsFileName($path);
-
-		// Validate mime and size.
-		if(!self::validMime($mime, $ext, $forbidden, $wrong)) {
-			if($forbidden) {
-				$errors['messages'][] = self::translate('errorForbiddenMime');
+			// Get other variables.
+			$leftovers = '';
+			$ext = self::getExtension($original, $leftovers);
+			$now = time();
+			if($useDateSorting) {
+				$year = date('Y', $now);
+				$month = date('n', $now);
+				$day = date('j', $now);
+				$path = sprintf("%s/%s/%s/%s",$rootDirectory, $year, $month, $day);
+			} else {
+				$path = $rootDirectory;
 			}
-			if($wrong) {
-				$errors['messages'][] = self::translate('errorMimeExtensionBadMatch');
+			$filename = $leftovers.$now.'.'.$ext;
+			$dest = t3lib_div::getFileAbsFileName($path);
+
+			// Validate mime and size.
+			$forbidden = $wrong = false;
+			if(!self::validMime($mime, $ext, $forbidden, $wrong)) {
+				if($forbidden) {
+					$errors[$i]['messages'][] = self::translate('errorForbiddenMime');
+				}
+				if($wrong) {
+					$errors[$i]['messages'][] = self::translate('errorMimeExtensionBadMatch');
+				}
+				$files[$i] = null;
+				continue;
 			}
-			return null;
-		}
-		if (!self::validSize($size)) {
-			$errors['messages'][] = self::translate('errorTooBig');
-			return null;
-		}
-
-		// Save the file.
-		if(!file_exists($dest)) {
-			try {
-				t3lib_div::mkdir_deep($dest);
-			} catch (Exception $e) {
-				// This is a 'compile-time' error, not a run-time one.
-				// Throwing an exception is appropriate.
-				throw new Exception ('Cannot create directory for storing files: '.$dest);
+			if (!self::validSize($size)) {
+				$errors[$i]['messages'][] = self::translate('errorTooBig');
+				$files[$i] = null;
+				continue;
 			}
+
+			// Save the file.
+			if(!file_exists($dest)) {
+				try {
+					t3lib_div::mkdir_deep($dest);
+				} catch (Exception $e) {
+					// This is a 'compile-time' error, not a run-time one.
+					// Throwing an exception is appropriate.
+					throw new Exception ('Cannot create directory for storing files: '.$dest);
+				}
+			}
+			$dest .= '/'.$filename;
+			if(!t3lib_div::upload_copy_move($source, $dest)) {
+				$errors[$i]['messages'][] = self::translate('errorNotSaved');
+				$files[$i] = null;
+				continue;
+			}
+
+
+			// Save data to error variable
+			$errors[$i]['filename'] = $filename;
+			$errors[$i]['originalFilename'] = $original;
+			$errors[$i]['mimeType'] = $mime;
+			$errors[$i]['size'] = $size;
+			$errors[$i]['path'] = $dest;
+
+			$files[$i] = $this->createFileFromArray($errors[$i]);
 		}
-		$dest .= '/'.$filename;
-		if(!t3lib_div::upload_copy_move($source, $dest)) {
-			$errors['messages'][] = self::translate('errorNotSaved');
-			return null;
-		}
 
-
-		// Save data to error variable
-		$errors['filename'] = $filename;
-		$errors['originalFilename'] = $original;
-		$errors['mimeType'] = $mime;
-		$errors['size'] = $size;
-		$errors['path'] = $dest;
-
-		// Create the file object.
-		$file = $this->objectManager->create('Tx_Cicbase_Domain_Model_File');
-		$file->setFilename($filename);
-		$file->setMimeType($mime);
-		$file->setOriginalFilename($original);
-		$file->setPath($dest);
-		$file->setSize($size);
-		return $file;
+		return $files;
 	}
 
 	/**
@@ -240,6 +245,7 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 	 * 'title', and 'description'.
 	 *
 	 * @param array $form
+	 * @return Tx_Cicbase_Domain_Model_File
 	 */
 	public function createFileFromArray(array $form) {
 		$file = $this->objectManager->create('Tx_Cicbase_Domain_Model_File');
@@ -250,6 +256,8 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 		$file->setSize($form['size']);
 		$file->setTitle($form['title']);
 		$file->setDescription($form['description']);
+
+		return $file;
 	}
 
 	/**
