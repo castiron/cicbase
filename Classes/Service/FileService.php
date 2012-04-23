@@ -128,12 +128,19 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 	 * Generates a link to the file.
 	 *
 	 * @param Tx_Cicbase_Domain_Model_File $file
+	 * @param string $rootDirectory
 	 * @return string
 	 */
-	public function generateLink(Tx_Cicbase_Domain_Model_File $file) {
+	public function generateLink(Tx_Cicbase_Domain_Model_File $file, $rootDirectory) {
+		// Get the domain name
 		$uriBuilder = $this->objectManager->get('Tx_Extbase_MVC_Web_Routing_UriBuilder');
-		$path = $file->getPath();
 		$uri = $uriBuilder->setCreateAbsoluteUri(true)->build();
+		$parsed_url = parse_url($uri);
+		$domain = $parsed_url['scheme'].'://'.$parsed_url['host'];
+
+		// Get the relative path
+		$path = $file->getPath();
+		preg_match('/.*/', $path, $matches);
 
 		return '';
 	}
