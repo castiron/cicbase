@@ -37,10 +37,11 @@ class Tx_Cicbase_ViewHelpers_File_LinkViewHelper extends Tx_Fluid_Core_ViewHelpe
 
 	/**
 	 * @param Tx_Cicbase_Domain_Model_File $file
+	 * @param string $rootDirectory
 	 * @param string $linkText
 	 * @return string
 	 */
-	public function render(Tx_Cicbase_Domain_Model_File $file, $linkText = null) {
+	public function render(Tx_Cicbase_Domain_Model_File $file, $rootDirectory, $linkText = null) {
 		$link = $this->fileService->generateLink($file);
 		if($linkText)
 			$text = $linkText;
