@@ -125,6 +125,20 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 	}
 
 	/**
+	 * Generates a link to the file.
+	 *
+	 * @param Tx_Cicbase_Domain_Model_File $file
+	 * @return string
+	 */
+	public function generateLink(Tx_Cicbase_Domain_Model_File $file) {
+		$uriBuilder = $this->objectManager->get('Tx_Extbase_MVC_Web_Routing_UriBuilder');
+		$path = $file->getPath();
+		$uri = $uriBuilder->setCreateAbsoluteUri(true)->build();
+
+		return '';
+	}
+
+	/**
 	 * This function creates a File object.
 	 *
 	 *
