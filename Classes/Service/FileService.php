@@ -128,21 +128,25 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 	 * Generates a link to the file.
 	 *
 	 * @param Tx_Cicbase_Domain_Model_File $file
-	 * @param string $rootDirectory
 	 * @return string
 	 */
-	public function generateLink(Tx_Cicbase_Domain_Model_File $file, $rootDirectory) {
+	public function generateLink(Tx_Cicbase_Domain_Model_File $file) {
 		// Get the domain name
 		$uriBuilder = $this->objectManager->get('Tx_Extbase_MVC_Web_Routing_UriBuilder');
 		$uri = $uriBuilder->setCreateAbsoluteUri(true)->build();
 		$parsed_url = parse_url($uri);
 		$domain = $parsed_url['scheme'].'://'.$parsed_url['host'];
 
-		// Get the relative path
+		// Get the relative location of the file
+		$root = $file->getRootDirectory();
 		$path = $file->getPath();
-		preg_match('/.*/', $path, $matches);
+		$i = strpos($path, $root);
+		$relPath = substr($path, $i);
 
-		return '';
+
+		$link = $domain . '/' . $relPath;
+
+		return $link;
 	}
 
 	/**
@@ -253,6 +257,7 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 			$errors[$i]['mimeType'] = $mime;
 			$errors[$i]['size'] = $size;
 			$errors[$i]['path'] = $dest;
+			$errors[$i]['rootDirectory'] = $rootDirectory;
 
 			$files[$i] = $this->createFileFromArray($errors[$i]);
 		}
@@ -275,6 +280,7 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 		$file->setPath($form['path']);
 		$file->setMimeType($form['mimeType']);
 		$file->setSize($form['size']);
+		$file->setRootDirectory($form['rootDirectory']);
 		$file->setTitle($form['title']);
 		$file->setDescription($form['description']);
 

@@ -49,14 +49,19 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	 * @var integer
 	 */
 	protected $size;
-	
+
+	/**
+	 * @var string
+	 */
+	protected $rootDirectory;
+
 	/**
 	 * @var string
 	 */
 	protected $title;
-	
+
 	/**
-	 * @var string 
+	 * @var string
 	 */
 	protected $description;
 
@@ -155,7 +160,27 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	public function setSize($size) {
 		$this->size = $size;
 	}
-	
+
+
+	/**
+	 * Returns the rootDirectory
+	 *
+	 * @return string $rootDirectory
+	 */
+	public function getRootDirectory() {
+		return $this->rootDirectory;
+	}
+
+	/**
+	 * Sets the rootDirectory
+	 *
+	 * @param string $rootDirectory
+	 * @return void
+	 */
+	public function setRootDirectory($rootDirectory) {
+		$this->rootDirectory = $rootDirectory;
+	}
+
 	/**
 	 * Returns the title
 	 *
@@ -164,7 +189,7 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	public function getTitle() {
 		return $this->title;
 	}
-	
+
 	/**
 	 * Sets the title
 	 *
@@ -174,7 +199,7 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	public function setTitle($title) {
 		$this->title = $title;
 	}
-	
+
 	/**
 	 * Returns the description
 	 *
@@ -183,7 +208,7 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	public function getDescription() {
 		return $this->description;
 	}
-	
+
 	/**
 	 * Sets the description
 	 *

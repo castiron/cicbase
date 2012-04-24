@@ -106,6 +106,15 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 				'eval' => 'trim,required'
 			),
 		),
+		'root_directory' => array(
+			'exclude' => 0,
+			'label' => 'LLL:EXT:cicbase/Resources/Private/Language/locallang_db.xml:tx_cicbase_domain_model_file.path',
+			'config' => array(
+				'type' => 'input',
+				'size' => 30,
+				'eval' => 'trim,required'
+			),
+		),
 		'title' => array(
 			'exclude' => 0,
 			'label' => 'LLL:EXT:sjcert/Resources/Private/Language/locallang_db.xml:tx_sjcert_domain_model_document.title',
