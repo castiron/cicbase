@@ -2,7 +2,7 @@
 if (!defined ('TYPO3_MODE')) {
 	die ('Access denied.');
 }
-t3lib_extMgm::addStaticFile($_EXTKEY, 'Configuration/TypoScript', 'CIC Services Typoscript');
+t3lib_extMgm::addStaticFile($_EXTKEY, 'Configuration/TypoScript', 'CICBase Static Typoscript');
 
 if (TYPO3_MODE == 'BE') {
 	if (t3lib_extMgm::isLoaded('scheduler')) {
@@ -14,7 +14,6 @@ if (TYPO3_MODE == 'BE') {
 		);
 	}
 }
-
 
 t3lib_extMgm::addLLrefForTCAdescr('tx_cicbase_domain_model_file', 'EXT:cicbase/Resources/Private/Language/locallang_csh_tx_cicbase_domain_model_file.xml');
 t3lib_extMgm::allowTableOnStandardPages('tx_cicbase_domain_model_file');
