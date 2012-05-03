@@ -373,7 +373,11 @@ class Tx_Cicbase_Service_FileService implements t3lib_Singleton {
 			$forbidden = true;
 			return false;
 		}
-		if($ext != $extension) {
+		// There can be multiple extensions per mimeTypes, so we can't just compare
+		// $ext to $extension to make sure they match.
+		$keys = array_keys($allowedMimes, $mimeType);
+		$properMime = array_search($extension, $keys);
+		if(!$properMime) {
 			$wrong = true;
 			return false;
 		}
