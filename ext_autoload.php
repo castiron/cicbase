@@ -28,6 +28,7 @@ return array(
 	'tx_cicbase_viewhelpers_relativetimeviewhelper' => $extensionPath . 'Classes/ViewHelpers/RelativeTimeViewHelper.php',
 	'tx_cicbase_viewhelpers_striplinebreaksviewhelper' => $extensionPath . 'Classes/ViewHelpers/StripLinebreaksViewHelper.php',
 	'tx_cicbase_viewhelpers_urlencodeviewhelper' => $extensionPath . 'Classes/ViewHelpers/UrlEncodeViewHelper.php',
+	'tx_cicbase_viewhelpers_typolinkviewhelper' => $extensionPath . 'Classes/ViewHelpers/TypolinkViewHelper.php',
 	'tx_cicbase_scheduler_task' => $extensionPath . 'Classes/Scheduler/Task.php',
 	'tx_cicbase_scheduler_fieldprovider' => $extensionPath . 'Classes/Scheduler/FieldProvider.php',
 	'tx_cicbase_scheduler_fieldprovider' => $extensionPath . 'Classes/Scheduler/FieldProvider.php',
