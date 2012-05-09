@@ -132,9 +132,31 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 		return $fileData;
 	}
 
-	protected function handleUploadErrors($rawFileData) {
-		// TODO: Return a proper extbase error object if there is an error
-		return NULL;
+	protected function handleUploadErrors($uploadedFileData) {
+		if($uploadedFileData['error']) {
+			switch ($uploadedFileData['error']) {
+				case 1:
+				case 2:
+					$this->addError('File exceeds upload size limit', 1336597081);
+				break;
+				case 3:
+					$this->addError('File was only partially uploaded. Please try again', 1336597082);
+				break;
+				case 4:
+					$this->addError('No file was uploaded.', 1336597083);
+				break;
+				case 5:
+				case 6:
+				case 7:
+					$this->addError('Bad destination error.', 1336597084);
+				break;
+				default:
+					$this->addError('Unknown error.', 1336597085);
+				break;
+			}
+		} else {
+			return NULL;
+		}
 	}
 
 	protected function validateType($uploadedFileData,$allowedTypes) {
@@ -169,38 +191,35 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 		$this->propertyPath = $propertyPath;
 		$this->settings = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
 
-		if($sourceData['uid']) {
-			// existing file, we should do the mapping using a regular persistent object convertor...
+		$uploadedFileData = $this->getUploadedFileData();
+		$isUploadError = $this->handleUploadErrors($uploadedFileData);
+		if($this->messages->hasErrors()) {
+			return $this->messages->getFirstError();
 		} else {
-			$uploadedFileData = $this->getUploadedFileData();
-			$isUploadError = $this->handleUploadErrors($rawFileData);
-			if($isUploadError instanceof Tx_Extbase_Error_Error) {
-				return $isUploadError;
-			} else {
-				$this->validateType($uploadedFileData,$allowedTypes);
-				$this->validateName($uploadedFileData);
-				$this->validateSize($uploadedFileData,$maxSize);
-			}
+			$this->validateType($uploadedFileData,$allowedTypes);
+			$this->validateName($uploadedFileData);
+			$this->validateSize($uploadedFileData,$maxSize);
+		}
 
-			if($this->messages->hasErrors()) {
-				return $this->messages->getFirstError();
-			} else {
-				// ok to make a file object
-				$pathInfo = pathinfo($uploadedFileData['tmp_name']);
-				$fileObject = $this->objectManager->create('Tx_Cicbase_Domain_Model_File');
-				$fileObject->setTitle($sourceData['title']);
-				$fileObject->setDescription($sourceData['description']);
-				$fileObject->setIsSaved(false);
-				$fileObject->setSize($uploadedFileData['size']);
-				$fileObject->setMimeType($uploadedFileData['type']);
-				$fileObject->setOriginalFilename($uploadedFileData['name']);
-				$fileObject->setPath($uploadedFileData['tmp_name']);
-				$fileObject->setFilename($pathInfo['filename']);
+		if($this->messages->hasErrors()) {
+			return $this->messages->getFirstError();
+		} else {
+			// ok to make a file object
+			$pathInfo = pathinfo($uploadedFileData['tmp_name']);
+			$fileObject = $this->objectManager->create('Tx_Cicbase_Domain_Model_File');
+			$fileObject->setTitle($sourceData['title']);
+			// TODO: Set a default title if it's not provided.
+			$fileObject->setDescription($sourceData['description']);
+			$fileObject->setIsSaved(false);
+			$fileObject->setSize($uploadedFileData['size']);
+			$fileObject->setMimeType($uploadedFileData['type']);
+			$fileObject->setOriginalFilename($uploadedFileData['name']);
+			$fileObject->setPath($uploadedFileData['tmp_name']);
+			$fileObject->setFilename($pathInfo['filename']);
 
-				$this->fileRepository->add($fileObject);
-				$this->persistenceManager->persistAll();
-				return $fileObject;
-			}
+			$this->fileRepository->add($fileObject);
+			$this->persistenceManager->persistAll();
+			return $fileObject;
 		}
 	}
 
