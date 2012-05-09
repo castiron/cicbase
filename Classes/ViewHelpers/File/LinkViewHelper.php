@@ -20,20 +20,6 @@
 
 class Tx_Cicbase_ViewHelpers_File_LinkViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
 
-	/**
-	 * @var Tx_Cicbase_Service_FileService
-	 */
-	protected $fileService;
-
-	/**
-	 * inject the fileService
-	 *
-	 * @param Tx_Cicbase_Service_FileService fileService
-	 * @return void
-	 */
-	public function injectFileService(Tx_Cicbase_Service_FileService $fileService) {
-		$this->fileService = $fileService;
-	}
 
 	/**
 	 * @param Tx_Cicbase_Domain_Model_File $file
@@ -41,12 +27,12 @@ class Tx_Cicbase_ViewHelpers_File_LinkViewHelper extends Tx_Fluid_Core_ViewHelpe
 	 * @return string
 	 */
 	public function render(Tx_Cicbase_Domain_Model_File $file,$linkText = null) {
-		$link = $this->fileService->generateLink($file);
+		#$link = $this->fileService->generateLink($file);
 		if($linkText)
 			$text = $linkText;
 		else
 			$text = $file->getOriginalFilename();
-		return '<a href="'.$link.'">'.$text.'</a>';
+		return '<a href="'.$link.'">TODO: THIS LINK HELPER IS BROKEN UNTIL ZACH FIXES IT</a>';
 	}
 }
 
