@@ -66,6 +66,12 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	protected $description;
 
 	/**
+	 * @var bool
+	 */
+	protected $isSaved = false;
+
+
+	/**
 	 * Returns the filename
 	 *
 	 * @return string $filename
@@ -102,7 +108,6 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	public function setOriginalFilename($originalFilename) {
 		$this->originalFilename = $originalFilename;
 	}
-
 
 	/**
 	 * Returns the path
@@ -217,6 +222,20 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	 */
 	public function setDescription($description) {
 		$this->description = $description;
+	}
+
+	/**
+	 * @param boolean $isSaved
+	 */
+	public function setIsSaved($isSaved) {
+		$this->isSaved = $isSaved;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getIsSaved() {
+		return $this->isSaved;
 	}
 }
 
