@@ -19,7 +19,7 @@ t3lib_extMgm::addLLrefForTCAdescr('tx_cicbase_domain_model_file', 'EXT:cicbase/R
 t3lib_extMgm::allowTableOnStandardPages('tx_cicbase_domain_model_file');
 $TCA['tx_cicbase_domain_model_file'] = array(
 	'ctrl' => array(
-		'title'	=> 'LLL:EXT:cicbase/Resources/Private/Language/locallang_db.xml:tx_cicbase_domain_model_file',
+		'title'	=> 'User File Uploads',
 		'label' => 'title',
 		'tstamp' => 'tstamp',
 		'crdate' => 'crdate',

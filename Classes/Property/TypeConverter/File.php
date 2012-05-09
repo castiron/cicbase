@@ -87,7 +87,13 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 			// We have an identity, and no upload was attempted, so we restore the previous file record.
 			$source = $source['__identity'];
 			$out = parent::convertFrom($source, $targetType, $convertedChildProperties, $configuration);
-			return $out;
+			if($out->getOwner() == $GLOBALS['TSFE']->fe_user->user['uid']) {
+				Tx_Extbase_Utility_Debugger::var_dump('AAA', __FILE__ . " " . __LINE___);
+				return $out;
+			} else {
+				Tx_Extbase_Utility_Debugger::var_dump('BBB',__FILE__ . " " . __LINE___);
+				return NULL;
+			}
 		} else {
 			// Otherwise, we create a new file object.
 			$allowedTypes = $configuration->getConfigurationValue('Tx_Cicbase_Property_TypeConverter_File', 'allowedTypes');

@@ -9,7 +9,7 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 		'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, title, description, filename, original_filename, path, mime_type, size',
 	),
 	'types' => array(
-		'1' => array('showitem' => 'sys_language_uid;;;;1-1-1, l10n_parent, l10n_diffsource, hidden;;1, title, description, filename, original_filename, path, mime_type, size --div--;LLL:EXT:cms/locallang_ttc.xml:tabs.access, starttime, endtime'),
+		'1' => array('showitem' => 'sys_language_uid;;;;1-1-1, l10n_parent, l10n_diffsource, hidden;;1, title, owner, description, filename, original_filename, path, mime_type, size --div--;LLL:EXT:cms/locallang_ttc.xml:tabs.access, starttime, endtime'),
 	),
 	'palettes' => array(
 		'1' => array('showitem' => ''),
@@ -63,7 +63,7 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 		),
 		'filename' => array(
 			'exclude' => 0,
-			'label' => 'LLL:EXT:cicbase/Resources/Private/Language/locallang_db.xml:tx_cicbase_domain_model_file.title',
+			'label' => 'Filename',
 			'config' => array(
 				'type' => 'input',
 				'size' => 30,
@@ -72,7 +72,7 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 		),
 		'original_filename' => array(
 			'exclude' => 0,
-			'label' => 'LLL:EXT:cicbase/Resources/Private/Language/locallang_db.xml:tx_cicbase_domain_model_file.originalFilename',
+			'label' => 'Original Filename',
 			'config' => array(
 				'type' => 'input',
 				'size' => 30,
@@ -81,7 +81,7 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 		),
 		'path' => array(
 			'exclude' => 0,
-			'label' => 'LLL:EXT:cicbase/Resources/Private/Language/locallang_db.xml:tx_cicbase_domain_model_file.path',
+			'label' => 'Path',
 			'config' => array(
 				'type' => 'input',
 				'size' => 30,
@@ -90,7 +90,7 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 		),
 		'mime_type' => array(
 			'exclude' => 0,
-			'label' => 'LLL:EXT:cicbase/Resources/Private/Language/locallang_db.xml:tx_cicbase_domain_model_file.mimeType',
+			'label' => 'MIME Type',
 			'config' => array(
 				'type' => 'input',
 				'size' => 30,
@@ -108,7 +108,7 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 		),
 		'root_directory' => array(
 			'exclude' => 0,
-			'label' => 'LLL:EXT:cicbase/Resources/Private/Language/locallang_db.xml:tx_cicbase_domain_model_file.path',
+			'label' => 'Path',
 			'config' => array(
 				'type' => 'input',
 				'size' => 30,
@@ -117,7 +117,7 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 		),
 		'title' => array(
 			'exclude' => 0,
-			'label' => 'LLL:EXT:sjcert/Resources/Private/Language/locallang_db.xml:tx_sjcert_domain_model_document.title',
+			'label' => 'Title',
 			'config' => array(
 				'type' => 'text',
 				'cols' => 40,
@@ -127,24 +127,26 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 		),
 		'description' => array(
 			'exclude' => 0,
-			'label' => 'LLL:EXT:sjcert/Resources/Private/Language/locallang_db.xml:tx_sjcert_domain_model_document.description',
+			'label' => 'Description',
 			'config' => array(
 				'type' => 'text',
 				'cols' => 40,
 				'rows' => 15,
 				'eval' => 'trim',
-				'wizards' => array(
-					'RTE' => array(
-						'icon' => 'wizard_rte2.gif',
-						'notNewRecords'=> 1,
-						'RTEonly' => 1,
-						'script' => 'wizard_rte.php',
-						'title' => 'LLL:EXT:cms/locallang_ttc.xml:bodytext.W.RTE',
-						'type' => 'script'
-					)
-				)
+
 			),
-			'defaultExtras' => 'richtext[]',
+		),
+		'owner' => array(
+			'exclude' => 0,
+			'label' => 'Creator',
+			'config' => array(
+				'type' => 'select',
+				'foreign_table' => 'fe_users',
+				'size' => 10,
+				'autoSizeMax' => 30,
+				'maxitems' => 9999,
+				'multiple' => 0,
+			),
 		),
 	),
 );

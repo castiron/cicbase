@@ -34,6 +34,7 @@ CREATE TABLE tx_cicbase_domain_model_file (
   original_filename varchar(255) DEFAULT '' NOT NULL,
   path varchar(255) DEFAULT '' NOT NULL,
   mime_type varchar(255) DEFAULT '' NOT NULL,
+  owner int(11) unsigned DEFAULT '0' NOT NULL,
   size int(11) unsigned DEFAULT '0' NOT NULL,
   root_directory varchar(255) DEFAULT '' NOT NULL,
   title varchar(255) DEFAULT '' NOT NULL,

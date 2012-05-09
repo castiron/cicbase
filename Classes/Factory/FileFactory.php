@@ -208,15 +208,17 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 			$pathInfo = pathinfo($uploadedFileData['tmp_name']);
 			$fileObject = $this->objectManager->create('Tx_Cicbase_Domain_Model_File');
 			$fileObject->setTitle($sourceData['title']);
+
 			// TODO: Set a default title if it's not provided.
 			$fileObject->setDescription($sourceData['description']);
 			$fileObject->setIsSaved(false);
+			$fileObject->setOwner($GLOBALS['TSFE']->fe_user->user['uid']);
 			$fileObject->setSize($uploadedFileData['size']);
 			$fileObject->setMimeType($uploadedFileData['type']);
 			$fileObject->setOriginalFilename($uploadedFileData['name']);
 			$fileObject->setPath($uploadedFileData['tmp_name']);
 			$fileObject->setFilename($pathInfo['filename']);
-
+			Tx_Extbase_Utility_Debugger::var_dump('in here',__FILE__ . " " . __LINE___);
 			$this->fileRepository->add($fileObject);
 			$this->persistenceManager->persistAll();
 			return $fileObject;

@@ -70,6 +70,13 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	 */
 	protected $isSaved = false;
 
+	/**
+	 * ID of the feuser who created this file
+	 *
+	 * @lazy
+	 * @var integer
+	 */
+	protected $owner;
 
 	/**
 	 * Returns the filename
@@ -236,6 +243,20 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	 */
 	public function getIsSaved() {
 		return $this->isSaved;
+	}
+
+	/**
+	 * @param integer $owner
+	 */
+	public function setOwner($owner) {
+		$this->owner = $owner;
+	}
+
+	/**
+	 * @return integer
+	 */
+	public function getOwner() {
+		return $this->owner;
 	}
 }
 

@@ -38,6 +38,7 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 	}
 
 	public function add($fileObject) {
+		Tx_Extbase_Utility_Debugger::var_dump('in here',__FILE__ . " " . __LINE___);
 		$baseStoragePath = $this->getBaseStoragePath();
 		if($fileObject->getIsSaved == false) {
 			$pathInfo = pathinfo($fileObject->getOriginalFilename());
