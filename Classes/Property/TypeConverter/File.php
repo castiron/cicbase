@@ -103,10 +103,15 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 			if($fileObject instanceof Tx_Cicbase_Domain_Model_File) {
 				return $fileObject;
 			} else {
+				// This is another edge case, but one that could happen if, for example, we cleaned out the temporary
+				// upload folder in typo3temp while a user was in the middle of submitting a form, since the file
+				// repository confirms that the file exists before it will return it as a held file.
 				return new Tx_Extbase_Error_Error('No file was uploaded.', 1336597083);
 			}
 		} else {
-			// Otherwise, we create a new file object.
+			// Otherwise, we create a new file object. Note that we use the fileFactory to turn $_FILE data into
+			// a proper file object. Elsewhere, we use the fileRepository to retrieve file objects, even those that
+			// haven't yet been persisted to the database;
 			$allowedTypes = $configuration->getConfigurationValue('Tx_Cicbase_Property_TypeConverter_File', 'allowedTypes');
 			$maxSize = $configuration->getConfigurationValue('Tx_Cicbase_Property_TypeConverter_File', 'maxSize');
 			$result = $this->fileFactory->createFile($source, $propertyPath, $allowedTypes, $maxSize);
