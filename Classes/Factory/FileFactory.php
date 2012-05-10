@@ -106,13 +106,12 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 	public function wasUploadAttempted($propertyPath) {
 		$fileData = array();
 		$fd = $_FILES[$this->getNamespace()];
-		$key = $propertyPath . '.file';
 		if
-			($fd['error'][$key] != 4 &&
+			($fd['error'][$propertyPath]['file'] != 4 &&
 			(
-				$fd['error'][$key] ||
-				$fd['size'][$key] ||
-				$fd['tmp_name'][$key]
+				$fd['error'][$propertyPath]['file'] ||
+				$fd['size'][$propertyPath]['file'] ||
+				$fd['tmp_name'][$propertyPath]['file']
 			)
 		) {
 			return true;
@@ -124,11 +123,11 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 	protected function getUploadedFileData() {
 		$fileData = array();
 		$fd = $_FILES[$this->getNamespace()];
-		$fileData['error'] = $fd['error'][$this->propertyPath . '.file'];
-		$fileData['type'] = $fd['type'][$this->propertyPath . '.file'];
-		$fileData['name'] = $fd['name'][$this->propertyPath . '.file'];
-		$fileData['size'] = $fd['size'][$this->propertyPath . '.file'];
-		$fileData['tmp_name'] = $fd['tmp_name'][$this->propertyPath . '.file'];
+		$fileData['error'] = $fd['error'][$this->propertyPath]['file'];
+		$fileData['type'] = $fd['type'][$this->propertyPath]['file'];
+		$fileData['name'] = $fd['name'][$this->propertyPath]['file'];
+		$fileData['size'] = $fd['size'][$this->propertyPath]['file'];
+		$fileData['tmp_name'] = $fd['tmp_name'][$this->propertyPath]['file'];
 		return $fileData;
 	}
 
@@ -192,8 +191,10 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 		$this->settings = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
 
 		$uploadedFileData = $this->getUploadedFileData();
-		$isUploadError = $this->handleUploadErrors($uploadedFileData);
+		$this->handleUploadErrors($uploadedFileData);
+
 		if($this->messages->hasErrors()) {
+			$this->fileRepository->clearHeld();
 			return $this->messages->getFirstError();
 		} else {
 			$this->validateType($uploadedFileData,$allowedTypes);
@@ -202,6 +203,7 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 		}
 
 		if($this->messages->hasErrors()) {
+			$this->fileRepository->clearHeld();
 			return $this->messages->getFirstError();
 		} else {
 			// ok to make a file object
@@ -218,9 +220,8 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 			$fileObject->setOriginalFilename($uploadedFileData['name']);
 			$fileObject->setPath($uploadedFileData['tmp_name']);
 			$fileObject->setFilename($pathInfo['filename']);
-			Tx_Extbase_Utility_Debugger::var_dump('in here',__FILE__ . " " . __LINE___);
-			$this->fileRepository->add($fileObject);
-			$this->persistenceManager->persistAll();
+
+			$this->fileRepository->hold($fileObject);
 			return $fileObject;
 		}
 	}

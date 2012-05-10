@@ -194,6 +194,28 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getAbsPathAndFileName() {
+		return t3lib_div::getFileAbsFileName($this->getPath().'/'.$this->getFilename());
+	}
+
+	public function getPathAndFileName() {
+		return $this->getPath().'/'.$this->getFileName();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function checkIfFileExists() {
+		if(file_exists($this->getAbsPathAndFileName())) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * Returns the title
 	 *
 	 * @return string $title

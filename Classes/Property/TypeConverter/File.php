@@ -32,6 +32,21 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 	protected $fileFactory;
 
 	/**
+	 * @var Tx_Cicbase_Domain_Repository_FileRepository
+	 */
+	protected $fileRepository;
+	
+	/**
+	 * inject the fileRepository
+	 *
+	 * @param Tx_Cicbase_Domain_Repository_FileRepository fileRepository
+	 * @return void
+	 */
+	public function injectFileRepository(Tx_Cicbase_Domain_Repository_FileRepository $fileRepository) {
+		$this->fileRepository = $fileRepository;
+	}
+	
+	/**
 	 * inject the documentFactory
 	 *
 	 * @param Tx_Cicbase_Factory_FileFactory documentFactory
@@ -83,16 +98,12 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 	 */
 	public function convertFrom($source, $targetType, array $convertedChildProperties = array(), Tx_Extbase_Property_PropertyMappingConfigurationInterface $configuration = NULL) {
 		$propertyPath = $configuration->getConfigurationValue('Tx_Cicbase_Property_TypeConverter_File', 'propertyPath');
-		if($source['__identity'] && !$this->fileFactory->wasUploadAttempted($propertyPath)) {
-			// We have an identity, and no upload was attempted, so we restore the previous file record.
-			$source = $source['__identity'];
-			$out = parent::convertFrom($source, $targetType, $convertedChildProperties, $configuration);
-			if($out->getOwner() == $GLOBALS['TSFE']->fe_user->user['uid']) {
-				Tx_Extbase_Utility_Debugger::var_dump('AAA', __FILE__ . " " . __LINE___);
-				return $out;
+		if(!$this->fileFactory->wasUploadAttempted($propertyPath)) {
+			$fileObject = $this->fileRepository->getHeld();
+			if($fileObject instanceof Tx_Cicbase_Domain_Model_File) {
+				return $fileObject;
 			} else {
-				Tx_Extbase_Utility_Debugger::var_dump('BBB',__FILE__ . " " . __LINE___);
-				return NULL;
+				return new Tx_Extbase_Error_Error('No file was uploaded.', 1336597083);
 			}
 		} else {
 			// Otherwise, we create a new file object.

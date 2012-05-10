@@ -1,0 +1,60 @@
+{namespace cic = Tx_Cicbase_ViewHelpers}
+<div class="row row-flush">
+	<div class="span{span}">
+		<div class="input control-group">
+			<label for="cicbase-formInput-{propertyName}">Document Title (optional): </label>
+			<f:if condition="{cic:ifFormWasSubmitted()}">
+				<f:then>
+					<f:form.textfield class="span10" id="cicbase-formInput-fileTitle" name="file[title]" />
+				</f:then>
+				<f:else>
+					<f:form.textfield class="span10" id="cicbase-formInput-fileTitle" name="file[title]" value="{defaultValue}" />
+				</f:else>
+			</f:if>
+		</div>
+	</div>
+</div>
+<div class="row row-flush">
+	<div class="span{span}">
+		<div class="input control-group">
+			<label for="description">Document Description (optional):</label>
+			<f:form.textfield class="span10" id="title" name="file[description]" />
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="span{span}">
+		<div class="input control-group">
+			<f:if condition="{file}">
+				<f:then>
+					<label for="resolutionInfo">Upload a New Resolution:</label>
+				</f:then>
+				<f:else>
+					<label for="resolutionInfo">Upload Resolution:</label>
+				</f:else>
+			</f:if>
+			<f:form.upload name="file[file]"/>
+			<f:form.validationResults for="file">
+				<f:if condition="{validationResults.flattenedErrors}">
+				<div class="message error">
+					<f:for each="{validationResults.errors}" as="error">
+						<div>
+							<f:translate
+									key="LLL:EXT:cicbase/Resources/Private/Language/locallang.xml:fileError-{error.code}"
+									default="{error.message} (#{error.code})"/>
+						</div>
+					</f:for>
+				</div>
+				</f:if>
+			</f:form.validationResults>
+			<f:if condition="{file}">
+				<f:then>
+					<div class="message">
+						Your file <strong>"{file.originalFilename}"</strong> was uploaded successfully, but there are errors above that must be
+						corrected before your registration can be saved.
+					</div>
+				</f:then>
+			</f:if>
+		</div>
+	</div>
+</div>
