@@ -14,4 +14,6 @@ if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations
     $TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['cicbase_cache'] = array();
 }
 
+Tx_Extbase_Utility_Extension::registerTypeConverter('Tx_Cicbase_Property_TypeConverter_File');
+
 ?>

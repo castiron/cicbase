@@ -8,7 +8,7 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 	 * @var array<string>
 	 * @api
 	 */
-	protected $sourceTypes = array('string');
+	protected $sourceTypes = array('array');
 
 	/**
 	 * The target type this converter can convert to.
@@ -35,7 +35,7 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 	 * @var Tx_Cicbase_Domain_Repository_FileRepository
 	 */
 	protected $fileRepository;
-	
+
 	/**
 	 * inject the fileRepository
 	 *
@@ -45,7 +45,7 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 	public function injectFileRepository(Tx_Cicbase_Domain_Repository_FileRepository $fileRepository) {
 		$this->fileRepository = $fileRepository;
 	}
-	
+
 	/**
 	 * inject the documentFactory
 	 *
