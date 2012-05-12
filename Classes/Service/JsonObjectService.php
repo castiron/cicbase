@@ -69,19 +69,27 @@ class Tx_Cicbase_Service_JsonObjectService implements t3lib_Singleton {
 			$transformedObject = new stdClass;
 			$properties = Tx_Extbase_Reflection_ObjectAccess::getGettablePropertyNames($model);
 			foreach ($properties as $property) {
-				if(!$this->reflectionService->isPropertyTaggedWith($class, $property, 'JSONExclude')) {
-					$getMethodName = 'get' . ucfirst($property);
-					$value = $model->$getMethodName();
-					// TODO, not sure about this check for lazy loading. Would be good to write a test for it.
-					if($value instanceof Tx_Extbase_Persistence_LazyLoadingProxy) {
-						$transformedObject->$property = 'lazy';
-					} elseif ($this->typeHandlingService->isSimpleType(gettype($value))) {
-						$transformedObject->$property = $value;
-					} elseif (is_object($value)) {
-						if ($value instanceof Tx_Extbase_Persistence_ObjectStorage) {
-							$transformedObject->$property = $this->transform($value);
+				// ignore properties that have JSON in them.
+				if (strpos($property, 'JSON') === FALSE) {
+					if (!$this->reflectionService->isPropertyTaggedWith($class, $property, 'JSONExclude')) {
+						$getMethodName = 'get' . ucfirst($property);
+						if (method_exists($model, $getMethodName . 'JSON')) {
+							$JSONGetMethodName = $getMethodName . 'JSON';
+							$value = $model->$JSONGetMethodName();
 						} else {
-							$transformedObject->$property = get_class($value);
+							$value = $model->$getMethodName();
+						}
+						// TODO, not sure about this check for lazy loading. Would be good to write a test for it.
+						if ($value instanceof Tx_Extbase_Persistence_LazyLoadingProxy) {
+							$transformedObject->$property = 'lazy';
+						} elseif ($this->typeHandlingService->isSimpleType(gettype($value))) {
+							$transformedObject->$property = $value;
+						} elseif (is_object($value)) {
+							if ($value instanceof Tx_Extbase_Persistence_ObjectStorage) {
+								$transformedObject->$property = $this->transform($value);
+							} else {
+								$transformedObject->$property = get_class($value);
+							}
 						}
 					}
 				}
