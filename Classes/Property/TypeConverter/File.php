@@ -37,6 +37,20 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 	protected $fileRepository;
 
 	/**
+	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
+	 */
+	protected $configurationManager;
+
+	/**
+	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager
+	 * @return void
+	 */
+	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
+		$this->configurationManager = $configurationManager;
+		$this->settings = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
+	}
+
+	/**
 	 * inject the fileRepository
 	 *
 	 * @param Tx_Cicbase_Domain_Repository_FileRepository fileRepository
@@ -98,6 +112,7 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 	 */
 	public function convertFrom($source, $targetType, array $convertedChildProperties = array(), Tx_Extbase_Property_PropertyMappingConfigurationInterface $configuration = NULL) {
 		$propertyPath = $configuration->getConfigurationValue('Tx_Cicbase_Property_TypeConverter_File', 'propertyPath');
+		if(!$propertyPath) $propertyPath = 'file';
 		if(!$this->fileFactory->wasUploadAttempted($propertyPath)) {
 			$fileObject = $this->fileRepository->getHeld();
 			if($fileObject instanceof Tx_Cicbase_Domain_Model_File) {
@@ -114,6 +129,25 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 			// haven't yet been persisted to the database;
 			$allowedTypes = $configuration->getConfigurationValue('Tx_Cicbase_Property_TypeConverter_File', 'allowedTypes');
 			$maxSize = $configuration->getConfigurationValue('Tx_Cicbase_Property_TypeConverter_File', 'maxSize');
+			if(!$allowedTypes) {
+				$allowedTypes = $this->settings['fileAllowedMime'];
+			}
+			if(!$maxSize) {
+				$maxSize = $this->settings['fileMaxSize'];
+			}
+
+			// Too risky to use this type converter without some settings in place.
+			if(!$maxSize) {
+				throw new Tx_Extbase_Configuration_Exception('Before you can use the file type converter, you must set a
+				 fileMaxSize value in the settings section of your extension typoscript, or in the file type converter
+				 configuration.', 1337043345);
+			}
+			if (!is_array($allowedTypes) && count($allowedTypes) == 0) {
+				throw new Tx_Extbase_Configuration_Exception('Before you can use the file type converter, you must configure
+				 fileAllowedMime settings section of your extension typoscript, or in the file type converter
+				 configuration.', 1337043346);
+			}
+
 			$result = $this->fileFactory->createFile($source, $propertyPath, $allowedTypes, $maxSize);
 			return $result;
 		}
