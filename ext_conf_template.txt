@@ -1,0 +1,18 @@
+ 	# cat=basic/enable/101; type=boolean; label=Enable Amazon AWS S3 File Storage
+enableAWS = 0
+
+ 	# cat=basic/enable/101; type=input; label=Temporary Bucket Name
+AWSTemporaryBucketName = cb-filestorage-temporary
+
+ 	# cat=basic/enable/101; type=input; label=Permanent Bucket Name
+AWSPermanentBucketName = cb-filestorage-permanent
+
+ 	# cat=basic/enable/101; type=input; label=AWS Key
+AWSKey =
+
+ 	# cat=basic/enable/101; type=input; label=AWS Secret
+AWSSecret =
+
+ 	# cat=basic/enable/101; type=input; label=AWS Cache Config String
+AWSCacheConfig =
+

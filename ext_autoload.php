@@ -32,6 +32,6 @@ return array(
 	'tx_cicbase_scheduler_task' => $extensionPath . 'Classes/Scheduler/Task.php',
 	'tx_cicbase_scheduler_fieldprovider' => $extensionPath . 'Classes/Scheduler/FieldProvider.php',
 	'tx_cicbase_scheduler_fieldprovider' => $extensionPath . 'Classes/Scheduler/FieldProvider.php',
-	'tx_cicbase_command_examplecommandcontroller' => $extensionPath . 'Classes/Command/ExampleCommandController.php'
+	'tx_cicbase_command_examplecommandcontroller' => $extensionPath . 'Classes/Command/ExampleCommandController.php',
 );
 ?>

@@ -79,6 +79,13 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	protected $owner;
 
 	/**
+	 * The name of the AWS bucket containing the file (if AWS is used)
+	 *
+	 * @var string
+	 */
+	protected $awsbucket;
+
+	/**
 	 * Returns the filename
 	 *
 	 * @return string $filename
@@ -201,8 +208,20 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	}
 
 	public function getPathAndFileName() {
-		return $this->getPath().'/'.$this->getFileName();
+		if($this->getAwsbucket()) {
+			return $this->getAwsPathAndFileName();
+		} else {
+			return $this->getPath() . '/' . $this->getFileName();
+		}
 	}
+
+	protected function getAwsPathAndFileName() {
+		$bucket = $this->getAwsbucket();
+		$domain = 's3.amazonaws.com';
+		$pathAndFile = $this->getPath() . '/' . $this->getFileName();
+		return 'http://'.$bucket.'.'.$domain.'/'.$pathAndFile;
+	}
+
 
 	/**
 	 * @return bool
@@ -279,6 +298,18 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	 */
 	public function getOwner() {
 		return $this->owner;
+	}
+	/**
+	 * @param string $awsbucket
+	 */
+	public function setAwsbucket($awsbucket) {
+		$this->awsbucket = $awsbucket;
+	}
+	/**
+	 * @return string
+	 */
+	public function getAwsbucket() {
+		return $this->awsbucket;
 	}
 }
 

@@ -6,10 +6,10 @@ if (!defined ('TYPO3_MODE')) {
 $TCA['tx_cicbase_domain_model_file'] = array(
 	'ctrl' => $TCA['tx_cicbase_domain_model_file']['ctrl'],
 	'interface' => array(
-		'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, title, description, filename, original_filename, path, mime_type, size',
+		'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, title, description, filename, original_filename, path, awsbucket, mime_type, size',
 	),
 	'types' => array(
-		'1' => array('showitem' => 'sys_language_uid;;;;1-1-1, l10n_parent, l10n_diffsource, hidden;;1, title, owner, description, filename, original_filename, path, mime_type, size --div--;LLL:EXT:cms/locallang_ttc.xml:tabs.access, starttime, endtime'),
+		'1' => array('showitem' => 'sys_language_uid;;;;1-1-1, l10n_parent, l10n_diffsource, hidden;;1, title, owner, description, filename, original_filename, path, awsbucket, mime_type, size --div--;LLL:EXT:cms/locallang_ttc.xml:tabs.access, starttime, endtime'),
 	),
 	'palettes' => array(
 		'1' => array('showitem' => ''),
@@ -82,6 +82,15 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 		'path' => array(
 			'exclude' => 0,
 			'label' => 'Path',
+			'config' => array(
+				'type' => 'input',
+				'size' => 30,
+				'eval' => 'trim,required'
+			),
+		),
+		'awsbucket' => array(
+			'exclude' => 0,
+			'label' => 'AWS Bucket Name',
 			'config' => array(
 				'type' => 'input',
 				'size' => 30,

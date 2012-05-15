@@ -36,9 +36,9 @@ CREATE TABLE tx_cicbase_domain_model_file (
   mime_type varchar(255) DEFAULT '' NOT NULL,
   owner int(11) unsigned DEFAULT '0' NOT NULL,
   size int(11) unsigned DEFAULT '0' NOT NULL,
-  root_directory varchar(255) DEFAULT '' NOT NULL,
   title varchar(255) DEFAULT '' NOT NULL,
   description text NOT NULL,
+  awsbucket varchar(255) DEFAULT '' NOT NULL,
 
   tstamp int(11) unsigned DEFAULT '0' NOT NULL,
   crdate int(11) unsigned DEFAULT '0' NOT NULL,
@@ -47,7 +47,6 @@ CREATE TABLE tx_cicbase_domain_model_file (
   hidden tinyint(4) unsigned DEFAULT '0' NOT NULL,
   starttime int(11) unsigned DEFAULT '0' NOT NULL,
   endtime int(11) unsigned DEFAULT '0' NOT NULL,
-
 
   t3ver_oid int(11) DEFAULT '0' NOT NULL,
   t3ver_id int(11) DEFAULT '0' NOT NULL,
