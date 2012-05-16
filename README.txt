@@ -1,2 +1,1 @@
-
-Feel free to add some documentation or simply add a link to the online manual.
+CICBase is a repository for functionality that builds on TYPO3's ExtBase and Fluid extensions.
