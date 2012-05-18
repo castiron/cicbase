@@ -55,6 +55,9 @@ class Tx_Cicbase_ViewHelpers_IncludeJavascriptStringViewHelper extends Tx_Fluid_
 	 */
 	public function render() {
 		$block = $this->renderChildren();
-		$this->pageRenderer->addJsFooterInlineCode($this->arguments['name'],$block,FALSE,FALSE);
+		$out = '<script type="text/javascript">'.$block.'</script>';
+		# This doesn't work with user_ints
+		#$this->pageRenderer->addJsFooterInlineCode($this->arguments['name'],$block,FALSE,FALSE);
+		return $out;
 	}
 }
