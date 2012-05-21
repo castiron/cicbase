@@ -8,6 +8,14 @@ tx_cicbase_pi1 {
 }
 
 config.tx_extbase.persistence.classes {
+	Tx_Cicbase_Domain_Model_File {
+		mapping {
+			columns {
+				crdate.MapOnProperty = crdate
+				tstamp.MapOnProperty = tstamp
+			}
+		}
+	}
     Tx_Cicbase_Domain_Model_DigitalAsset {
 	    mapping {
 		    tableName = tx_dam
