@@ -13,49 +13,47 @@
 	<div class="pagination">
 		<div class="pagination">
 			<ul>
-				<f:if condition="{pagination.previousPage} > 1">
+				<f:if condition="{pagination.previousPage}">
 					<f:then>
-						<li><f:widget.link class="leftArrow" arguments="{currentPage: pagination.previousPage}">Prev</f:widget.link></li>
+						<li><f:widget.link arguments="{currentPage: pagination.previousPage}">&laquo;</f:widget.link></li>
 					</f:then>
 					<f:else>
-						<li class="disabled"><f:widget.link class="leftArrow" arguments="{currentPage: pagination.previousPage}">Prev</f:widget.link></li>
+						<li class="disabled"><span>&laquo;</span></li>
 					</f:else>
 				</f:if>
-				<li class="active"><a href="#">1</a></li>
-				<li><a href="#">{pagination.nextPage}</a></li>
-				<li><a href="#">{pagination.nextNextPage}</a></li>
-				<li><a href="#">4</a></li>
-				<li>
-					<f:if condition="{pagination.nextPage}">
-						<f:widget.link class="rightArrow" arguments="{currentPage: pagination.nextPage}">Next</f:widget.link>
-					</f:if>
-				</li>
+				<f:if condition="{pagination.nextPage}">
+					<f:then>
+						<!-- do nothing -->
+					</f:then>
+					<f:else>
+						<li><f:widget.link arguments="{currentPage: pagination.previousPreviousPage}">{pagination.previousPreviousPage}</f:widget.link></li>
+					</f:else>
+				</f:if>
+				<f:if condition="{pagination.previousPage}">
+					<li><f:widget.link arguments="{currentPage: pagination.previousPage}">{pagination.previousPage}</f:widget.link></li>
+				</f:if>
+				<li class="active"><span>{pagination.current}</span></li>
+				<f:if condition="{pagination.nextPage}">
+					<li><f:widget.link arguments="{currentPage: pagination.nextPage}">{pagination.nextPage}</f:widget.link></li>
+				</f:if>
+				<f:if condition="{pagination.previousPage}">
+					<f:then>
+						<!-- do nothing -->
+					</f:then>
+					<f:else>
+						<li><f:widget.link arguments="{currentPage: pagination.nextNextPage}">{pagination.nextNextPage}</f:widget.link></li>
+					</f:else>
+				</f:if>
+				<f:if condition="{pagination.nextPage}">
+					<f:then>
+						<li><f:widget.link arguments="{currentPage: pagination.nextPage}">&raquo;</f:widget.link></li>
+					</f:then>
+					<f:else>
+						<li class="disabled"><span>&raquo;</span></li>
+					</f:else>
+				</f:if>
 			</ul>
 		</div>
-		
-		<div class="main-bottom pagination caps">
-			<!-- <strong>News:</strong>
-						<span class="active-filter active-filter-first">Date</span>
-						|<span class="active-filter">Division</span>
-						|<span class="active-filter">Another</span> -->
-			
-			<span class="arrows">
-				<f:if condition="{pagination.previousPage}">
-					<f:if condition="{pagination.previousPage} > 1">
-						<f:then>
-							<f:widget.link class="leftArrow" arguments="{currentPage: pagination.previousPage}"></f:widget.link>
-						</f:then>
-						<f:else>
-							<f:widget.link class="leftArrow"> </f:widget.link>
-						</f:else>
-					</f:if>
-				</f:if>
-				
-				<span class="caps">Page</span> <span class="bigger">{pagination.current}</span> <em>of</em> <span class="bigger">{pagination.numberOfPages}</span>
-				
-			</span>
-		</div>
-		
 	</div>
 	</f:if>
 </f:section>
