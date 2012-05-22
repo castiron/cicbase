@@ -26,7 +26,6 @@
 
 class Tx_Cicbase_ViewHelpers_Form_SelectViewHelper extends Tx_Fluid_ViewHelpers_Form_SelectViewHelper {
 
-
 	/**
 	 * Initialize the arguments that we're adding to the base class arguments.
 	 * @return string rendered tag
@@ -44,7 +43,7 @@ class Tx_Cicbase_ViewHelpers_Form_SelectViewHelper extends Tx_Fluid_ViewHelpers_
 		$options = parent::getOptions();
 		if($this->arguments['nullOption']) {
 			$label = $this->arguments['nullOption'];
-			$options = array('0' => $label) + $options;
+			$options = array('' => $label) + $options;
 		}
 		return $options;
 	}
