@@ -31,6 +31,16 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	protected $filename;
 
 	/**
+	 * @var integer
+	 */
+	protected $crdate;
+
+	/**
+	 * @var integer
+	 */
+	protected $tstamp;
+
+	/**
 	 * @var string
 	 */
 	protected $originalFilename;
@@ -299,18 +309,94 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	public function getOwner() {
 		return $this->owner;
 	}
+
 	/**
 	 * @param string $awsbucket
 	 */
 	public function setAwsbucket($awsbucket) {
 		$this->awsbucket = $awsbucket;
 	}
+
 	/**
 	 * @return string
 	 */
 	public function getAwsbucket() {
 		return $this->awsbucket;
 	}
+
+	/**
+	 * @param int $tstamp
+	 */
+	public function setTstamp($tstamp) {
+		$this->tstamp = $tstamp;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getTstampObj() {
+		$out = new DateTime();
+		$out->setTimestamp($this->tstamp);
+		return $out;
+	}
+
+	/**
+	 * @param int $crdate
+	 */
+	public function setCrdate($crdate) {
+		$this->crdate = $crdate;
+	}
+
+	/**
+	 * @return DateTime
+	 */
+	public function getCrdateObj() {
+		$out = new DateTime();
+		$out->setTimestamp($this->crdate);
+		return $out;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getExtension() {
+		$parts = explode('.',$this->getFilename());
+		return $parts[1];
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getTypeKey() {
+		// todo: make this more complete
+		switch($this->getExtension()) {
+			case 'avi':
+			case 'mov':
+			case 'flv':
+			case 'mp4':
+				$out = 'video';
+			case 'pdf':
+				$out = 'pdf';
+				break;
+			case 'jpg':
+			case 'png':
+			case 'jpeg':
+			case 'gif':
+				$out = 'image';
+				break;
+			case 'doc':
+			case 'docx':
+				$out = 'word';
+			case 'xls':
+			case 'xld':
+			case 'xlsx':
+			case 'xlsm':
+				$out = 'excel';
+				break;
+		}
+		return $out;
+	}
+
 }
 
 ?>

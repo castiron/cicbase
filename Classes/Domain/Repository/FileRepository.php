@@ -30,19 +30,35 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 	protected $AWSEnabled = true;
 	protected $cicbaseConfiguration;
 
+	/**
+	 *
+	 */
 	public function __construct() {
 		$this->cicbaseConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['cicbase']);
 		parent::__construct();
 	}
 
+	/**
+	 * Returns base storage path
+	 * @return string
+	 */
 	protected function getBaseStoragePath() {
 		return $this->baseStoragePath;
 	}
 
+	/**
+	 * Returns the path for held files
+	 * @return string
+	 */
 	protected function getHoldStoragePath() {
 		return $this->holdStoragePath;
 	}
 
+	/**
+	 * Returns the cache object
+	 * @return mixed
+	 * @throws Exception
+	 */
 	protected function getCache() {
 		try {
 			$cache = $GLOBALS['typo3CacheManager']->getCache('cicbase_cache');
@@ -52,12 +68,19 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 		return $cache;
 	}
 
+	/**
+	 * Clears the held file
+	 */
 	public function clearHeld() {
 		$cache = $this->getCache();
 		$cacheKey = 'heldFile_'.$GLOBALS['TSFE']->fe_user->id;
 		$cache->remove($cacheKey);
 	}
 
+	/**
+	 * Returns the held file
+	 * @return Tx_Cicbase_Domain_Model_File|null
+	 */
 	public function getHeld() {
 		$cache = $this->getCache();
 		$cacheKey = 'heldFile_'.$GLOBALS['TSFE']->fe_user->id;
@@ -76,7 +99,13 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 		}
 	}
 
-	public function hold($fileObject) {
+	/**
+	 * Holds an uploaded file
+	 * @param Tx_Cicbase_Domain_Model_File $fileObject
+	 * @return Tx_Cicbase_Domain_Model_File|Tx_Extbase_Error_Error
+	 * @throws Exception
+	 */
+	public function hold(Tx_Cicbase_Domain_Model_File $fileObject) {
 		$baseStoragePath = $this->getHoldStoragePath();
 		if($fileObject->getIsSaved() == false) {
 			$relativeDestinationPath = $this->getRelativeDestinationPath($fileObject, $baseStoragePath);
@@ -95,7 +124,12 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 		}
 	}
 
-	protected function getDestinationFilename($fileObject) {
+	/**
+	 * Returns the destination file name
+	 * @param Tx_Cicbase_Domain_Model_File $fileObject
+	 * @return string
+	 */
+	protected function getDestinationFilename(Tx_Cicbase_Domain_Model_File $fileObject) {
 		$pathInfo = pathinfo($fileObject->getOriginalFilename());
 		$extension = $pathInfo['extension'];
 		$now = time();
@@ -103,7 +137,12 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 		return $destinationFilename;
 	}
 
-	protected function getRelativeDestinationPath($fileObject, $storagePath) {
+	/**
+	 * @param Tx_Cicbase_Domain_Model_File $fileObject
+	 * @param $storagePath
+	 * @return string
+	 */
+	protected function getRelativeDestinationPath(Tx_Cicbase_Domain_Model_File $fileObject, $storagePath) {
 		$pathInfo = pathinfo($fileObject->getOriginalFilename());
 		$extension = $pathInfo['extension'];
 		$now = time();
@@ -114,6 +153,9 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 		return $relativeDestinationPath;
 	}
 
+	/**
+	 * @return AmazonS3
+	 */
 	protected function initializeS3() {
 		$extensionPath = t3lib_extMgm::extPath('cicbase');
 		require_once($extensionPath . 'Vendor/awssdk/sdk.class.php');
@@ -130,7 +172,15 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 		return $s3;
 	}
 
-	protected function moveToAWSDestination($relativeDestinationPath, $destinationFilename, $fileObject, $isFinalDestination) {
+	/**
+	 * @param $relativeDestinationPath
+	 * @param $destinationFilename
+	 * @param Tx_Cicbase_Domain_Model_File $fileObject
+	 * @param boolean $isFinalDestination
+	 * @return Tx_Extbase_Error_Error
+	 * @throws Exception
+	 */
+	protected function moveToAWSDestination($relativeDestinationPath, $destinationFilename,Tx_Cicbase_Domain_Model_File $fileObject, $isFinalDestination) {
 
 		// make sure we have adequate configuration.
 		if(	!$this->cicbaseConfiguration['AWSTemporaryBucketName'] ||
@@ -185,6 +235,14 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 		}
 	}
 
+	/**
+	 * @param string $relativeDestinationPath
+	 * @param string $destinationFilename
+	 * @param $fileObject
+	 * @param $isFinalDestination
+	 * @return Tx_Extbase_Error_Error
+	 * @throws Exception
+	 */
 	protected function moveToDestination($relativeDestinationPath, $destinationFilename, $fileObject, $isFinalDestination) {
 		if($this->cicbaseConfiguration['enableAWS'] == true) {
 			return $this->moveToAWSDestination($relativeDestinationPath, $destinationFilename, $fileObject, $isFinalDestination);
@@ -211,6 +269,11 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 
 	}
 
+	/**
+	 * @param  $fileObject
+	 * @return Tx_Extbase_Error_Error|void
+	 * @throws Exception
+	 */
 	public function add($fileObject) {
 		$baseStoragePath = $this->getBaseStoragePath();
 		if($fileObject->getIsSaved() == false) {

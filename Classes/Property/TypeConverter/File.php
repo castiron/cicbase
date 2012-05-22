@@ -71,6 +71,14 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 	}
 
 	/**
+	 * @param mixed $source
+	 * @return array
+	 */
+	public function getSourceChildPropertiesToBeConverted($source) {
+		return array();
+	}
+
+	/**
 	 * This implementation always returns TRUE for this method.
 	 *
 	 * @param mixed $source the source data
@@ -94,21 +102,12 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 	}
 
 	/**
-	 * Actually convert from $source to $targetType, taking into account the fully
-	 * built $convertedChildProperties and $configuration.
-	 * The return value can be one of three types:
-	 * - an arbitrary object, or a simple type (which has been created while mapping).
-	 *   This is the normal case.
-	 * - NULL, indicating that this object should *not* be mapped (i.e. a "File Upload" Converter could return NULL if no file has been uploaded, and a silent failure should occur.
-	 * - An instance of Tx_Extbase_Error_Error -- This will be a user-visible error message lateron.
-	 * Furthermore, it should throw an Exception if an unexpected failure occured or a configuration issue happened.
-	 *
 	 * @param mixed $source
 	 * @param string $targetType
 	 * @param array $convertedChildProperties
-	 * @param Tx_Extbase_Property_PropertyMappingConfigurationInterface $configuration
-	 * @return mixed the target type
-	 * @api
+	 * @param null|Tx_Extbase_Property_PropertyMappingConfigurationInterface $configuration
+	 * @return mixed|null|object|Tx_Extbase_Error_Error
+	 * @throws Tx_Extbase_Configuration_Exception
 	 */
 	public function convertFrom($source, $targetType, array $convertedChildProperties = array(), Tx_Extbase_Property_PropertyMappingConfigurationInterface $configuration = NULL) {
 		$propertyPath = $configuration->getConfigurationValue('Tx_Cicbase_Property_TypeConverter_File', 'propertyPath');
@@ -118,9 +117,12 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 			if($fileObject instanceof Tx_Cicbase_Domain_Model_File) {
 				return $fileObject;
 			} else {
-				// This is another edge case, but one that could happen if, for example, we cleaned out the temporary
-				// upload folder in typo3temp while a user was in the middle of submitting a form, since the file
-				// repository confirms that the file exists before it will return it as a held file.
+				// this is where we end up if no file upload was attempted (eg, form was submitted without a value
+				// in the upload field, and we were unable to find a held file. In this case, return false, as though
+				// nothing was ever posted.
+				return NULL;
+				// I thought this should return an error, at first, but instead we're going to treat this as though
+				// nothing was posted at all... this allows for option file upload fields, I think.
 				return new Tx_Extbase_Error_Error('No file was uploaded.', 1336597083);
 			}
 		} else {
