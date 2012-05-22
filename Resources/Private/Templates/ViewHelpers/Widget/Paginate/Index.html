@@ -26,8 +26,16 @@
 						<!-- do nothing -->
 					</f:then>
 					<f:else>
-						<li><f:widget.link arguments="{currentPage: pagination.previousPreviousPage}">{pagination.previousPreviousPage}</f:widget.link></li>
+						<f:if condition="{pagination.previousPreviousPage}">
+							<f:then>
+								<li><f:widget.link arguments="{currentPage: pagination.previousPreviousPage}">{pagination.previousPreviousPage}</f:widget.link></li>
+							</f:then>
+							<f:else>
+								<!-- do nothing -->
+							</f:else>
+						</f:if>
 					</f:else>
+					
 				</f:if>
 				<f:if condition="{pagination.previousPage}">
 					<li><f:widget.link arguments="{currentPage: pagination.previousPage}">{pagination.previousPage}</f:widget.link></li>
@@ -41,7 +49,14 @@
 						<!-- do nothing -->
 					</f:then>
 					<f:else>
-						<li><f:widget.link arguments="{currentPage: pagination.nextNextPage}">{pagination.nextNextPage}</f:widget.link></li>
+						<f:if condition="{pagination.nextNextPage}">
+							<f:then>
+								<li><f:widget.link arguments="{currentPage: pagination.nextNextPage}">{pagination.nextNextPage}</f:widget.link></li>
+							</f:then>
+							<f:else>
+								<!-- do nothing -->
+							</f:else>
+						</f:if>
 					</f:else>
 				</f:if>
 				<f:if condition="{pagination.nextPage}">
