@@ -44,7 +44,11 @@ class Tx_Cicbase_ViewHelpers_Form_SelectViewHelper extends Tx_Fluid_ViewHelpers_
 		$options = parent::getOptions();
 		if($this->arguments['nullOption']) {
 			$label = $this->arguments['nullOption'];
-			$options = array('0' => $label) + $options;
+			if(!$options[0]) {
+				$options = array('0' => $label) + $options;
+			} else {
+				array_unshift($options, $label);
+			}
 		}
 		return $options;
 	}
