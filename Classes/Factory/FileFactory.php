@@ -222,8 +222,8 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 			$fileObject->setPath($uploadedFileData['tmp_name']);
 			$fileObject->setFilename($pathInfo['filename']);
 
-			$this->fileRepository->hold($fileObject);
-			return $fileObject;
+			$results = $this->fileRepository->hold($fileObject);
+			return $results;
 		}
 	}
 

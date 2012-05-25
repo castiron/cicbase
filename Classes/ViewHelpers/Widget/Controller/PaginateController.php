@@ -105,9 +105,14 @@ class Tx_Cicbase_ViewHelpers_Widget_Controller_PaginateController extends Tx_Flu
 		if ($this->currentPage < $this->numberOfPages) {
 			$pagination['nextPage'] = $this->currentPage + 1;
 		}
+		if ($this->currentPage < $this->numberOfPages - 1){
+			$pagination['nextNextPage'] = $this->currentPage + 2;
+		}
 		if ($this->currentPage > 1) {
 			$pagination['previousPage'] = $this->currentPage - 1;
+            $pagination['previousPreviousPage'] = $this->currentPage - 2;
 		}
+
 		return $pagination;
 	}
 }

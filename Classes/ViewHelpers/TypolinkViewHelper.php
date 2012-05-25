@@ -25,8 +25,9 @@ class Tx_Cicbase_ViewHelpers_TypolinkViewHelper extends Tx_Fluid_Core_ViewHelper
 	 * @param integer noCache
 	 * @param integer useCacheHash
 	 * @param array $additionalParams
+	 * @param string $ATagParams
 	 */
-	public function render($parameter, $target='',$noCache=0,$useCacheHash=1,$additionalParams=array()) {
+	public function render($parameter, $target='',$noCache=0,$useCacheHash=1,$additionalParams=array(),$ATagParams = '') {
 		$typoLinkConf = array(
 			'parameter' => $parameter,
 		);
@@ -45,6 +46,10 @@ class Tx_Cicbase_ViewHelpers_TypolinkViewHelper extends Tx_Fluid_Core_ViewHelper
 
 		if(count($additionalParams)) {
 			$typoLinkConf['additionalParams'] = t3lib_div::implodeArrayForUrl('',$additionalParams);
+		}
+
+		if(strlen($ATagParams)) {
+			$typoLinkConf['ATagParams'] = $ATagParams;
 		}
 
 		$linkText = $this->renderChildren();
