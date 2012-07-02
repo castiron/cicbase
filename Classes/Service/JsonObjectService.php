@@ -58,8 +58,9 @@ class Tx_Cicbase_Service_JsonObjectService implements t3lib_Singleton {
 	 * @return stdClass
 	 */
 	public function transform($model) {
+		$tag = microtime();
 		$class = get_class($model);
-		if($class == 'Tx_Extbase_Persistence_ObjectStorage') {
+		if($class == 'Tx_Extbase_Persistence_ObjectStorage' || $class == 'Tx_Extbase_Persistence_LazyObjectStorage') {
 			$out = array();
 			foreach($model as $subModel) {
 				$out[] = $this->transform($subModel);
