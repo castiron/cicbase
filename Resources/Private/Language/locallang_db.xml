@@ -6,12 +6,15 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
-			<label index="tx_cicevents_domain_model_file">File</label>
-			<label index="tx_cicevents_domain_model_file.filename">Filename</label>
-			<label index="tx_cicevents_domain_model_file.originalFilename">Original Filename</label>
-			<label index="tx_cicevents_domain_model_file.path">Path</label>
-			<label index="tx_cicevents_domain_model_file.mimeType">Mime Type</label>
-			<label index="tx_cicevents_domain_model_file.size">Size</label>
+			<label index="tx_cicbase_domain_model_file">File</label>
+			<label index="tx_cicbase_domain_model_file.filename">Filename</label>
+			<label index="tx_cicbase_domain_model_file.originalFilename">Original Filename</label>
+			<label index="tx_cicbase_domain_model_file.path">Path</label>
+			<label index="tx_cicbase_domain_model_file.mimeType">Mime Type</label>
+			<label index="tx_cicbase_domain_model_file.size">Size</label>
+			<label index="tx_cicbase_domain_model_file.title">Title</label>
+			<label index="tx_cicbase_domain_model_file.description">Description</label>
+			<label index="tx_cicbase_domain_model_file.rootDirectory">Root Directory</label>
 		</languageKey>
 	</data>
 </T3locallang>

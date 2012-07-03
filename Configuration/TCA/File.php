@@ -6,10 +6,10 @@ if (!defined ('TYPO3_MODE')) {
 $TCA['tx_cicbase_domain_model_file'] = array(
 	'ctrl' => $TCA['tx_cicbase_domain_model_file']['ctrl'],
 	'interface' => array(
-		'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, title, description, filename, original_filename, path, awsbucket, mime_type, size',
+		'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, title, description, filename, original_filename, path, awsbucket, mime_type, size, root_directory'
 	),
 	'types' => array(
-		'1' => array('showitem' => 'sys_language_uid;;;;1-1-1, l10n_parent, l10n_diffsource, hidden;;1, title, owner, description, filename, original_filename, path, awsbucket, mime_type, size --div--;LLL:EXT:cms/locallang_ttc.xml:tabs.access, starttime, endtime'),
+		'1' => array('showitem' => 'sys_language_uid;;;;1-1-1, l10n_parent, l10n_diffsource, hidden;;1, title, owner, path, mime_type, filename, original_filename, description, awsbucket, size, root_directory --div--;LLL:EXT:cms/locallang_ttc.xml:tabs.access, starttime, endtime'),
 	),
 	'palettes' => array(
 		'1' => array('showitem' => ''),
@@ -63,7 +63,7 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 		),
 		'filename' => array(
 			'exclude' => 0,
-			'label' => 'Filename',
+			'label' => 'LLL:EXT:cicbase/Resources/Private/Language/locallang_db.xml:tx_cicbase_domain_model_file.filename',
 			'config' => array(
 				'type' => 'input',
 				'size' => 30,
@@ -94,16 +94,30 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 			'config' => array(
 				'type' => 'input',
 				'size' => 30,
-				'eval' => 'trim,required'
+				'eval' => 'trim,required',
+				'wizards' => array(
+					'link' => array(
+						'type' => 'popup',
+						'title' => 'Link',
+						'icon' => 'link_popup.gif',
+						'script' => 'browse_links.php?mode=wizard',
+						'JSopenParams' => 'height=800,width=500,status=0,menubar=0,scrollbars=1'
+					),
+				),
 			),
 		),
 		'mime_type' => array(
 			'exclude' => 0,
 			'label' => 'MIME Type',
 			'config' => array(
-				'type' => 'input',
-				'size' => 30,
-				'eval' => 'trim,required'
+				'type' => 'select',
+				'items' => array(
+					array('image/png', 'image/png'),
+					array('image/gif', 'image/gif'),
+					array('image/jpeg', 'image/jpeg'),
+					array('image/bmp', 'image/bmp'),
+					array('image/tiff', 'image/tiff')
+				),
 			),
 		),
 		'size' => array(
@@ -111,13 +125,13 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 			'label' => 'LLL:EXT:cicbase/Resources/Private/Language/locallang_db.xml:tx_cicbase_domain_model_file.size',
 			'config' => array(
 				'type' => 'input',
-				'size' => 30,
+				'size' => 10,
 				'eval' => 'trim,required'
 			),
 		),
 		'root_directory' => array(
 			'exclude' => 0,
-			'label' => 'Path',
+			'label' => 'LLL:EXT:cicbase/Resources/Private/Language/locallang_db.xml:tx_cicbase_domain_model_file.rootDirectory',
 			'config' => array(
 				'type' => 'input',
 				'size' => 30,
@@ -126,17 +140,16 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 		),
 		'title' => array(
 			'exclude' => 0,
-			'label' => 'Title',
+			'label' => 'LLL:EXT:cicbase/Resources/Private/Language/locallang_db.xml:tx_cicbase_domain_model_file.title',
 			'config' => array(
-				'type' => 'text',
-				'cols' => 40,
-				'rows' => 15,
+				'type' => 'input',
+				'size' => 30,
 				'eval' => 'trim'
 			),
 		),
 		'description' => array(
 			'exclude' => 0,
-			'label' => 'Description',
+			'label' => 'LLL:EXT:cicbase/Resources/Private/Language/locallang_db.xml:tx_cicbase_domain_model_file.description',
 			'config' => array(
 				'type' => 'text',
 				'cols' => 40,
