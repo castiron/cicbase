@@ -27,12 +27,57 @@
 class Tx_Cicbase_ViewHelpers_Form_SelectViewHelper extends Tx_Fluid_ViewHelpers_Form_SelectViewHelper {
 
 	/**
-	 * Initialize the arguments that we're adding to the base class arguments.
-	 * @return string rendered tag
+ 	 *
 	 */
 	public function initializeArguments() {
 		parent::initializeArguments();
 		$this->registerArgument('nullOption', 'string', 'If specified, an extra option is added on top of the others labeled with the given string and valued as null');
+		$this->registerArgument('dataPlaceholder', 'string', 'If specified, value will populate the select tag\'s data-placeholder attribute');
+	}
+
+	/**
+	 * Render the tag.
+	 *
+	 * @return string rendered tag.
+	 * @api
+	 */
+	public function render() {
+		$name = $this->getName();
+
+		if ($this->hasArgument('dataPlaceholder')) {
+			$this->tag->addAttribute('data-placeholder', $this->arguments['dataPlaceholder']);
+		}
+
+		if ($this->hasArgument('multiple')) {
+			$name .= '[]';
+		}
+
+		$this->tag->addAttribute('name', $name);
+
+		$options = $this->getOptions();
+		if (empty($options)) {
+			$options = array('' => '');
+		}
+		$this->tag->setContent($this->renderOptionTags($options));
+
+		$this->setErrorClassAttribute();
+
+		$content = '';
+
+		// register field name for token generation.
+		// in case it is a multi-select, we need to register the field name
+		// as often as there are elements in the box
+		if ($this->hasArgument('multiple') && $this->arguments['multiple'] !== '') {
+			$content .= $this->renderHiddenFieldForEmptyValue();
+			for ($i = 0; $i < count($options); $i++) {
+				$this->registerFieldNameForFormTokenGeneration($name);
+			}
+		} else {
+			$this->registerFieldNameForFormTokenGeneration($name);
+		}
+
+		$content .= $this->tag->render();
+		return $content;
 	}
 
 	/**
@@ -41,7 +86,8 @@ class Tx_Cicbase_ViewHelpers_Form_SelectViewHelper extends Tx_Fluid_ViewHelpers_
 	 */
 	protected function getOptions() {
 		$options = parent::getOptions();
-		if($this->arguments['nullOption']) {
+
+		if($this->hasArgument('nullOption')) {
 			$label = $this->arguments['nullOption'];
 			$options = array('' => $label) + $options;
 		}
