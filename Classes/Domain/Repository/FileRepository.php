@@ -31,6 +31,22 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 	protected $cicbaseConfiguration;
 
 	/**
+	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
+	 */
+	protected $configurationManager;
+
+	/**
+	 * inject the configurationManager
+	 *
+	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface configurationManager
+	 * @return void
+	 */
+	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
+		$this->configurationManager = $configurationManager;
+	}
+
+
+	/**
 	 *
 	 */
 	public function __construct() {
@@ -288,6 +304,21 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 			}
 		} else {
 			throw new Exception ('Cannot add an existing file object to the fileRepository');
+		}
+	}
+
+	/**
+ 	 * Used to set object-specific storage pids, if desired.
+	 */
+	public function initializeObject() {
+		$frameworkConfig = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
+		$ext = $frameworkConfig['extensionName'];
+		$plugin = $frameworkConfig['pluginName'];
+		$configuration = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, $ext, $plugin);
+		if ($configuration['storagePids'][$this->objectType]) {
+			$this->internalPid = $configuration['storagePids'][$this->objectType];
+			$this->defaultQuerySettings = $this->objectManager->create('Tx_Extbase_Persistence_Typo3QuerySettings');
+			$this->defaultQuerySettings->setStoragePageIds(explode(',', $configuration['storagePids'][$this->objectType]));
 		}
 	}
 
