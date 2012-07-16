@@ -22,17 +22,23 @@ class Tx_Cicbase_ViewHelpers_File_LinkViewHelper extends Tx_Fluid_Core_ViewHelpe
 
 
 	/**
-	 * @param Tx_Cicbase_Domain_Model_File $file
+	 * @param Tx_Cicbase_Domain_Model_File||Tx_Extbase_Persistence_LazyLoadingProxy $file
+	 * @param string $class
 	 * @param string $linkText
 	 * @return string
 	 */
-	public function render(Tx_Cicbase_Domain_Model_File $file,$linkText = null) {
+	public function render($file,$class = null, $linkText = null) {
 		$uri = $file->getPathAndFileName();
 		if($linkText)
 			$text = $linkText;
 		else
 			$text = $file->getOriginalFilename();
-		return '<a href="'.$uri.'">'.$text.'</a>';
+
+		if($class)
+			$classAttr = 'class="'.$class.'"';
+		else
+			$classAttr = '';
+		return '<a href="'.$uri.'" '.$classAttr.'>'.$text.'</a>';
 	}
 }
 
