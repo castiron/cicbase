@@ -79,6 +79,9 @@ class Tx_Cicbase_Service_ControllerSecurityService {
 			} else {
 				$options[$key] = true;
 			}
+
+			// set sane defaults
+			$conf->setTypeConverterOptions('Tx_Extbase_Property_TypeConverter_PersistentObjectConverter', $options);
 		}
 	}
 }
