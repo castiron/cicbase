@@ -49,6 +49,7 @@ class Tx_Cicbase_Service_ControllerSecurityService {
 		// look for @modificationAllowed and @creationAllowed annotations on action methods
 		$actionMethodName = $request->getControllerActionName().'Action';
 		$tags = $this->reflectionService->getMethodTagsValues($controllerClassName, $actionMethodName);
+
 		if(array_key_exists('modificationAllowed',$tags)) {
 			$modificationAllowed = $tags['modificationAllowed'];
 		} else {
@@ -81,7 +82,7 @@ class Tx_Cicbase_Service_ControllerSecurityService {
 			}
 
 			// set sane defaults
-			$conf->setTypeConverterOptions('Tx_Extbase_Property_TypeConverter_PersistentObjectConverter', $options);
+			#$conf->setTypeConverterOptions('Tx_Extbase_Property_TypeConverter_PersistentObjectConverter', $options);
 		}
 	}
 }
