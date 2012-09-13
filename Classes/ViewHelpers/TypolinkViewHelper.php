@@ -15,17 +15,17 @@
 /**
  *	Wraps some of the basic Typolink settings in a viewhelper. Good for rendering links to pages and page titles
  *	when all you have is the page id.
- *
- *
  */
 class Tx_Cicbase_ViewHelpers_TypolinkViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+
 	/**
-	 * @param parameter Same as the parameter config value in Typoscript, can accept a page id, or
-	 * @param string target
-	 * @param integer noCache
-	 * @param integer useCacheHash
+	 * @param string $parameter
+	 * @param string $target
+	 * @param int $noCache
+	 * @param int $useCacheHash
 	 * @param array $additionalParams
 	 * @param string $ATagParams
+	 * @return mixed
 	 */
 	public function render($parameter, $target='',$noCache=0,$useCacheHash=1,$additionalParams=array(),$ATagParams = '') {
 		$typoLinkConf = array(
