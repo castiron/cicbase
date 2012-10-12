@@ -111,9 +111,14 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 	 */
 	public function convertFrom($source, $targetType, array $convertedChildProperties = array(), Tx_Extbase_Property_PropertyMappingConfigurationInterface $configuration = NULL) {
 		$propertyPath = $configuration->getConfigurationValue('Tx_Cicbase_Property_TypeConverter_File', 'propertyPath');
-		if(!$propertyPath) $propertyPath = 'file';
+		if(!$propertyPath) {
+			$propertyPath = 'file';
+			$key = '';
+		} else {
+			$key = $propertyPath;
+		}
 		if(!$this->fileFactory->wasUploadAttempted($propertyPath)) {
-			$fileObject = $this->fileRepository->getHeld();
+			$fileObject = $this->fileRepository->getHeld($key);
 			if($fileObject instanceof Tx_Cicbase_Domain_Model_File) {
 				return $fileObject;
 			} else {

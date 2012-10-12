@@ -189,13 +189,14 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 	public function createFile(array $sourceData, $propertyPath, $allowedTypes, $maxSize) {
 		$this->messages = new Tx_Extbase_Error_Result();
 		$this->propertyPath = $propertyPath;
+		$key = $propertyPath ? $propertyPath : '';
 		$this->settings = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
 
 		$uploadedFileData = $this->getUploadedFileData();
 		$this->handleUploadErrors($uploadedFileData);
 
 		if($this->messages->hasErrors()) {
-			$this->fileRepository->clearHeld();
+			$this->fileRepository->clearHeld($key);
 			return $this->messages->getFirstError();
 		} else {
 			$this->validateType($uploadedFileData,$allowedTypes);
@@ -204,7 +205,7 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 		}
 
 		if($this->messages->hasErrors()) {
-			$this->fileRepository->clearHeld();
+			$this->fileRepository->clearHeld($key);
 			return $this->messages->getFirstError();
 		} else {
 			// ok to make a file object
@@ -222,7 +223,7 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 			$fileObject->setPath($uploadedFileData['tmp_name']);
 			$fileObject->setFilename($pathInfo['filename']);
 
-			$results = $this->fileRepository->hold($fileObject);
+			$results = $this->fileRepository->hold($fileObject, $key);
 			return $results;
 		}
 	}
