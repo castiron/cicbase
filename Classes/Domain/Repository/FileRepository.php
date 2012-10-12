@@ -64,10 +64,16 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 
 	/**
 	 * Returns the path for held files
+	 * @param string $key
 	 * @return string
 	 */
-	protected function getHoldStoragePath() {
-		return $this->holdStoragePath;
+	protected function getHoldStoragePath($key = '') {
+		return $this->holdStoragePath.$key;
+	}
+
+	protected function getCacheKey($key = '') {
+		return 'heldFile_'.$GLOBALS['TSFE']->fe_user->id.$key;
+
 	}
 
 	/**
@@ -86,21 +92,20 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 
 	/**
 	 * Clears the held file
+	 * @param string $key
 	 */
-	public function clearHeld() {
+	public function clearHeld($key = '') {
 		$cache = $this->getCache();
-		$cacheKey = 'heldFile_'.$GLOBALS['TSFE']->fe_user->id;
-		$cache->remove($cacheKey);
+		$cache->remove($this->getCacheKey($key));
 	}
 
 	/**
 	 * Returns the held file
 	 * @return Tx_Cicbase_Domain_Model_File|null
 	 */
-	public function getHeld() {
+	public function getHeld($key = '') {
 		$cache = $this->getCache();
-		$cacheKey = 'heldFile_'.$GLOBALS['TSFE']->fe_user->id;
-		$serializedData = $cache->get($cacheKey);
+		$serializedData = $cache->get($this->getCacheKey($key));
 		if($serializedData) {
 			$fileObject = unserialize($serializedData);
 			if(!$fileObject->getAwsbucket() && $fileObject->checkIfFileExists()) {
@@ -118,11 +123,12 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 	/**
 	 * Holds an uploaded file
 	 * @param Tx_Cicbase_Domain_Model_File $fileObject
+	 * @param string $key
 	 * @return Tx_Cicbase_Domain_Model_File|Tx_Extbase_Error_Error
 	 * @throws Exception
 	 */
-	public function hold(Tx_Cicbase_Domain_Model_File $fileObject) {
-		$baseStoragePath = $this->getHoldStoragePath();
+	public function hold(Tx_Cicbase_Domain_Model_File $fileObject, $key = '') {
+		$baseStoragePath = $this->getHoldStoragePath($key);
 		if($fileObject->getIsSaved() == false) {
 			$relativeDestinationPath = $this->getRelativeDestinationPath($fileObject, $baseStoragePath);
 			$destinationFilename = $this->getDestinationFilename($fileObject);
@@ -131,7 +137,7 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 				return $results;
 			} else {
 				$cache = $this->getCache();
-				$cacheKey = 'heldFile_'.$GLOBALS['TSFE']->fe_user->id;
+				$cacheKey = $this->getCacheKey($key);
 				$cache->set($cacheKey,serialize($fileObject),array('heldFile'),3600);
 				return $fileObject;
 			}
@@ -287,11 +293,12 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 
 	/**
 	 * @param  $fileObject
+	 * @param string $key
 	 * @return Tx_Extbase_Error_Error|void
 	 * @throws Exception
 	 */
-	public function add($fileObject) {
-		$baseStoragePath = $this->getBaseStoragePath();
+	public function add($fileObject, $key = '') {
+		$baseStoragePath = $this->getBaseStoragePath($key);
 		if($fileObject->getIsSaved() == false) {
 			$relativeDestinationPath = $this->getRelativeDestinationPath($fileObject, $baseStoragePath);
 			$destinationFilename = $this->getDestinationFilename($fileObject);
