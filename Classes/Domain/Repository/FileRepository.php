@@ -64,11 +64,10 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 
 	/**
 	 * Returns the path for held files
-	 * @param string $key
 	 * @return string
 	 */
-	protected function getHoldStoragePath($key = '') {
-		return $this->holdStoragePath.$key;
+	protected function getHoldStoragePath() {
+		return $this->holdStoragePath;
 	}
 
 	protected function getCacheKey($key = '') {
@@ -128,7 +127,7 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 	 * @throws Exception
 	 */
 	public function hold(Tx_Cicbase_Domain_Model_File $fileObject, $key = '') {
-		$baseStoragePath = $this->getHoldStoragePath($key);
+		$baseStoragePath = $this->getHoldStoragePath();
 		if($fileObject->getIsSaved() == false) {
 			$relativeDestinationPath = $this->getRelativeDestinationPath($fileObject, $baseStoragePath);
 			$destinationFilename = $this->getDestinationFilename($fileObject);
@@ -154,7 +153,8 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 	protected function getDestinationFilename(Tx_Cicbase_Domain_Model_File $fileObject) {
 		$pathInfo = pathinfo($fileObject->getOriginalFilename());
 		$extension = $pathInfo['extension'];
-		$now = time();
+		$now = microtime(true);
+		$now = str_replace('.','', $now);
 		$destinationFilename = $now.'.'.$extension;
 		return $destinationFilename;
 	}
