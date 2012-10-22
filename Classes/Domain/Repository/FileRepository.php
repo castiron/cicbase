@@ -288,7 +288,6 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 				$fileObject->setPath($relativeDestinationPath);
 			}
 		}
-
 	}
 
 	/**
@@ -310,7 +309,7 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 				return parent::add($fileObject);
 			}
 		} else {
-			throw new Exception ('Cannot add an existing file object to the fileRepository');
+			return parent::add($fileObject);
 		}
 	}
 
