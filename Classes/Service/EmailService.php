@@ -65,8 +65,10 @@ class Tx_Cicbase_Service_EmailService implements t3lib_Singleton {
 	 * @param string $templateName template name (UpperCamelCase)
 	 * @param array $templateVariables variables to be passed to the Fluid view
 	 * @return boolean TRUE on success, otherwise false
+	 * @param array $attachments An array of Swift_Attachment instances
+	 * @return bool
 	 */
-	public function sendTemplateEmail(array $recipient, array $sender, $subject, $templateName, array $templateVariables = null) {
+	public function sendTemplateEmail(array $recipient, array $sender, $subject, $templateName, array $templateVariables = null, array $attachments = null) {
 		$emailView = $this->objectManager->create('Tx_Fluid_View_StandaloneView');
 		$emailView->setFormat('html');
 		$extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
@@ -81,6 +83,10 @@ class Tx_Cicbase_Service_EmailService implements t3lib_Singleton {
 		$message->setTo($recipient)
 			->setFrom($sender)
 			->setSubject($subject);
+
+		foreach($attachments as $att) {
+			$message->attach($att);
+		}
 
 		// Plain text example
 		#$message->setBody($emailBody, 'text/plain');
