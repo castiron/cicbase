@@ -29,10 +29,13 @@ class Tx_Cicbase_ViewHelpers_File_LinkViewHelper extends Tx_Fluid_Core_ViewHelpe
 	 */
 	public function render($file,$class = null, $linkText = null) {
 		$uri = $file->getPathAndFileName();
-		if($linkText)
+		if($linkText) {
 			$text = $linkText;
-		else
+		} elseif($file->getTitle()) {
+			$text = $file->getTitle();
+		}else {
 			$text = $file->getOriginalFilename();
+		}
 
 		if($class)
 			$classAttr = 'class="'.$class.'"';
