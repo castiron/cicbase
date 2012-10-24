@@ -110,14 +110,9 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 			'exclude' => 0,
 			'label' => 'MIME Type',
 			'config' => array(
-				'type' => 'select',
-				'items' => array(
-					array('image/png', 'image/png'),
-					array('image/gif', 'image/gif'),
-					array('image/jpeg', 'image/jpeg'),
-					array('image/bmp', 'image/bmp'),
-					array('image/tiff', 'image/tiff')
-				),
+				'type' => 'input',
+				'size' => 30,
+				'eval' => 'trim'
 			),
 		),
 		'size' => array(
