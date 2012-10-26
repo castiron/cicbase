@@ -41,7 +41,7 @@ class Tx_Cicbase_ViewHelpers_File_LinkViewHelper extends Tx_Fluid_Core_ViewHelpe
 			$classAttr = 'class="'.$class.'"';
 		else
 			$classAttr = '';
-		return '<a href="'.$uri.'" '.$classAttr.'>'.$text.'</a>';
+		return '<a target="_blank" href="'.$uri.'" '.$classAttr.'>'.$text.'</a>';
 	}
 }
 

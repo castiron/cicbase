@@ -221,14 +221,23 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 		if($this->getAwsbucket()) {
 			return $this->getAwsPathAndFileName();
 		} else {
-			return $this->getPath() . '/' . $this->getFileName();
+			if($this->getPath()) {
+				return $this->getPath() . '/' . $this->getFileName();
+			} else {
+				return $this->getFileName();
+			}
 		}
 	}
 
 	protected function getAwsPathAndFileName() {
 		$bucket = $this->getAwsbucket();
 		$domain = 's3.amazonaws.com';
-		$pathAndFile = $this->getPath() . '/' . $this->getFileName();
+
+		if($this->getPath()) {
+			$pathAndFile = $this->getPath() . '/' . $this->getFileName();
+		} else {
+			$pathAndFile = $this->getFileName();
+		}
 		return 'http://'.$bucket.'.'.$domain.'/'.$pathAndFile;
 	}
 
