@@ -5,7 +5,8 @@ if (!defined ('TYPO3_MODE')) {
 t3lib_extMgm::addStaticFile($_EXTKEY, 'Configuration/TypoScript', 'CICBase Static Typoscript');
 
 if (TYPO3_MODE == 'BE') {
-	if (t3lib_extMgm::isLoaded('scheduler')) {
+	// Older versions of ExtBase don't have CLI CommandManager
+	if (t3lib_extMgm::isLoaded('scheduler') && class_exists('Tx_Extbase_MVC_CLI_CommandManager')) {
 		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['Tx_Cicbase_Scheduler_Task'] = array(
 			'extension'        => $_EXTKEY,
 			'title'            => 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang.xml:task.name',
