@@ -25,7 +25,7 @@
  ***************************************************************/
 
 
-class Tx_Cicbase_Service_EmailService implements t3lib_Singleton {
+class Tx_Cicbase_Service_EmailService implements Tx_Cicbase_Service_EmailServiceInterface {
 
 
 	/**
@@ -64,9 +64,8 @@ class Tx_Cicbase_Service_EmailService implements t3lib_Singleton {
 	 * @param string $subject subject of the email
 	 * @param string $templateName template name (UpperCamelCase)
 	 * @param array $templateVariables variables to be passed to the Fluid view
-	 * @return boolean TRUE on success, otherwise false
 	 * @param array $attachments An array of Swift_Attachment instances
-	 * @return bool
+	 * @return boolean TRUE on success, otherwise false
 	 */
 	public function sendTemplateEmail(array $recipient, array $sender, $subject, $templateName, array $templateVariables = null, array $attachments = null) {
 		$emailView = $this->objectManager->create('Tx_Fluid_View_StandaloneView');
