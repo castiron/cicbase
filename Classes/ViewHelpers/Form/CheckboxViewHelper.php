@@ -30,15 +30,6 @@
  * A replacement for Fluid's checkbox viewhelper.
  */
 class Tx_Cicbase_ViewHelpers_Form_CheckboxViewHelper extends Tx_Cicbase_ViewHelpers_Form_AbstractFormFieldViewHelper {
-	/**
-	 * @var string
-	 */
-	protected $tagName = 'input';
-
-	/**
-	 * @var string
-	 */
-	protected $labelClass = 'checkbox';
 
 	/**
 	 * Initialize the arguments.
@@ -50,58 +41,86 @@ class Tx_Cicbase_ViewHelpers_Form_CheckboxViewHelper extends Tx_Cicbase_ViewHelp
 		parent::initializeArguments();
 		$this->registerTagAttribute('disabled', 'string', 'Specifies that the input element should be disabled when the page loads');
 		$this->registerArgument('errorClass', 'string', 'CSS class to set if there are errors for this view helper', FALSE, 'f3-form-error');
-		$this->overrideArgument('value', 'string', 'Value of input tag. Required for radio buttons', TRUE);
+		$this->overrideArgument('value', 'array', 'Value of the checked input tag.', FALSE);
+		$this->registerArgument('options', 'string', 'The options for the radio list.', TRUE);
+		$this->registerArgument('inline', 'boolean', 'Adds a CSS class "inline" to the radio labels.', FALSE);
 		$this->registerUniversalTagAttributes();
 	}
 
 	/**
 	 * Renders the radio.
 	 *
-	 * @param boolean $checked Specifies that the input element should be preselected
-	 * @param boolean $multiple Specifies whether this checkbox belongs to a multivalue (is part of a checkbox group)
-	 *
 	 * @return string
 	 * @api
 	 */
-	public function render($checked = NULL, $multiple = NULL) {
-		$this->tag->addAttribute('type', 'checkbox');
-
-		$nameAttribute = $this->getName();
-		$valueAttribute = $this->getValue();
-		if ($this->isObjectAccessorMode()) {
-			try {
-				$propertyValue = $this->getPropertyValue();
-			} catch (Tx_Fluid_Core_ViewHelper_Exception_InvalidVariableException $exception) {
-				// https://review.typo3.org/#change,7856
-				// http://forge.typo3.org/issues/8854
-				$propertyValue = FALSE;
+	public function render() {
+		$content = '';
+		$options = $this->getOptions();
+		$multiple = count($options) > 1;
+		foreach($this->getOptions() as $value => $labelString) {
+			$inputTag = $this->renderInputTag($value, $multiple);
+			$labelAttributes['class'] = 'checkbox';
+			if($this->arguments['inline']) {
+				$labelAttributes['class'] .= ' inline';
 			}
+			$content .= $this->createTag('label', $labelAttributes, $inputTag.' '.$labelString);
+		}
+		$hiddenField = $this->renderHiddenFieldForEmptyValue();
+
+		return $content.$hiddenField;
+	}
+
+	/**
+	 * @param string $value
+	 * @param boolean $multiple
+	 * @return string
+	 */
+	protected function renderInputTag($value, $multiple) {
+		$name = $this->getName();
+		$checked = FALSE;
+
+		if ($this->isObjectAccessorMode()) {
+			$propertyValue = $this->getPropertyValue();
 			if ($propertyValue instanceof \Traversable) {
 				$propertyValue = iterator_to_array($propertyValue);
 			}
 			if (is_array($propertyValue)) {
 				if ($checked === NULL) {
-					$checked = in_array($valueAttribute, $propertyValue);
+					$checked = in_array($value, $propertyValue);
 				}
-				$nameAttribute .= '[]';
-			} elseif ($multiple === TRUE) {
-				$nameAttribute .= '[]';
-			} elseif ($checked === NULL && $propertyValue !== NULL) {
-				$checked = (boolean)$propertyValue === (boolean)$valueAttribute;
+				$multiple = TRUE;
+			}elseif ($propertyValue !== NULL) {
+				$checked = (boolean)$propertyValue === (boolean) $value;
 			}
+		} else if(isset($this->arguments['value'])) {
+			$checked = in_array($value, $this->arguments['value']);
 		}
 
-		$this->registerFieldNameForFormTokenGeneration($nameAttribute);
-		$this->tag->addAttribute('name', $nameAttribute);
-		$this->tag->addAttribute('value', $valueAttribute);
+		if($multiple) {
+			$name .= '[]';
+		}
+
+		$this->registerFieldNameForFormTokenGeneration($name);
+		$tag = new Tx_Fluid_Core_ViewHelper_TagBuilder('input');
+		$tag->addAttributes(array(
+			'name' => $name,
+			'value' => $value,
+			'type' => 'checkbox'
+		));
 		if ($checked) {
-			$this->tag->addAttribute('checked', 'checked');
+			$tag->addAttribute('checked', 'checked');
 		}
 
-		$this->setErrorClassAttribute();
+		return $tag->render();
+	}
 
-		$hiddenField = $this->renderHiddenFieldForEmptyValue();
-		return $hiddenField . $this->tag->render();
+	/**
+	 * An easily overridable function for getting options.
+	 *
+	 * @return mixed
+	 */
+	protected function getOptions() {
+		return $this->arguments['options'];
 	}
 
 }

@@ -71,7 +71,8 @@ class Tx_Cicbase_ViewHelpers_Form_RadioViewHelper extends Tx_Cicbase_ViewHelpers
 	 * @return string
 	 */
 	protected function renderInputTag($value) {
-		if ($this->arguments['value'] === '' && $this->isObjectAccessorMode()) {
+		$checked = FALSE;
+		if ($this->isObjectAccessorMode()) {
 			try {
 				$propertyValue = $this->getPropertyValue();
 			} catch (Tx_Fluid_Core_ViewHelper_Exception_InvalidVariableException $exception) {
@@ -79,12 +80,9 @@ class Tx_Cicbase_ViewHelpers_Form_RadioViewHelper extends Tx_Cicbase_ViewHelpers
 				// http://forge.typo3.org/issues/5636
 				$propertyValue = FALSE;
 			}
-			// no type-safe comparisation by intention
-			$check = $propertyValue == $value;
-		} else if($this->arguments['value'] == $value) {
-			$check = TRUE;
-		} else {
-			$check = FALSE;
+			$checked = $propertyValue == $value; // not a type-safe comparison by intention
+		} else if(isset($this->arguments['value']) && $this->arguments['value'] == $value) {
+			$checked = TRUE;
 		}
 
 		$tag = new Tx_Fluid_Core_ViewHelper_TagBuilder('input');
@@ -93,7 +91,7 @@ class Tx_Cicbase_ViewHelpers_Form_RadioViewHelper extends Tx_Cicbase_ViewHelpers
 			'type' => 'radio',
 			'name' => $this->getName(),
 		));
-		if($check) {
+		if($checked) {
 			$tag->addAttribute('checked', 'checked');
 		}
 
