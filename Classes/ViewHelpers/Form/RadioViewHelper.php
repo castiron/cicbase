@@ -72,16 +72,17 @@ class Tx_Cicbase_ViewHelpers_Form_RadioViewHelper extends Tx_Cicbase_ViewHelpers
 	 */
 	protected function renderInputTag($value) {
 		$checked = FALSE;
+		$propertyValue = FALSE;
 		if ($this->isObjectAccessorMode()) {
 			try {
 				$propertyValue = $this->getPropertyValue();
 			} catch (Tx_Fluid_Core_ViewHelper_Exception_InvalidVariableException $exception) {
 				// https://review.typo3.org/#/c/4413/4/Classes/ViewHelpers/Form/CheckboxViewHelper.php
 				// http://forge.typo3.org/issues/5636
-				$propertyValue = FALSE;
 			}
 			$checked = $propertyValue == $value; // not a type-safe comparison by intention
-		} else if(isset($this->arguments['value']) && $this->arguments['value'] == $value) {
+		}
+		if($propertyValue == FALSE && isset($this->arguments['value']) && $this->arguments['value'] == $value) {
 			$checked = TRUE;
 		}
 
