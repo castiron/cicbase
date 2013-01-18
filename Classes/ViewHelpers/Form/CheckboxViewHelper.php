@@ -36,12 +36,6 @@ class Tx_Cicbase_ViewHelpers_Form_CheckboxViewHelper extends Tx_Cicbase_ViewHelp
 	protected $tagName = 'input';
 
 	/**
-	 * Wraps the input inside of the label element.
-	 * @var bool
-	 */
-	protected $wrapInputWithLabel = TRUE;
-
-	/**
 	 * @var string
 	 */
 	protected $labelClass = 'checkbox';

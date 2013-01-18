@@ -30,21 +30,6 @@
  * A replacement for Fluid's radio viewhelper.
  */
 class Tx_Cicbase_ViewHelpers_Form_RadioViewHelper extends Tx_Cicbase_ViewHelpers_Form_AbstractFormFieldViewHelper {
-	/**
-	 * @var string
-	 */
-	protected $tagName = 'input';
-
-	/**
-	 * Wraps the input inside of the label element.
-	 * @var bool
-	 */
-	protected $wrapInputWithLabel = TRUE;
-
-	/**
-	 * @var string
-	 */
-	protected $labelClass = 'radio';
 
 	/**
 	 * Initialize the arguments.
@@ -56,24 +41,37 @@ class Tx_Cicbase_ViewHelpers_Form_RadioViewHelper extends Tx_Cicbase_ViewHelpers
 		parent::initializeArguments();
 		$this->registerTagAttribute('disabled', 'string', 'Specifies that the input element should be disabled when the page loads');
 		$this->registerArgument('errorClass', 'string', 'CSS class to set if there are errors for this view helper', FALSE, 'f3-form-error');
-		$this->overrideArgument('value', 'string', 'Value of input tag. Required for radio buttons', TRUE);
+		$this->overrideArgument('value', 'string', 'Value of the checked input tag.', FALSE);
+		$this->registerArgument('options', 'string', 'The options for the radio list.', TRUE);
+		$this->registerArgument('inline', 'boolean', 'Adds a CSS class "inline" to the radio labels.', FALSE);
 		$this->registerUniversalTagAttributes();
 	}
 
 	/**
 	 * Renders the radio.
 	 *
-	 * @param boolean $checked Specifies that the input element should be preselected
-	 *
 	 * @return string
 	 * @api
 	 */
-	public function render($checked = NULL) {
-		$this->tag->addAttribute('type', 'radio');
+	public function render() {
+		$content = '';
+		foreach($this->getOptions() as $value => $labelString) {
+			$inputTag = $this->renderInputTag($value);
+			$labelAttributes['class'] = 'radio';
+			if($this->arguments['inline']) {
+				$labelAttributes['class'] .= ' inline';
+			}
+			$content .= $this->createTag('label', $labelAttributes, $inputTag.' '.$labelString);
+		}
+		return $content;
+	}
 
-		$nameAttribute = $this->getName();
-		$valueAttribute = $this->getValue();
-		if ($checked === NULL && $this->isObjectAccessorMode()) {
+	/**
+	 * @param string $value
+	 * @return string
+	 */
+	protected function renderInputTag($value) {
+		if ($this->arguments['value'] === '' && $this->isObjectAccessorMode()) {
 			try {
 				$propertyValue = $this->getPropertyValue();
 			} catch (Tx_Fluid_Core_ViewHelper_Exception_InvalidVariableException $exception) {
@@ -82,19 +80,33 @@ class Tx_Cicbase_ViewHelpers_Form_RadioViewHelper extends Tx_Cicbase_ViewHelpers
 				$propertyValue = FALSE;
 			}
 			// no type-safe comparisation by intention
-			$checked = $propertyValue == $valueAttribute;
+			$check = $propertyValue == $value;
+		} else if($this->arguments['value'] == $value) {
+			$check = TRUE;
+		} else {
+			$check = FALSE;
 		}
 
-		$this->registerFieldNameForFormTokenGeneration($nameAttribute);
-		$this->tag->addAttribute('name', $nameAttribute);
-		$this->tag->addAttribute('value', $valueAttribute);
-		if ($checked) {
-			$this->tag->addAttribute('checked', 'checked');
+		$tag = new Tx_Fluid_Core_ViewHelper_TagBuilder('input');
+		$tag->addAttributes(array(
+			'value' => $value,
+			'type' => 'radio',
+			'name' => $this->getName(),
+		));
+		if($check) {
+			$tag->addAttribute('checked', 'checked');
 		}
 
-		$this->setErrorClassAttribute();
+		return $tag->render();
+	}
 
-		return $this->tag->render();
+	/**
+	 * An easily overridable function for getting options.
+	 *
+	 * @return mixed
+	 */
+	protected function getOptions() {
+		return $this->arguments['options'];
 	}
 
 }

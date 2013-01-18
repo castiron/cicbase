@@ -28,14 +28,6 @@
 
 abstract class Tx_Cicbase_ViewHelpers_Form_AbstractFormFieldViewHelper extends Tx_Fluid_ViewHelpers_Form_AbstractFormFieldViewHelper {
 
-	/**
-	 * You can change this in subclasses so that
-	 * the input tag gets wrapped in the label tag,
-	 * like for radio and checkbox inputs.
-	 *
-	 * @var bool
-	 */
-	protected $wrapInputWithLabel = FALSE;
 
 	/**
 	 * You can change this in a subclass to add
@@ -64,11 +56,11 @@ abstract class Tx_Cicbase_ViewHelpers_Form_AbstractFormFieldViewHelper extends T
 			$this->tag->addAttribute('id', $id);
 		}
 		$inputTag = parent::callRenderMethod();
-		$labelAndInputTag = $this->renderLabelTag($inputTag);
+		$labelTag = $this->renderLabelTag();
 		$descriptionTag = $this->renderDescriptionTag();
 		$errors = $this->renderErrors();
 
-		return $labelAndInputTag.$descriptionTag.$errors;
+		return $labelTag.$inputTag.$descriptionTag.$errors;
 	}
 
 
@@ -119,12 +111,11 @@ abstract class Tx_Cicbase_ViewHelpers_Form_AbstractFormFieldViewHelper extends T
 	}
 
 	/**
-	 * @param string $inputTag
 	 * @return string
 	 */
-	protected function renderLabelTag($inputTag) {
+	protected function renderLabelTag() {
 		if(!isset($this->arguments['label']) || $this->arguments['label'] == '') {
-			return $inputTag;
+			return '';
 		}
 		$labelString = $this->arguments['label'];
 		$id = $this->deriveId();
@@ -132,18 +123,13 @@ abstract class Tx_Cicbase_ViewHelpers_Form_AbstractFormFieldViewHelper extends T
 		if($id) {
 			$attributes['for'] = $id;
 		}
-		if($this->labelClass) {
-			$attributes['class'] = $this->labelClass;
-			if(isset($this->arguments['labelClass']) && $this->arguments['labelClass']) {
-				$attributes['class'] .= ' '.$this->arguments['labelClass'];
-			}
+
+		if(isset($this->arguments['labelClass']) && $this->arguments['labelClass']) {
+			$attributes['class'] = ' '.$this->arguments['labelClass'];
 		}
 
-		if($this->wrapInputWithLabel) {
-			return $this->createTag('label', $attributes, $inputTag.' '.$labelString);
-		} else {
-			return $this->createTag('label', $attributes, $labelString) . $inputTag;
-		}
+		return $this->createTag('label', $attributes, $labelString);
+
 	}
 
 	/**
