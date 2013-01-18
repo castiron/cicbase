@@ -60,6 +60,13 @@ class Tx_Cicbase_ViewHelpers_Form_TextareaViewHelper extends Tx_Cicbase_ViewHelp
 		$name = $this->getName();
 		$this->registerFieldNameForFormTokenGeneration($name);
 
+		if(!isset($this->arguments['cols'])) {
+			$this->tag->addAttribute('cols', '40');
+		}
+		if(!isset($this->arguments['rows'])) {
+			$this->tag->addAttribute('rows', '5');
+		}
+
 		$this->tag->forceClosingTag(TRUE);
 		$this->tag->addAttribute('name', $name);
 		$this->tag->setContent(htmlspecialchars($this->getValue()));
