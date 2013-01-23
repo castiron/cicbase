@@ -82,7 +82,7 @@ class Tx_Cicbase_ViewHelpers_Form_RadioViewHelper extends Tx_Cicbase_ViewHelpers
 			}
 			$checked = $propertyValue == $value; // not a type-safe comparison by intention
 		}
-		if($propertyValue == FALSE && isset($this->arguments['value']) && $this->arguments['value'] == $value) {
+		if($propertyValue == FALSE && ((isset($this->arguments['value']) && $this->arguments['value'] == $value)|| $this->getValue() == $value) ) {
 			$checked = TRUE;
 		}
 
