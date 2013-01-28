@@ -79,6 +79,19 @@ abstract class Tx_Cicbase_Scheduler_AbstractTask extends tx_scheduler_Task {
 	protected function initialize($extensionName, $pluginName) {
 		// Get ObjectManager
 		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		$this->injectConfigurationManager($this->objectManager->get('Tx_Extbase_Configuration_ConfigurationManager'));
+
+		// Configure the object manager
+		$typoScriptSetup = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+		if (is_array($typoScriptSetup['config.']['tx_extbase.']['objects.'])) {
+			$objectContainer = t3lib_div::makeInstance('Tx_Extbase_Object_Container_Container');
+			foreach ($typoScriptSetup['config.']['tx_extbase.']['objects.'] as $classNameWithDot => $classConfiguration) {
+				if (isset($classConfiguration['className'])) {
+					$originalClassName = rtrim($classNameWithDot, '.');
+					$objectContainer->registerImplementation($originalClassName, $classConfiguration['className']);
+				}
+			}
+		}
 
 		// Inject Depencencies
 		$class = new ReflectionClass($this);
@@ -96,6 +109,7 @@ abstract class Tx_Cicbase_Scheduler_AbstractTask extends tx_scheduler_Task {
 		// Grab the settings array
 		$this->configurationManager->setConfiguration(array('extensionName' => $extensionName, 'pluginName' => $pluginName));
 		$this->settings = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
+
 	}
 }
 
