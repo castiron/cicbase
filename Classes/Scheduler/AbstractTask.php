@@ -28,75 +28,75 @@
 
 abstract class Tx_Cicbase_Scheduler_AbstractTask extends tx_scheduler_Task {
 
-    /**
-     * @var Tx_Extbase_Object_ObjectManager
-     */
-    protected $objectManager;
+	/**
+	 * @var Tx_Extbase_Object_ObjectManager
+	 */
+	protected $objectManager;
 
-    /**
-     * @var array
-     */
-    protected $settings;
+	/**
+	 * @var array
+	 */
+	protected $settings;
 
-    /**
-     * @var Tx_Extbase_Persistence_Manager
-     */
-    protected $persistenceManager;
+	/**
+	 * @var Tx_Extbase_Persistence_Manager
+	 */
+	protected $persistenceManager;
 
-    /**
-     * @var Tx_Extbase_Configuration_ConfigurationManager
-     */
-    protected $configurationManager;
+	/**
+	 * @var Tx_Extbase_Configuration_ConfigurationManager
+	 */
+	protected $configurationManager;
 
-    /**
-    * inject the persistenceManager
-    *
-    * @param Tx_Extbase_Persistence_Manager persistenceManager
-    * @return void
-    */
-    public function injectPersistenceManager(Tx_Extbase_Persistence_Manager $persistenceManager) {
-        $this->persistenceManager = $persistenceManager;
-    }
+	/**
+	 * inject the persistenceManager
+	 *
+	 * @param Tx_Extbase_Persistence_Manager persistenceManager
+	 * @return void
+	 */
+	public function injectPersistenceManager(Tx_Extbase_Persistence_Manager $persistenceManager) {
+		$this->persistenceManager = $persistenceManager;
+	}
 
-    /**
-     * inject the configurationManager
-     *
-     * @param Tx_Extbase_Configuration_ConfigurationManager configurationManager
-     * @return void
-     */
-    public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManager $configurationManager) {
-    	$this->configurationManager = $configurationManager;
-    }
+	/**
+	 * inject the configurationManager
+	 *
+	 * @param Tx_Extbase_Configuration_ConfigurationManager configurationManager
+	 * @return void
+	 */
+	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManager $configurationManager) {
+		$this->configurationManager = $configurationManager;
+	}
 
 
-    /**
-     * A function for injecting dependencies. Should be called first
-     * thing within the overridden 'execute' method.
-     *
-     * @param $extensionName
-     * @param $pluginName
-     */
-    protected function initialize($extensionName, $pluginName) {
-        // Get ObjectManager
-        $this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+	/**
+	 * A function for injecting dependencies. Should be called first
+	 * thing within the overridden 'execute' method.
+	 *
+	 * @param $extensionName
+	 * @param $pluginName
+	 */
+	protected function initialize($extensionName, $pluginName) {
+		// Get ObjectManager
+		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
 
-        // Inject Depencencies
-        $class = new ReflectionClass($this);
-        $methods = $class->getMethods();
-        foreach($methods as $method) {
-            if(substr_compare($method->name, 'inject', 0, 6) == 0) {
-                $comment = $method->getDocComment();
-                preg_match('#@param ([^\s]+)#', $comment, $matches);
-                $type = $matches[1];
-                $dependency = $this->objectManager->get($type);
-                $method->invokeArgs($this, array($dependency));
-            }
-        }
+		// Inject Depencencies
+		$class = new ReflectionClass($this);
+		$methods = $class->getMethods();
+		foreach ($methods as $method) {
+			if (substr_compare($method->name, 'inject', 0, 6) == 0) {
+				$comment = $method->getDocComment();
+				preg_match('#@param ([^\s]+)#', $comment, $matches);
+				$type = $matches[1];
+				$dependency = $this->objectManager->get($type);
+				$method->invokeArgs($this, array($dependency));
+			}
+		}
 
-        // Grab the settings array
-        $this->configurationManager->setConfiguration(array('extensionName' => $extensionName, 'pluginName' => $pluginName));
-        $this->settings = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
-    }
+		// Grab the settings array
+		$this->configurationManager->setConfiguration(array('extensionName' => $extensionName, 'pluginName' => $pluginName));
+		$this->settings = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
+	}
 }
 
 ?>
