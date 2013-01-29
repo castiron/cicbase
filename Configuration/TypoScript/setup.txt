@@ -7,6 +7,17 @@ tx_cicbase_pi1 {
 	}
 }
 
+config.tx_extbase{
+	objects {
+		Tx_Extbase_Persistence_QueryFactory {
+			className = Tx_Cicbase_Persistence_QueryFactory
+		}
+		Tx_Extbase_Persistence_QueryFactoryInterface {
+			className = Tx_Cicbase_Persistence_QueryFactory
+		}
+	}
+}
+
 config.tx_extbase.persistence.classes {
 	Tx_Cicbase_Domain_Model_File {
 		mapping {
