@@ -37,8 +37,9 @@ class Tx_Cicbase_Formhandler_Finisher_Salesforce extends Tx_Formhandler_Abstract
 
 		$salesforceLead->curlPost();
 		$response = $salesforceLead->getResponse();
-		$this->gp['salesforce_success'] = substr_count($response, 'HTTP/1.0 200 OK') > 0  ? 'yes' : 'no';
-
+		$this->gp['salesforce_success'] = substr_count($response, '200 OK') > 0  ? 'yes' : 'no';
+		$this->gp['salesforce_response'] = $response;
+		
 		return $this->gp;
 	}
 }
