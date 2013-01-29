@@ -30,6 +30,8 @@ class Tx_Cicbase_Formhandler_Finisher_Salesforce extends Tx_Formhandler_Abstract
 		$salesforceLead->setOid($this->settings['oid']);
 		$salesforceLead->setDebug($this->settings['debug']);
 		foreach($this->settings['mapping.'] as $localField => $sfField) {
+			if($this->settings['mapping.'][$localField.'.']['mapIfNotEmpty'] && empty($this->gp[$localField])) continue;
+
 			$salesforceLead->set($sfField,$this->gp[$localField]);
 		}
 

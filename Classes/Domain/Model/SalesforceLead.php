@@ -73,10 +73,6 @@ class Tx_Cicbase_Domain_Model_SalesforceLead {
 
 		$this->response = $response;
 
-		#	$fPHP = FirePHP::getInstance(true);
-		#	$fPHP->log($header.$req);
-		#	$fPHP->log($response);
-
 		return TRUE;
 	}
 
