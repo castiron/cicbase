@@ -159,10 +159,10 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 	}
 
 	protected function validateType($uploadedFileData,$allowedTypes) {
-		// TODO: Users should be able to specify a list of mime types that work per extension.
 		$pathInfo = pathinfo($uploadedFileData['name']);
 		$extension = $pathInfo['extension'];
-		if($allowedTypes[$extension] == $uploadedFileData['type']) {
+		$allowedMimes = t3lib_div::trimExplode(',',$allowedTypes[$extension]);
+		if(in_array($uploadedFileData['type'],$allowedMimes)) {
 			return NULL;
 		} else {
 			$this->addError('Invalid mime type: '.$uploadedFileData['type'], 1336597086);
