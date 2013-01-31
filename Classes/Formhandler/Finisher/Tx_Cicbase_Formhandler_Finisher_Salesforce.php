@@ -29,17 +29,23 @@ class Tx_Cicbase_Formhandler_Finisher_Salesforce extends Tx_Formhandler_Abstract
 		$salesforceLead = new Tx_Cicbase_Domain_Model_SalesforceLead;
 		$salesforceLead->setOid($this->settings['oid']);
 		$salesforceLead->setDebug($this->settings['debug']);
-		foreach($this->settings['mapping.'] as $localField => $sfField) {
-			if($this->settings['mapping.'][$localField.'.']['mapIfNotEmpty'] && empty($this->gp[$localField])) continue;
+		$salesforceLead->setDebugEmail($this->settings['debugEmail']);
+		$salesforceLead->setUseSandbox($this->settings['useSandbox'] ? true : false);
 
-			$salesforceLead->set($sfField,$this->gp[$localField]);
+		foreach($this->settings['mapping.'] as $localField => $sfField) {
+			if(is_string($sfField)) {
+				if($this->settings['mapping.'][$localField.'.']['mapOnlyIfNotEmpty'] && empty($this->gp[$localField])) continue;
+				$salesforceLead->set($sfField,$this->gp[$localField]);
+			}
 		}
 
 		$salesforceLead->curlPost();
 		$response = $salesforceLead->getResponse();
 		$this->gp['salesforce_success'] = substr_count($response, '200 OK') > 0  ? 'yes' : 'no';
 		$this->gp['salesforce_response'] = $response;
-		
+		$this->gp['salesforce_request_header'] = $salesforceLead->getRequestHeader();
+		$this->gp['salesforce_request_string'] = $salesforceLead->getRequestString();
+
 		return $this->gp;
 	}
 }
