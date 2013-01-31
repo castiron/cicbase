@@ -1,1 +1,0 @@
-CICBase is a repository for functionality that builds on TYPO3's ExtBase and Fluid extensions.
