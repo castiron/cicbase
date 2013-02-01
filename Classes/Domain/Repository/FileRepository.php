@@ -280,16 +280,19 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 				}
 			}
 			$source = $fileObject->getPath();
-			if(!is_uploaded_file($source)) {
-				$source = $fileObject->getPath().'/'.$fileObject->getFilename();
-			}
 			$absoluteDestinationPathAndFilename = $absoluteDestinationPath . '/' . $destinationFilename;
-			if (!t3lib_div::upload_copy_move($source, $absoluteDestinationPathAndFilename)) {
-				return new Tx_Extbase_Error_Error('Unable to save file', 1336600870);
+			if(is_uploaded_file($source)) {
+				if (!t3lib_div::upload_copy_move($source, $absoluteDestinationPathAndFilename)) {
+					return new Tx_Extbase_Error_Error('Unable to save file', 1336600870);
+				}
 			} else {
-				$fileObject->setFilename($destinationFilename);
-				$fileObject->setPath($relativeDestinationPath);
+				$source = $fileObject->getPath().'/'.$fileObject->getFilename();
+				if(!rename($source, $absoluteDestinationPathAndFilename)) {
+					return new Tx_Extbase_Error_Error('Unable to save file', 1336600870);
+				}
 			}
+			$fileObject->setFilename($destinationFilename);
+			$fileObject->setPath($relativeDestinationPath);
 		}
 	}
 
