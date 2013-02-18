@@ -89,8 +89,23 @@ abstract class Tx_Cicbase_ViewHelpers_Form_AbstractFormFieldViewHelper extends T
 
 		$controllerName = lcfirst($this->controllerContext->getRequest()->getControllerName());
 		$extensionName = lcfirst($this->controllerContext->getRequest()->getControllerExtensionName());
-		$validationResults = $this->controllerContext->getRequest()->getOriginalRequestMappingResults();
-		$errors = $validationResults->forProperty($property)->getErrors();
+
+		// This has been tested with new property mapper enabled and disabled, but it's been _more_ tested
+		// with the property mapper enabled --ZD
+		if ($this->configurationManager->isFeatureEnabled('rewrittenPropertyMapper')) {
+			$validationResults = $this->controllerContext->getRequest()->getOriginalRequestMappingResults();
+			$errors = $validationResults->forProperty($property)->getErrors();
+		} else {
+			// @deprecated since Extbase 1.4.0, will be removed in Extbase 1.6.0.
+			$validationResults = $this->controllerContext->getRequest()->getErrors();
+			$allErrors = $validationResults[$objectName]->getErrors();
+			if(array_key_exists($this->arguments['property'], $allErrors) && is_object($allErrors[$this->arguments['property']])) {
+				$errors = $allErrors[$this->arguments['property']]->getErrors();
+			} else {
+				$errors = array();
+			}
+		}
+
 		$content = '';
 		foreach($errors as $error) {
 			$code = $error->getCode();
