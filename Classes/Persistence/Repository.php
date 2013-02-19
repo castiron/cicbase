@@ -51,25 +51,25 @@ class Tx_Cicbase_Persistence_Repository extends Tx_Extbase_Persistence_Repositor
 	/**
 	 * Get the current page number
 	 * @return integer $page
-	 * 
+	 *
 	 */
 	public function getPage() {
 		return $this->page;
 	}
-	
+
 	/**
 	 * Get the number of records to skip based on results per page and total reocrds
 	 * @return integer $limitSkip
-	 * 
+	 *
 	 */
 	public function getLimitSkip() {
 		return $this->limitSkip;
 	}
-	
+
 	/**
 	 * Get the number of pages based on number of records and resultsPerPage
 	 * @return integer totalPages
-	 * 
+	 *
 	 */
 	public function getTotalPages() {
 		return $this->totalPages;
@@ -78,16 +78,16 @@ class Tx_Cicbase_Persistence_Repository extends Tx_Extbase_Persistence_Repositor
 	/**
 	 * Set the number of results per page. This number should be validated from the outside. In other words, if only 20 or 0 are allowed, make sure it's one of those values
 	 * 0 means all.
-	 * 
+	 *
 	 */
 	public function setResultsPerPage($resultsPerPage) {
 		$this->resultsPerPage = (int) $resultsPerPage;
 	}
-	
+
 	/**
 	 * Set the number of requested page. Just needs to be a number.
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	public function setRequestedPage($requestedPage) {
 		$this->requestedPage = (int) $requestedPage;
@@ -99,7 +99,7 @@ class Tx_Cicbase_Persistence_Repository extends Tx_Extbase_Persistence_Repositor
 	 * @param integer $count
 	 * @param integer $page
 	 * @return void
-	 */	
+	 */
 	protected function prepareInitialPaginationInfo() {
 		if($this->resultsPerPage > 0) {
 			$totalPages = ceil(intval($this->totalCount) / intval($this->resultsPerPage));
@@ -116,7 +116,7 @@ class Tx_Cicbase_Persistence_Repository extends Tx_Extbase_Persistence_Repositor
 		$this->totalPages = $totalPages;
 		$this->limitSkip = $limitSkip;
 	}
-	
+
 	/**
 	 *
 	 * @return void
@@ -129,14 +129,14 @@ class Tx_Cicbase_Persistence_Repository extends Tx_Extbase_Persistence_Repositor
 		$out->page = $this->page;
 		$out->totalCount = $this->totalCount;
 		$out->totalPages = $this->totalPages;
-	
+
 		return $out;
 	}
 
 	/**
 	 *
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	protected function setTotalCountFromParams($params) {
 		$count = $this->countByParams($params);
@@ -145,8 +145,8 @@ class Tx_Cicbase_Persistence_Repository extends Tx_Extbase_Persistence_Repositor
 
 	/**
 	 *
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	public function countByParams($params) {
 		unset($params['offset']);
@@ -160,11 +160,37 @@ class Tx_Cicbase_Persistence_Repository extends Tx_Extbase_Persistence_Repositor
 	 * @return Tx_Extbase_Persistence_ObjectStorage
 	 */
 	protected function orderResultsByUids($iterable,$uidArray) {
-		$objectStorage = t3lib_div::makeInstance('Tx_Extbase_Persistence_ObjectStorage');
+		/**
+		 * We have a problem here, because the workspace overlay may have already
+		 * been done (by initial repo fetch), so the $uidArray provided for sorting
+		 * contains only the LIVE uids, while the uids in $iterable correspond
+		 * to the Workspace versions :/
+		 */
+		if(is_object($GLOBALS['TSFE']) && $GLOBALS['TSFE']->sys_page->versioningWorkspaceId > 0) {
+			$select = 'x.uid,x.t3ver_oid,GROUP_CONCAT(y.uid) as versions';
+			$tableName = $iterable->getQuery()->getSource()->getSelectorName();
+			$uidList = implode(',',$GLOBALS['TYPO3_DB']->fullQuoteArray($uidArray,$tableName));
 
+			$table =  $tableName . ' x LEFT JOIN ' . $tableName . ' y ON x.uid = y.t3ver_oid AND y.t3ver_wsid = '.intval($GLOBALS['TSFE']->sys_page->versioningWorkspaceId) . ' AND y.deleted=0 AND y.hidden=0';
+			$where = 'x.uid IN ( ' . $uidList . ' ) AND x.deleted=0 AND x.hidden=0' ;
+			$groupBy = 'x.uid';
+			$orderBy = 'FIND_IN_SET(x.uid,"'.implode(',',$uidArray).'")';
+			$limit = '';
+
+			$qres = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select,$table,$where,$groupBy,$orderBy,$limit);
+			$uids = array();
+			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($qres)) {
+				$uids[] = $row['versions'] ? array_shift(t3lib_div::trimExplode(',',$row['versions'])) : $row['uid'];
+			}
+			$uidArray = $uids;
+		}
+
+		$objectStorage = t3lib_div::makeInstance('Tx_Extbase_Persistence_ObjectStorage');
 		foreach($uidArray as $uid) {
 			foreach($iterable as $item) {
-				if($item->getUid() == $uid) {
+				$foundId = $item->getUid();
+				$foundIds[] = $foundId;
+				if($foundId == $uid) {
 					$objectStorage->attach($item);
 				}
 			}
