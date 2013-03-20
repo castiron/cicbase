@@ -25,15 +25,20 @@ class Tx_Cicbase_ViewHelpers_TypolinkViewHelper extends Tx_Fluid_Core_ViewHelper
 	 * @param int $useCacheHash
 	 * @param array $additionalParams
 	 * @param string $ATagParams
+	 * @param string $extTarget
 	 * @return mixed
 	 */
-	public function render($parameter, $target='',$noCache=0,$useCacheHash=1,$additionalParams=array(),$ATagParams = '') {
+	public function render($parameter, $target='',$noCache=0,$useCacheHash=1,$additionalParams=array(),$ATagParams = '',$extTarget = '') {
 		$typoLinkConf = array(
 			'parameter' => $parameter,
 		);
 
 		if($target) {
 			$typoLinkConf['target'] = $target;
+		}
+
+		if($target) {
+			$typoLinkConf['extTarget'] = $extTarget;
 		}
 
 		if($noCache) {
