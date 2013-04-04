@@ -78,6 +78,58 @@ abstract class Tx_Cicbase_ViewHelpers_Form_AbstractFormFieldViewHelper extends T
 		return $tag->render();
 	}
 
+	/**
+	 * Overriding this class to look for errors not just
+	 * on property fields, but named fields as well. That is,
+	 * there are some variables passed to an action that undergo
+	 * validation that aren't properties of an object, like a
+	 * password field or credit card number. And these fields
+	 * also need to show an error class.
+	 */
+	protected function setErrorClassAttribute() {
+		if ($this->hasArgument('class')) {
+			$cssClass = $this->arguments['class'] . ' ';
+		} else {
+			$cssClass = '';
+		}
+
+		if ($this->hasArgument('errorClass')) {
+			$cssClass .= $this->arguments['errorClass'];
+		} else {
+			$cssClass .= 'error';
+		}
+
+		if ($this->configurationManager->isFeatureEnabled('rewrittenPropertyMapper')) {
+
+			// Check if this is a property that has errors
+			$mappingResultsForProperty = $this->getMappingResultsForProperty();
+			if ($mappingResultsForProperty->hasErrors()) {
+				$this->tag->addAttribute('class', $cssClass);
+
+			// Check if this is a named field that has errors
+			} else if(isset($this->arguments['name'])) {
+				$originalRequestMappingResults = $this->controllerContext->getRequest()->getOriginalRequestMappingResults();
+				$property = str_replace('[]', '', $this->arguments['name']);
+				$mappingResultsForName = $originalRequestMappingResults->forProperty($property);
+				if($mappingResultsForName->hasErrors()){
+					$this->tag->addAttribute('class', $cssClass);
+				}
+
+			}
+		} else {
+			// @deprecated since Extbase 1.4.0, will be removed in Extbase 1.6.0.
+			$errors = $this->getErrorsForProperty();
+			if (count($errors) > 0) {
+				$this->tag->addAttribute('class', $cssClass);
+			}
+		}
+	}
+
+	/**
+	 * Adds error messages below each field that has errors.
+	 *
+	 * @return string
+	 */
 	protected function renderErrors() {
 		$objectName = $this->getFormObjectName();
 		if(isset($this->arguments['property'])) {
