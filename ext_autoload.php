@@ -23,6 +23,7 @@ return array(
 	'tx_cicbase_formhandler_interceptor_fieldchanger' => $extensionClassesPath . 'Formhandler/Interceptor/Tx_Cicbase_Formhandler_Interceptor_FieldChanger.php',
 	'tx_cicbase_formhandler_interceptor_maxmindlocator' => $extensionClassesPath . 'Formhandler/Interceptor/Tx_Cicbase_Formhandler_Interceptor_MaxMindLocator.php',
 	'tx_cicbase_formhandler_interceptor_searchenginequerygrabber' => $extensionClassesPath . 'Formhandler/Interceptor/Tx_Cicbase_Formhandler_Interceptor_SearchEngineQueryGrabber.php',
+	'tx_cicbase_formhandler_interceptor_conditionalfieldchanges' => $extensionClassesPath . 'Formhandler/Interceptor/Tx_Cicbase_Formhandler_Interceptor_ConditionalFieldChanges.php',
 	'tx_cicbase_persistence_repository' => $extensionClassesPath . 'Persistence/Repository.php',
 	'tx_cicbase_property_typeconverter_file' => $extensionClassesPath . 'Property/TypeConverter/File.php',
 	'tx_cicbase_scheduler_abstracttask' => $extensionClassesPath . 'Scheduler/AbstractTask.php',
