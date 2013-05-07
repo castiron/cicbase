@@ -18,12 +18,13 @@ CREATE TABLE tx_cicbase_cache_tags (
 );
 
 CREATE TABLE tx_cicbase_zipcodes (
-  zipcode INT NOT NULL PRIMARY KEY,
-  latitude FLOAT(12,8),
-  longitude FLOAT(12,8),
-  state VARCHAR(2),
-  city VARCHAR(128),
-  county VARCHAR(128)
+  zipcode int(11) unsigned NOT NULL DEFAULT '0',
+  latitude float(12,8) NOT NULL DEFAULT '0.00000000',
+  longitude float(12,8) NOT NULL DEFAULT '0.00000000',
+  state varchar(2) NOT NULL DEFAULT '',
+  city varchar(128) NOT NULL DEFAULT '',
+  county varchar(128) NOT NULL DEFAULT '',
+  PRIMARY KEY (zipcode)
 );
 
 CREATE TABLE tx_cicbase_domain_model_file (
