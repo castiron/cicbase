@@ -2,7 +2,7 @@
 
 ### Compatibility ###
 * master => TYPO3 6.x
-* [TYPO3_4.7.x](/castiron/cicbase/tree/TYPO3_4.7.x) => TYPO3 4.7.x 
+* [TYPO3_4.7.x](https://github.com/castiron/cicbase/tree/TYPO3_4.7.x) => TYPO3 4.7.x
 
 ## Features
 * [Class by class storage PIDs](#storagePids)
