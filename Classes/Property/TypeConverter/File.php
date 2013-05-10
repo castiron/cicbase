@@ -105,11 +105,11 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 	 * @param mixed $source
 	 * @param string $targetType
 	 * @param array $convertedChildProperties
-	 * @param null|\TYPO3\CMS\Extbase\Property\PropertyMappingConfigurationInterface $configuration
-	 * @return null|object|Tx_Cicbase_Domain_Model_File|Tx_Extbase_Error_Error|\TYPO3\CMS\Extbase\Error\Error
+	 * @param null|Tx_Extbase_Property_PropertyMappingConfigurationInterface $configuration
+	 * @return mixed|null|object|Tx_Extbase_Error_Error
 	 * @throws Tx_Extbase_Configuration_Exception
 	 */
-	public function convertFrom($source, $targetType, array $convertedChildProperties = array(), \TYPO3\CMS\Extbase\Property\PropertyMappingConfigurationInterface $configuration = NULL) {
+	public function convertFrom($source, $targetType, array $convertedChildProperties = array(), Tx_Extbase_Property_PropertyMappingConfigurationInterface $configuration = NULL) {
 		$propertyPath = $configuration->getConfigurationValue('Tx_Cicbase_Property_TypeConverter_File', 'propertyPath');
 		if(!$propertyPath) {
 			$propertyPath = 'file';
