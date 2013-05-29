@@ -199,9 +199,15 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 			$this->fileRepository->clearHeld($key);
 			return $this->messages->getFirstError();
 		} else {
-			$this->validateType($uploadedFileData,$allowedTypes);
-			$this->validateName($uploadedFileData);
-			$this->validateSize($uploadedFileData,$maxSize);
+			if(!$this->settings['file']['dontValidateType']) {
+				$this->validateType($uploadedFileData,$allowedTypes);
+			}
+			if(!$this->settings['file']['dontValidateName']) {
+				$this->validateName($uploadedFileData);
+			}
+			if(!$this->settings['file']['dontValidateSize']) {
+				$this->validateSize($uploadedFileData,$maxSize);
+			}
 		}
 
 		if($this->messages->hasErrors()) {
