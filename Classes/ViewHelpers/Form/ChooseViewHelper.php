@@ -209,7 +209,7 @@ class Tx_Cicbase_ViewHelpers_Form_ChooseViewHelper extends Tx_Cicbase_ViewHelper
 	 * @return mixed value string or an array of strings
 	 */
 	protected function getSelectedValue() {
-		$value = $this->getPropertyValue();
+		$value = $this->getValue();
 		if (!$this->hasArgument('optionValueField')) {
 			return $value;
 		}
