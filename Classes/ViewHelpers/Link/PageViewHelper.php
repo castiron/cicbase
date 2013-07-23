@@ -47,10 +47,11 @@ class Tx_Cicbase_ViewHelpers_Link_PageViewHelper extends Tx_Fluid_ViewHelpers_Li
 	 * @param array $argumentsToBeExcludedFromQueryString arguments to be removed from the URI. Only active if $addQueryString = TRUE
 	 *
 	 * @param string $frontendPath Generates a frontend link (even if executed from backend module)
+	 * @param string $backupDomain Use this domain, if a domain isn't found (like when this is called from scheduled task)
 	 *
 	 * @return string Rendered page URI
 	 */
-	public function render($pageUid = NULL, array $additionalParams = array(), $pageType = 0, $noCache = FALSE, $noCacheHash = FALSE, $section = '', $linkAccessRestrictedPages = FALSE, $absolute = FALSE, $addQueryString = FALSE, array $argumentsToBeExcludedFromQueryString = array(), $frontendPath = '') {
+	public function render($pageUid = NULL, array $additionalParams = array(), $pageType = 0, $noCache = FALSE, $noCacheHash = FALSE, $section = '', $linkAccessRestrictedPages = FALSE, $absolute = FALSE, $addQueryString = FALSE, array $argumentsToBeExcludedFromQueryString = array(), $frontendPath = '', $backupDomain = '') {
 
 		$uriBuilder = $this->controllerContext->getUriBuilder();
 		$uri = $uriBuilder
@@ -69,6 +70,9 @@ class Tx_Cicbase_ViewHelpers_Link_PageViewHelper extends Tx_Fluid_ViewHelpers_Li
 
 		if($frontendPath) {
 			$parts = parse_url($uri);
+			if(!$parts['host'] && $backupDomain) {
+				$parts['host'] = $backupDomain;
+			}
 			$parts['query'] = preg_replace('/M=[^&]+/', '', $parts['query']);
 			$parts['path'] = $frontendPath;
 			$uri = self::http_build_url($parts);
@@ -92,6 +96,12 @@ class Tx_Cicbase_ViewHelpers_Link_PageViewHelper extends Tx_Fluid_ViewHelpers_Li
 		$slash = '';
 		$qMark = '';
 		$hash = '';
+		if(!$parts['scheme']){
+			$parts['scheme'] = 'http';
+		}
+		if(!$parts['host']) {
+			$parts['host'] = $_ENV['SERVER_NAME'];
+		}
 		if(substr($parts['path'], 0, 1) != '/'){
 			$slash = '/';
 		}
