@@ -41,9 +41,13 @@ class Tx_Cicbase_ViewHelpers_Fal_ImageViewHelper extends TYPO3\CMS\Fluid\ViewHel
 	 * @return string rendered tag.
 	 */
 	public function render($uid = NULL, $tableName = 'tt_content', $fieldName = 'media', $fieldIndex = 0, $width = NULL, $height = NULL, $minWidth = NULL, $minHeight = NULL, $maxWidth = NULL, $maxHeight = NULL, $treatIdAsReference = FALSE) {
+		$out = '';
 		$fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
 		$file = $fileRepository->findByRelation($tableName, $fieldName, $uid);
-		return parent::render($file[$fieldIndex]->getCombinedIdentifier(), $width, $height, $minWidth, $minHeight, $maxWidth, $maxHeight, $treatIdAsReference);
+		if($file[$fieldIndex]) {
+			$out = parent::render($file[$fieldIndex]->getCombinedIdentifier(), $width, $height, $minWidth, $minHeight, $maxWidth, $maxHeight, $treatIdAsReference);
+		}
+		return $out;
 	}
 }
 
