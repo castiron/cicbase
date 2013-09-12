@@ -94,6 +94,26 @@ class Tx_Cicbase_Persistence_Repository extends \TYPO3\CMS\Extbase\Persistence\R
 	}
 
 	/**
+	 * Queries for the given list of IDs
+	 *
+	 * @param array|string $uids
+	 * @return array|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+	 * @throws Exception
+	 */
+	public function findByUids($uids) {
+		if(is_string($uids)) {
+			$uids = explode(',', $uids);
+		}
+		if(!is_array($uids)) throw new \Exception('findByUids() only takes a comma separated string of uids or an array of uids');
+
+		$query = $this->createQuery();
+		foreach($uids as $uid) {
+			$constraints[] = $query->equals('uid', $uid);
+		}
+		return $query->matching($query->logicalOr($constraints))->execute();
+	}
+
+	/**
 	 * It would be great to move this out into another class, along with other pagination functions
 	 * @param integer $resultsPerPage
 	 * @param integer $count
