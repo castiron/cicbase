@@ -137,7 +137,6 @@ class SolrService {
 	 *
 	 */
 	public function addArgFilters($args) {
-		print_r(__FUNCTION__,func);
 		foreach($args as $argName => $argValue) {
 			$methodName = 'add'.ucfirst($argName).'Filter';
 			if(method_exists($this,$methodName)) {
