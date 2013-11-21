@@ -1,4 +1,5 @@
 <?php
+namespace CIC\Cicbase\ViewHelpers\Form;
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +30,7 @@
 /**
  * A replacement for Fluid's select viewhelper.
  */
-class Tx_Cicbase_ViewHelpers_Form_ChooseViewHelper extends Tx_Cicbase_ViewHelpers_Form_AbstractFormFieldViewHelper {
+class ChooseViewHelper extends AbstractFormFieldViewHelper {
 	/**
 	 * @var string
 	 */

@@ -1,4 +1,5 @@
 <?php
+namespace CIC\Cicbase\ViewHelpers\Form;
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +30,7 @@
 /**
  * A replacement for Fluid's password viewhelper.
  */
-class Tx_Cicbase_ViewHelpers_Form_PasswordViewHelper extends Tx_Cicbase_ViewHelpers_Form_AbstractFormFieldViewHelper {
+class PasswordViewHelper extends AbstractFormFieldViewHelper {
 	/**
 	 * @var string
 	 */

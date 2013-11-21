@@ -1,4 +1,5 @@
 <?php
+namespace CIC\Cicbase\ViewHelpers\Form;
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +30,7 @@
 /**
  * A replacement for Fluid's textarea viewhelper.
  */
-class Tx_Cicbase_ViewHelpers_Form_TextareaViewHelper extends Tx_Cicbase_ViewHelpers_Form_AbstractFormFieldViewHelper {
+class TextareaViewHelper extends AbstractFormFieldViewHelper {
 	/**
 	 * @var string
 	 */

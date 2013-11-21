@@ -1,4 +1,5 @@
 <?php
+namespace CIC\Cicbase\ViewHelpers\Form;
 /***************************************************************
  *  Copyright notice
  *
@@ -26,7 +27,7 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-abstract class Tx_Cicbase_ViewHelpers_Form_AbstractFormFieldViewHelper extends Tx_Fluid_ViewHelpers_Form_AbstractFormFieldViewHelper {
+abstract class AbstractFormFieldViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Form\AbstractFormFieldViewHelper {
 
 
 	/**
@@ -225,8 +226,8 @@ abstract class Tx_Cicbase_ViewHelpers_Form_AbstractFormFieldViewHelper extends T
 	 */
 	protected function getFormObjectName() {
 		try {
-			return $this->viewHelperVariableContainer->get('Tx_Fluid_ViewHelpers_FormViewHelper', 'formObjectName');
-		} catch(Exception $e) {
+			return $this->viewHelperVariableContainer->get('TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper', 'formObjectName');
+		} catch(\Exception $e) {
 			return '';
 		}
 	}

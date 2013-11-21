@@ -1,4 +1,5 @@
 <?php
+namespace CIC\Cicbase\ViewHelpers\Form;
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +30,7 @@
 /**
  * A replacement for Fluid's radio viewhelper.
  */
-class Tx_Cicbase_ViewHelpers_Form_RadioViewHelper extends Tx_Cicbase_ViewHelpers_Form_AbstractFormFieldViewHelper {
+class RadioViewHelper extends AbstractFormFieldViewHelper {
 
 	/**
 	 * Initialize the arguments.
