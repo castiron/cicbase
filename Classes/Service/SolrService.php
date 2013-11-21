@@ -116,7 +116,7 @@ class SolrService {
 	 * Guesses the solr connection configuration (useful if called on page request)
 	 */
 	public function initialize($documentType = '') {
-		$this->addFilter("type:$documentType");
+		$this->addFilter('type', $documentType);
 	}
 
 	/**
@@ -134,40 +134,63 @@ class SolrService {
 	}
 
 	/**
-	 *
+	 * Setting the filters can be customized by methods
+	 * in a subclass.
 	 */
-	public function addArgFilters($args) {
+	public function setFilters($args) {
 		foreach($args as $argName => $argValue) {
-			$methodName = 'add'.ucfirst($argName).'Filter';
-			if(method_exists($this,$methodName)) {
-				$this->$methodName($args);
+			if($argValue) {
+				$methodName = 'add'.ucfirst($argName).'Filter';
+				if(method_exists($this,$methodName)) {
+					$this->$methodName($argValue, $args);
+				} else {
+					$this->addFilter($argName, $argValue);
+				}
 			}
 		}
-		$this->postAddArgFilters($args);
 	}
 
 	/**
 	 *  If a filter has been applied
 	 *  @return boolean
 	 */
-	public function getHasFilters() {
+	public function hasFilters() {
 		return count($this->filters) ? true : false;
 	}
 
 	/**
-	 * @param string
+	 * Adds a filter to the query string. You can pass
+	 * a string or an array. If you pass an array, you
+	 * can also specify how to join the values (as
+	 * conjunction or disjunction).
+	 *
+	 *
+	 * @param string $key
+	 * @param mixed $value
+	 * @param string $glue
 	 */
-	protected function addFilter($filter) {
-		$this->filters[] = $filter;
+	protected function addFilter($key, $value, $glue = 'OR') {
+		if(is_string($value)) {
+			$value = self::quote($value);
+		} else if(is_array($value) && $glue) {
+			switch(strtolower($glue)) {
+				case 'or' : $value = self::logicalOR($value);  break;
+				case 'and': $value = self::logicalAND($value); break;
+			}
+		}
+		$this->filters[$key] = "$key:$value";
 	}
 
 	/**
-	 * @param $keywords
+	 * @param string $keywords
 	 */
 	public function setKeywords($keywords) {
 		$this->keywords = $keywords;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getKeywords() {
 		return $this->keywords;
 	}
@@ -213,15 +236,9 @@ class SolrService {
 	}
 
 	/**
-	 * Defined in a child class
-	 */
-	protected function postAddArgFilters() {
-	}
-
-	/**
 	 *
 	 */
-	protected function getHasSorting() {
+	protected function hasSorting() {
 		return is_array($this->sorting) && count($this->sorting);
 	}
 
@@ -281,11 +298,11 @@ class SolrService {
 	 * @return string
 	 */
 	protected static function junction($junction, array $values){
-		// remove empties
+		// remove empties and add quotes
 		foreach($values as $val){
 			$parsed = explode(':',$val);
 			if($val !== '' && $parsed[1] !== ''){
-				$newVals[] = $val;
+				$newVals[] = self::quote($val);
 			}
 		}
 
@@ -311,6 +328,13 @@ class SolrService {
 		return $str;
 	}
 
+	protected static function quote($val) {
+		if(strpos($val, ' ') !== FALSE) {
+			$val = '"'.$val.'"';
+		}
+		return $val;
+	}
+
 	/**
 	 *
 	 *
@@ -329,7 +353,10 @@ class SolrService {
 			$query->setSorting($this->sorting[0].' '.$sortingDirection);
 		}
 
-		$query->addFilter(self::logicalAND($this->filters));
+		foreach($this->filters as $filter) {
+			$query->addFilter($filter);
+		}
+
 		$this->response = $search->search($query, $this->getQueryOffset(), $this->getQueryLimit());
 		$this->body = json_decode($this->response->getRawResponse());
 		$this->search = $search;
