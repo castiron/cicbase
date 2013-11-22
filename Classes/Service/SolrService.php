@@ -329,6 +329,9 @@ class SolrService {
 	}
 
 	protected static function quote($val) {
+		if(strpos($val, '[') === 0) {
+			return $val;
+		}
 		if(strpos($val, ' ') !== FALSE) {
 			$val = '"'.$val.'"';
 		}
