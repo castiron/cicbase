@@ -130,7 +130,7 @@ class ChooseViewHelper extends AbstractFormFieldViewHelper {
 	 * @return array an associative array of options, key will be the value of the option tag
 	 */
 	protected function getOptions() {
-		if (!is_array($this->arguments['options']) && !($this->arguments['options'] instanceof Traversable)) {
+		if (!is_array($this->arguments['options']) && !($this->arguments['options'] instanceof \Traversable)) {
 			return array();
 		}
 		$options = array();
@@ -139,12 +139,12 @@ class ChooseViewHelper extends AbstractFormFieldViewHelper {
 			if (is_object($value)) {
 
 				if ($this->hasArgument('optionValueField')) {
-					$key = Tx_Extbase_Reflection_ObjectAccess::getPropertyPath($value, $this->arguments['optionValueField']);
+					$key = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getPropertyPath($value, $this->arguments['optionValueField']);
 					if (is_object($key)) {
 						if (method_exists($key, '__toString')) {
 							$key = (string)$key;
 						} else {
-							throw new Tx_Fluid_Core_ViewHelper_Exception('Identifying value for object of class "' . get_class($value) . '" was an object.' , 1247827428);
+							throw new \TYPO3\CMS\Fluid\Core\ViewHelper\Exception('Identifying value for object of class "' . get_class($value) . '" was an object.' , 1247827428);
 						}
 					}
 				} elseif ($this->persistenceManager->getBackend()->getIdentifierByObject($value) !== NULL) {
@@ -152,16 +152,16 @@ class ChooseViewHelper extends AbstractFormFieldViewHelper {
 				} elseif (method_exists($value, '__toString')) {
 					$key = (string)$value;
 				} else {
-					throw new Tx_Fluid_Core_ViewHelper_Exception('No identifying value for object of class "' . get_class($value) . '" found.' , 1247826696);
+					throw new \TYPO3\CMS\Fluid\Core\ViewHelper\Exception('No identifying value for object of class "' . get_class($value) . '" found.' , 1247826696);
 				}
 
 				if ($this->hasArgument('optionLabelField')) {
-					$value = Tx_Extbase_Reflection_ObjectAccess::getPropertyPath($value, $this->arguments['optionLabelField']);
+					$value = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getPropertyPath($value, $this->arguments['optionLabelField']);
 					if (is_object($value)) {
 						if (method_exists($value, '__toString')) {
 							$value = (string)$value;
 						} else {
-							throw new Tx_Fluid_Core_ViewHelper_Exception('Label value for object of class "' . get_class($value) . '" was an object without a __toString() method.' , 1247827553);
+							throw new \TYPO3\CMS\Fluid\Core\ViewHelper\Exception('Label value for object of class "' . get_class($value) . '" was an object without a __toString() method.' , 1247827553);
 						}
 					}
 				} elseif (method_exists($value, '__toString')) {
@@ -216,7 +216,7 @@ class ChooseViewHelper extends AbstractFormFieldViewHelper {
 		}
 		if (!is_array($value) && !($value instanceof Iterator)) {
 			if (is_object($value)) {
-				return Tx_Extbase_Reflection_ObjectAccess::getPropertyPath($value, $this->arguments['optionValueField']);
+				return \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getPropertyPath($value, $this->arguments['optionValueField']);
 			} else {
 				return $value;
 			}
@@ -224,7 +224,7 @@ class ChooseViewHelper extends AbstractFormFieldViewHelper {
 		$selectedValues = array();
 		foreach($value as $selectedValueElement) {
 			if (is_object($selectedValueElement)) {
-				$selectedValues[] = Tx_Extbase_Reflection_ObjectAccess::getPropertyPath($selectedValueElement, $this->arguments['optionValueField']);
+				$selectedValues[] = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getPropertyPath($selectedValueElement, $this->arguments['optionValueField']);
 			} else {
 				$selectedValues[] = $selectedValueElement;
 			}
