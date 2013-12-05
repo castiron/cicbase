@@ -1,4 +1,5 @@
 <?php
+namespace CIC\Cicbase\ViewHelpers\Widget;
 
 /*                                                                        *
  * This script belongs to the FLOW3 package "CICBase".                      *
@@ -21,30 +22,29 @@
  *                                                                        */
 
 
-class Tx_Cicbase_ViewHelpers_Widget_PaginateViewHelper extends Tx_Fluid_ViewHelpers_Widget_PaginateViewHelper {
+class PaginateViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\PaginateViewHelper {
 
 	/**
-	 * @var Tx_Cicbase_ViewHelpers_Widget_Controller_PaginateController
+	 * @var \CIC\Cicbase\ViewHelpers\Widget\Controller\PaginateController
 	 */
 	protected $controller;
 
 	/**
-	 * @param Tx_Cicbase_ViewHelpers_Widget_Controller_PaginateController $controller
+	 * @param \CIC\Cicbase\ViewHelpers\Widget\Controller\PaginateController $controller
 	 * @return void
 	 */
-	public function injectController(Tx_Cicbase_ViewHelpers_Widget_Controller_PaginateController $controller) {
+	public function injectController(\CIC\Cicbase\ViewHelpers\Widget\Controller\PaginateController $controller) {
 		$this->controller = $controller;
 	}
 
 	/**
-	 *
-	 * @param Tx_Extbase_Persistence_QueryResultInterface $objects
+	 * @param \TYPO3\CMS\Extbase\Persistence\QueryResultInterface $objects
 	 * @param string $as
 	 * @param array $configuration
 	 * @param array $arguments
 	 * @return string
 	 */
-	public function render(Tx_Extbase_Persistence_QueryResultInterface $objects, $as, array $configuration = array('itemsPerPage' => 10, 'insertAbove' => FALSE, 'insertBelow' => TRUE),$arguments = array()) {
+	public function render(\TYPO3\CMS\Extbase\Persistence\QueryResultInterface $objects, $as, array $configuration = array('itemsPerPage' => 10, 'insertAbove' => FALSE, 'insertBelow' => TRUE, 'maximumNumberOfLinks' => 99), $arguments = array()) {
 		return $this->initiateSubRequest();
 	}
 }

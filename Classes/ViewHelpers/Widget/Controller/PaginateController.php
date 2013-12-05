@@ -1,4 +1,5 @@
 <?php
+namespace CIC\Cicbase\ViewHelpers\Widget\Controller;
 
 /*                                                                        *
  * This script belongs to the FLOW3 package "Cicbase".                      *
@@ -23,36 +24,7 @@
 /**
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License, version 3 or later
  */
-class Tx_Cicbase_ViewHelpers_Widget_Controller_PaginateController extends Tx_Fluid_Core_Widget_AbstractWidgetController {
-
-	/**
-	 * @var array
-	 */
-	protected $configuration = array('itemsPerPage' => 10, 'insertAbove' => FALSE, 'insertBelow' => TRUE);
-
-	/**
-	 * @var Tx_Extbase_Persistence_QueryResultInterface
-	 */
-	protected $objects;
-
-	/**
-	 * @var integer
-	 */
-	protected $currentPage = 1;
-
-	/**
-	 * @var integer
-	 */
-	protected $numberOfPages = 1;
-
-	/**
-	 * @return void
-	 */
-	public function initializeAction() {
-		$this->objects = $this->widgetConfiguration['objects'];
-		$this->configuration = t3lib_div::array_merge_recursive_overrule($this->configuration, $this->widgetConfiguration['configuration'], TRUE);
-		$this->numberOfPages = ceil(count($this->objects) / (integer)$this->configuration['itemsPerPage']);
-	}
+class PaginateController extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\Controller\PaginateController {
 
 	/**
 	 * @param integer $currentPage
