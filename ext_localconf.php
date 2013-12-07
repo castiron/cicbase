@@ -14,8 +14,8 @@ if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations
     $TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['cicbase_cache'] = array();
 }
 
-if (t3lib_div::compat_version('4.6')) {
-	Tx_Extbase_Utility_Extension::registerTypeConverter('Tx_Cicbase_Property_TypeConverter_File');
+if (t3lib_div::compat_version('6')) {
+	Tx_Extbase_Utility_Extension::registerTypeConverter('CIC\Cicbase\Property\TypeConverter\FileReferenceConverter');
 }
 
 ?>

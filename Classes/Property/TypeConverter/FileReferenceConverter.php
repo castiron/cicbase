@@ -1,6 +1,7 @@
 <?php
+namespace CIC\Cicbase\Property\TypeConverter;
 
-class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeConverter_PersistentObjectConverter {
+class FileReferenceConverter extends \TYPO3\CMS\Extbase\Property\TypeConverter\PersistentObjectConverter {
 
 	/**
 	 * The source types this converter can convert.
@@ -16,7 +17,7 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 	 * @var string
 	 * @api
 	 */
-	protected $targetType = 'Tx_Cicbase_Domain_Model_File';
+	protected $targetType = '\TYPO3\CMS\Extbase\Domain\Model\FileReference';
 
 	/**
 	 * The priority for this converter.
@@ -27,17 +28,32 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 	protected $priority = 2;
 
 	/**
-	 * @var Tx_Cicbase_Factory_FileFactory
+	 * @var \TYPO3\CMS\Core\Resource\ResourceFactory
+	 * @inject
 	 */
 	protected $fileFactory;
 
 	/**
-	 * @var Tx_Cicbase_Domain_Repository_FileRepository
+	 * @var \TYPO3\CMS\Core\Resource\FileRepository
+	 * @inject
 	 */
 	protected $fileRepository;
 
 	/**
-	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
+	 * @var \TYPO3\CMS\Core\Resource\StorageRepository
+	 * @inject
+	 */
+	protected $folderRepository;
+
+	/**
+	 * @var \TYPO3\CMS\Core\Utility\File\BasicFileUtility
+	 * @inject
+	 */
+	protected $fileUtility;
+
+
+	/**
+	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
 
@@ -45,29 +61,9 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager
 	 * @return void
 	 */
-	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
+	public function injectConfigurationManager(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
-		$this->settings = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
-	}
-
-	/**
-	 * inject the fileRepository
-	 *
-	 * @param Tx_Cicbase_Domain_Repository_FileRepository fileRepository
-	 * @return void
-	 */
-	public function injectFileRepository(Tx_Cicbase_Domain_Repository_FileRepository $fileRepository) {
-		$this->fileRepository = $fileRepository;
-	}
-
-	/**
-	 * inject the documentFactory
-	 *
-	 * @param Tx_Cicbase_Factory_FileFactory documentFactory
-	 * @return void
-	 */
-	public function injectFileFactory(Tx_Cicbase_Factory_FileFactory $documentFactory) {
-		$this->fileFactory = $documentFactory;
+		$this->settings = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
 	}
 
 	/**
@@ -106,11 +102,44 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 	 * @param string $targetType
 	 * @param array $convertedChildProperties
 	 * @param null|\TYPO3\CMS\Extbase\Property\PropertyMappingConfigurationInterface $configuration
-	 * @return null|object|Tx_Cicbase_Domain_Model_File|Tx_Extbase_Error_Error|\TYPO3\CMS\Extbase\Error\Error
+	 * @return null|object|\TYPO3\CMS\Extbase\Domain\Model\FileReference|\TYPO3\CMS\Extbase\Error\Error
 	 * @throws Tx_Extbase_Configuration_Exception
 	 */
 	public function convertFrom($source, $targetType, array $convertedChildProperties = array(), \TYPO3\CMS\Extbase\Property\PropertyMappingConfigurationInterface $configuration = NULL) {
-		$propertyPath = $configuration->getConfigurationValue('Tx_Cicbase_Property_TypeConverter_File', 'propertyPath');
+
+		# Determine where we're going to save this file. Sorted by date.
+		$relFolderPath = 'cicbase/uploads/'.date('Y').'/'.date('n').'/'.date('j');
+		$absFolderPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName(PATH_site."fileadmin/$relFolderPath");
+
+		# Get a FolderObject whether we need to create it or not
+		if(!is_dir($absFolderPath)) {
+			\TYPO3\CMS\Core\Utility\GeneralUtility::mkdir_deep(PATH_site."fileadmin/$relFolderPath");
+			$storage = $this->folderRepository->findByUid(1);
+			$folder = $this->fileFactory->createFolderObject($storage, $relFolderPath, 'upload_folder');
+		} else {
+			$folder = $this->fileFactory->getFolderObjectFromCombinedIdentifier("1:$relFolderPath");
+		}
+
+		# Use the file hash as the name of the file
+		$hash = md5_file($source['tmp_name']);
+		$source['name'] = $hash;
+
+		# Create the FileObject by adding the uploaded file to the FolderObject.
+		$file = $folder->addUploadedFile($source, 'replace');
+
+		# Build a FileReference object using the FileObject
+		$ref = $this->fileFactory->createFileReferenceObject(array(
+			'uid_local' => $file->getUid(),
+		));
+
+		# Convert the Core FileReference we made to an ExtBase FileReference
+		$extbaseRef = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Domain\Model\FileReference');
+		$extbaseRef->setOriginalResource($ref);
+		return $extbaseRef;
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// OLD CODE:
+
 		if(!$propertyPath) {
 			$propertyPath = 'file';
 			$key = '';
