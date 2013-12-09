@@ -147,8 +147,9 @@ class ChooseViewHelper extends AbstractFormFieldViewHelper {
 							throw new \TYPO3\CMS\Fluid\Core\ViewHelper\Exception('Identifying value for object of class "' . get_class($value) . '" was an object.' , 1247827428);
 						}
 					}
-				} elseif ($this->persistenceManager->getBackend()->getIdentifierByObject($value) !== NULL) {
-					$key = $this->persistenceManager->getBackend()->getIdentifierByObject($value);
+					// TODO: use $this->persistenceManager->isNewObject() once it is implemented
+				} elseif ($this->persistenceManager->getIdentifierByObject($value) !== NULL) {
+					$key = $this->persistenceManager->getIdentifierByObject($value);
 				} elseif (method_exists($value, '__toString')) {
 					$key = (string)$value;
 				} else {
