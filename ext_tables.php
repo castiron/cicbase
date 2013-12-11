@@ -18,9 +18,9 @@ if (TYPO3_MODE == 'BE') {
 
 t3lib_extMgm::addLLrefForTCAdescr('tx_cicbase_domain_model_file', 'EXT:cicbase/Resources/Private/Language/locallang_csh_tx_cicbase_domain_model_file.xml');
 t3lib_extMgm::allowTableOnStandardPages('tx_cicbase_domain_model_file');
-$TCA['tx_cicbase_domain_model_file'] = array(
+$GLOBALS['TCA']['tx_cicbase_domain_model_file'] = array(
 	'ctrl' => array(
-		'title'	=> 'User File Uploads',
+		'title'	=> 'LLL:EXT:cicbase/Resources/Private/Language/locallang_db.xml:tx_cicbase_domain_model_file',
 		'label' => 'title',
 		'tstamp' => 'tstamp',
 		'crdate' => 'crdate',

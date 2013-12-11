@@ -6,7 +6,7 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
-			<label index="tx_cicbase_domain_model_file">File</label>
+			<label index="tx_cicbase_domain_model_file">User File Upload</label>
 			<label index="tx_cicbase_domain_model_file.filename">Filename</label>
 			<label index="tx_cicbase_domain_model_file.originalFilename">Original Filename</label>
 			<label index="tx_cicbase_domain_model_file.path">Path</label>
