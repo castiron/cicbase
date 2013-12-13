@@ -80,14 +80,14 @@ class SolrService {
 	private $numFound = false;
 
 	/**
-	 * Solr The number of results found
+	 * Solr A limit to the number of results.
 	 * @var mixed|integer|boolean
 	 */
-	protected $queryLimit = 0;
+	protected $queryLimit = 999999;
 
 
 	/**
-	 * Solr The number of results found
+	 * Solr An offset, for pagination if you will.
 	 * @var mixed|integer|boolean
 	 */
 	protected $queryOffset = 0;
