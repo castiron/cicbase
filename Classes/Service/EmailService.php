@@ -424,6 +424,58 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	public function getWhitelist() {
 		return $this->whitelist;
 	}
+
+	/**
+	 * This method sends an email without using much of the typoscript configurations.
+	 *
+	 * It only checks the whitelist really and doesn't use template configurations in typoscript.
+	 *
+	 * @param array $recipients recipient of the email in the format array('recipient@domain.tld' => 'Recipient Name')
+	 * @param array $sender sender of the email in the format array('sender@domain.tld' => 'Sender Name')
+	 * @param string $subject subject of the email
+	 * @param string $templateName template name (UpperCamelCase)
+	 * @param array $templateVariables variables to be passed to the Fluid view
+	 * @param array $attachments An array of Swift_Attachment instances
+	 * @return boolean TRUE on success, otherwise false
+	 * @deprecated For all new T3 6.x extensions, you should not use this method anymore.
+	 */
+	public function sendTemplateEmail(array $recipients, array $sender, $subject, $templateName, array $templateVariables = null, array $attachments = null) {
+
+		$recipients = $this->cleanRecipients($recipients);
+		$sender = $this->cleanSender($sender);
+
+		/** @var \TYPO3\CMS\Fluid\View\StandaloneView $emailView */
+		$emailView = $this->objectManager->get('TYPO3\CMS\Fluid\View\StandaloneView');
+		$emailView->setFormat('html');
+		$extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
+		$templateRootPath = GeneralUtility::getFileAbsFileName($extbaseFrameworkConfiguration['view']['templateRootPath']);
+		$templatePathAndFilename = $templateRootPath . '/Email/' . $templateName;
+		$emailView->setTemplatePathAndFilename($templatePathAndFilename);
+		if($templateVariables) {
+			$emailView->assignMultiple($templateVariables);
+		}
+		$emailBody = $emailView->render();
+
+		$message = GeneralUtility::makeInstance('TYPO3\CMS\Core\Mail\MailMessage');
+		$message->setTo($recipients)
+			->setFrom($sender)
+			->setSubject($subject);
+
+		foreach($attachments as $att) {
+			$message->attach($att);
+		}
+
+		// Plain text example
+		#$message->setBody($emailBody, 'text/plain');
+
+		// HTML Email
+		$message->setBody($emailBody, 'text/html');
+
+		$message->send();
+
+
+		return $message->isSent();
+	}
 }
 
 
