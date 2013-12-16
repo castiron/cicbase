@@ -1,5 +1,8 @@
 <?php
 namespace CIC\Cicbase\ViewHelpers\Form;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Fluid\Core\ViewHelper\TagBuilder;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -73,7 +76,7 @@ abstract class AbstractFormFieldViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\
 	 * @return string
 	 */
 	protected function createTag($tagName, array $attributes = NULL, $content = '', $forceClosingTag = FALSE) {
-		$tag = new Tx_Fluid_Core_ViewHelper_TagBuilder($tagName, $content);
+		$tag = new TagBuilder($tagName, $content);
 		if ($attributes) $tag->addAttributes($attributes);
 		$tag->forceClosingTag($forceClosingTag);
 		return $tag->render();
@@ -164,7 +167,7 @@ abstract class AbstractFormFieldViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\
 			$code = $error->getCode();
 			$path = "form-$controllerName"."Controller-$property-$code";
 			$key = 'LLL:EXT:'.$extensionName.'/Resources/Private/Language/locallang.xml:'.$path;
-			$message = Tx_Extbase_Utility_Localization::translate($key, $extensionName);
+			$message = LocalizationUtility::translate($key, $extensionName);
 			if(!$message) {
 				$message = $error->getMessage();
 			}
