@@ -30,8 +30,6 @@ return array(
 	'tx_cicbase_scheduler_fieldprovider' => $extensionClassesPath . 'Scheduler/FieldProvider.php',
 	'tx_cicbase_scheduler_task' => $extensionClassesPath . 'Scheduler/Task.php',
 	'tx_cicbase_service_controllersecurityservice' => $extensionClassesPath . 'Service/ControllerSecurityService.php',
-	'tx_cicbase_service_emailservice' => $extensionClassesPath . 'Service/EmailService.php',
-	'tx_cicbase_service_emailserviceinterface' => $extensionClassesPath . 'Service/EmailServiceInterface.php',
 	'tx_cicbase_service_geolocationservice' => $extensionClassesPath . 'Service/GeolocationService.php',
 	'tx_cicbase_service_jsonobjectservice' => $extensionClassesPath . 'Service/JsonObjectService.php',
 	'tx_cicbase_service_yamlparserservice' => $extensionClassesPath . 'Service/YamlParserService.php',
