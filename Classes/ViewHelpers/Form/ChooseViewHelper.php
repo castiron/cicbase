@@ -26,6 +26,7 @@ namespace CIC\Cicbase\ViewHelpers\Form;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
  * A replacement for Fluid's select viewhelper.
@@ -211,26 +212,42 @@ class ChooseViewHelper extends AbstractFormFieldViewHelper {
 	 * @return mixed value string or an array of strings
 	 */
 	protected function getSelectedValue() {
+		if ($this->selectedValue) {
+			return $this->selectedValue;
+		}
+
 		$value = $this->getValue();
 		if (!$this->hasArgument('optionValueField')) {
-			return $value;
-		}
-		if (!is_array($value) && !($value instanceof Iterator)) {
-			if (is_object($value)) {
-				return \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getPropertyPath($value, $this->arguments['optionValueField']);
+
+			# Handle the situation where we might have more than one value here.
+			if($value instanceof ObjectStorage) {
+				$result = array();
+				foreach ($value as $item) {
+					$result[] = $item->getUid();
+				}
 			} else {
-				return $value;
+				$result = $value;
+			}
+		} else {
+			if (!is_array($value) && !($value instanceof Iterator)) {
+				if (is_object($value)) {
+					$result = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getPropertyPath($value, $this->arguments['optionValueField']);
+				} else {
+					$result = $value;
+				}
+			} else {
+				$result = array();
+				foreach($value as $selectedValueElement) {
+					if (is_object($selectedValueElement)) {
+						$result[] = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getPropertyPath($selectedValueElement, $this->arguments['optionValueField']);
+					} else {
+						$result[] = $selectedValueElement;
+					}
+				}
 			}
 		}
-		$selectedValues = array();
-		foreach($value as $selectedValueElement) {
-			if (is_object($selectedValueElement)) {
-				$selectedValues[] = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getPropertyPath($selectedValueElement, $this->arguments['optionValueField']);
-			} else {
-				$selectedValues[] = $selectedValueElement;
-			}
-		}
-		return $selectedValues;
+		$this->selectedValue = $result;
+		return $result;
 	}
 
 	/**
