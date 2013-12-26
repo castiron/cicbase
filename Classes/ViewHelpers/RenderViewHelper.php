@@ -58,7 +58,7 @@ class RenderViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\RenderViewHelper {
 
 		$body = $this->renderChildren();
 
-		if($body) {
+		if(trim($body)) {
 			$arguments[$yield] = new RenderViewHelperStringObject($body);
 		}
 
