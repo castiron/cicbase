@@ -1,35 +1,18 @@
 <?php
-/***************************************************************
- *  Copyright notice
- *
- *  (c) 2012 Zach Davis <zach@castironcoding.com>, Cast Iron Coding
- *  Lucas Thurston <lucas@castironcoding.com>, Cast Iron Coding
- *  Gabe Blair <gabe@castironcoding.com>, Cast Iron Coding
- *  Peter Soots <peter@castironcoding.com>, Cast Iron Coding
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+namespace CIC\Cicbase\Scheduler;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
-abstract class Tx_Cicbase_Scheduler_AbstractTask extends tx_scheduler_Task {
+/**
+ * Scheduler task to execute CommandController commands
+ *
+ * @package cicbase
+ * @subpackage Scheduler
+ */
+class AbstractTask extends \TYPO3\CMS\Extbase\Scheduler\Task {
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManager
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
 	 */
 	protected $objectManager;
 
@@ -39,17 +22,17 @@ abstract class Tx_Cicbase_Scheduler_AbstractTask extends tx_scheduler_Task {
 	protected $settings;
 
 	/**
-	 * @var Tx_Extbase_Persistence_Manager
+	 * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
 	 */
 	protected $persistenceManager;
 
 	/**
-	 * @var Tx_Extbase_Configuration_ConfigurationManager
+	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
 
 	/**
-	 * @var Tx_Extbase_Service_TypoScriptService
+	 * @var \TYPO3\CMS\Extbase\Service\TypoScriptService
 	 */
 	protected $typoscriptService;
 
@@ -57,20 +40,19 @@ abstract class Tx_Cicbase_Scheduler_AbstractTask extends tx_scheduler_Task {
 	/**
 	 * inject the persistenceManager
 	 *
-	 * @param Tx_Extbase_Persistence_Manager persistenceManager
+	 * @param \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager $persistenceManager
 	 * @return void
 	 */
-	public function injectPersistenceManager(Tx_Extbase_Persistence_Manager $persistenceManager) {
+	public function injectPersistenceManager(\TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager $persistenceManager) {
 		$this->persistenceManager = $persistenceManager;
 	}
 
 	/**
 	 * inject the configurationManager
 	 *
-	 * @param Tx_Extbase_Configuration_ConfigurationManager configurationManager
-	 * @return void
+	 * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager
 	 */
-	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManager $configurationManager) {
+	public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
 	}
 
@@ -78,10 +60,10 @@ abstract class Tx_Cicbase_Scheduler_AbstractTask extends tx_scheduler_Task {
 	/**
 	 * inject the typoscriptService
 	 *
-	 * @param Tx_Extbase_Service_TypoScriptService typoscriptService
+	 * @param \TYPO3\CMS\Extbase\Service\TypoScriptService typoscriptService
 	 * @return void
 	 */
-	public function injectTyposcriptService(Tx_Extbase_Service_TypoScriptService $typoscriptService) {
+	public function injectTyposcriptService(\TYPO3\CMS\Extbase\Service\TypoScriptService $typoscriptService) {
 		$this->typoscriptService = $typoscriptService;
 	}
 
@@ -95,13 +77,13 @@ abstract class Tx_Cicbase_Scheduler_AbstractTask extends tx_scheduler_Task {
 	 */
 	protected function initialize($extensionName, $pluginName) {
 		// Get ObjectManager
-		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$this->injectConfigurationManager($this->objectManager->get('Tx_Extbase_Configuration_ConfigurationManager'));
+		$this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+		$this->injectConfigurationManager($this->objectManager->get('TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface'));
 
 		// Configure the object manager
-		$typoScriptSetup = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+		$typoScriptSetup = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 		if (is_array($typoScriptSetup['config.']['tx_extbase.']['objects.'])) {
-			$objectContainer = t3lib_div::makeInstance('Tx_Extbase_Object_Container_Container');
+			$objectContainer = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\Container\Container');
 			foreach ($typoScriptSetup['config.']['tx_extbase.']['objects.'] as $classNameWithDot => $classConfiguration) {
 				if (isset($classConfiguration['className'])) {
 					$originalClassName = rtrim($classNameWithDot, '.');
@@ -111,13 +93,16 @@ abstract class Tx_Cicbase_Scheduler_AbstractTask extends tx_scheduler_Task {
 		}
 
 		// Inject Depencencies
-		$class = new ReflectionClass($this);
+		$class = new \ReflectionClass($this);
 		$methods = $class->getMethods();
 		foreach ($methods as $method) {
 			if (substr_compare($method->name, 'inject', 0, 6) == 0) {
 				$comment = $method->getDocComment();
 				preg_match('#@param ([^\s]+)#', $comment, $matches);
 				$type = $matches[1];
+				if(substr($type, 0, 1) == '\\') {
+					$type = substr($type, 1);
+				}
 				$dependency = $this->objectManager->get($type);
 				$method->invokeArgs($this, array($dependency));
 			}
@@ -126,9 +111,9 @@ abstract class Tx_Cicbase_Scheduler_AbstractTask extends tx_scheduler_Task {
 
 		// Grab the settings array
 		$this->configurationManager->setConfiguration(array('extensionName' => $extensionName, 'pluginName' => $pluginName));
-		$this->settings = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
+		$this->settings = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
 		if(!$this->settings) {
-			$configuration = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+			$configuration = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 			$settings = $configuration['plugin.']['tx_'.strtolower($extensionName).'.']['settings.'];
 			$this->settings = $this->typoscriptService->convertTypoScriptArrayToPlainArray($settings);
 		}
