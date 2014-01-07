@@ -122,7 +122,7 @@ class FileReferenceConverter extends \TYPO3\CMS\Extbase\Property\TypeConverter\P
 
 		# Use the file hash as the name of the file
 		$hash = md5_file($source['tmp_name']);
-		$source['name'] = $hash;
+		$source['name'] = $hash; // TODO Use real extension here
 
 		# Create the FileObject by adding the uploaded file to the FolderObject.
 		$file = $folder->addUploadedFile($source, 'replace');
@@ -130,7 +130,10 @@ class FileReferenceConverter extends \TYPO3\CMS\Extbase\Property\TypeConverter\P
 		# Build a FileReference object using the FileObject
 		$ref = $this->fileFactory->createFileReferenceObject(array(
 			'uid_local' => $file->getUid(),
+			'table_local' => 'sys_file',
 		));
+
+		$this->fileRepository->add($file);
 
 		# Convert the Core FileReference we made to an ExtBase FileReference
 		$extbaseRef = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Domain\Model\FileReference');
