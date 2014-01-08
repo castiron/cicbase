@@ -121,8 +121,7 @@ class FileReferenceConverter extends \TYPO3\CMS\Extbase\Property\TypeConverter\P
 		}
 
 		# Use the file hash as the name of the file
-		$hash = md5_file($source['tmp_name']);
-		$source['name'] = $hash; // TODO Use real extension here
+		$source['name'] = md5_file($source['tmp_name']) . '.' . pathinfo($source['name'], PATHINFO_EXTENSION);
 
 		# Create the FileObject by adding the uploaded file to the FolderObject.
 		$file = $folder->addUploadedFile($source, 'replace');
