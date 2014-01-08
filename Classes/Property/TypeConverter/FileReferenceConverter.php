@@ -133,11 +133,13 @@ class FileReferenceConverter extends \TYPO3\CMS\Extbase\Property\TypeConverter\P
 		));
 
 		$this->fileRepository->add($file);
-
-		# Convert the Core FileReference we made to an ExtBase FileReference
-		$extbaseRef = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Domain\Model\FileReference');
-		$extbaseRef->setOriginalResource($ref);
-		return $extbaseRef;
+		\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($source);
+		$fileRef = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Cicbase_Domain_Model_FileReference');
+		$fileRef->setUidLocal($file->getUid());
+		$fileRef->setTableLocal('sys_file');
+		\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($fileRef);
+#		die();
+		return $fileRef;
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// OLD CODE:

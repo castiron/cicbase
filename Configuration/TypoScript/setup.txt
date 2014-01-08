@@ -19,6 +19,14 @@ config.tx_extbase{
 }
 
 config.tx_extbase.persistence.classes {
+	Tx_Cicbase_Domain_Model_FileReference {
+		mapping {
+			tableName = sys_file_reference
+		}
+	}
+	Tx_Cicbase_Domain_Model_FileReference {
+
+	}
 	Tx_Cicbase_Domain_Model_File {
 		mapping {
 			columns {
