@@ -352,7 +352,7 @@ class SolrService {
 		$query->setFieldList($this->getFieldList());
 
 		if(is_array($this->sorting)) {
-			$sortingDirection = strtolower($this->sorting[1] == 'asc' ? tx_solr_Query::SORT_ASC : tx_solr_Query::SORT_DESC);
+			$sortingDirection = strtolower($this->sorting[1] == 'asc' ? \tx_solr_Query::SORT_ASC : \tx_solr_Query::SORT_DESC);
 			$query->setSorting($this->sorting[0].' '.$sortingDirection);
 		}
 
