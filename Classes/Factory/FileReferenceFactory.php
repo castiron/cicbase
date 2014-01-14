@@ -222,8 +222,6 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 
 		$ref = $fileReference->getOriginalResource();
 		$file = $ref->getOriginalFile();
-
-		$newFileIdentifier = '/' . $relFolderPath . '/' . $file->getName();
 		$fileName = $file->getName();
 
 		$existingFile = $db->exec_SELECTgetSingleRow('uid', 'sys_file', "name = '$fileName' AND identifier NOT LIKE '/_temp_/%' AND deleted = 0");
@@ -350,16 +348,18 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 
 		// Don't delete File objects if there are other references to them
 		// Don't unlink the actual file if there is another file with the same identifier
+		// (which shouldn't happen anyway because we try to re-use files)
 		$refUidsClause = implode(',', $refUids);
+		$identifyingClauses = "$refTable.tablenames = '$tablenames' AND $refTable.fieldname = '$fieldname'";
 		foreach ($filesToDelete as $fileUid => $filePath) {
 			$refCount = $db->exec_SELECTcountRows('uid', $refTable, "$refTable.uid_local = $fileUid AND $refTable.uid NOT IN ($refUidsClause) AND $identifyingClauses");
 			if (!$refCount) {
 				$fileUids[] = $fileUid;
-			}
 
-			$fileCount = $db->exec_SELECTcountRows('uid', $fileTable, "$fileTable.identifier = '$filePath' AND $fileTable.uid != $fileUid");
-			if (!$fileCount) {
-				unlink(PATH_site.'fileadmin/'.$filePath);
+				$fileCount = $db->exec_SELECTcountRows('uid', $fileTable, "$fileTable.identifier = '$filePath' AND $fileTable.uid != $fileUid");
+				if (!$fileCount) {
+					unlink(PATH_site.'fileadmin/'.$filePath);
+				}
 			}
 		}
 
