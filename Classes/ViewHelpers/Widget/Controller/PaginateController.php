@@ -28,6 +28,7 @@ class PaginateController extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\Controller\
 
 	/**
 	 * @param integer $currentPage
+	 * @throws \Exception
 	 * @return void
 	 */
 	public function indexAction($currentPage = 1) {
@@ -41,12 +42,35 @@ class PaginateController extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\Controller\
 
 			// modify query
 		$itemsPerPage = (integer)$this->configuration['itemsPerPage'];
-		$query = $this->objects->getQuery();
-		$query->setLimit($itemsPerPage);
-		if ($this->currentPage > 1) {
-			$query->setOffset((integer)($itemsPerPage * ($this->currentPage - 1)));
+		$offset = $this->currentPage > 1 ? (integer)($itemsPerPage * ($this->currentPage - 1)) : 0;
+
+		if (is_array($this->objects)) {
+
+			$modifiedObjects = array_slice($this->objects, $offset, $itemsPerPage);
+
+		} elseif ($this->objects instanceof \TYPO3\CMS\Extbase\Persistence\QueryResultInterface) {
+
+			$query = $this->objects->getQuery();
+			$statement = $query->getStatement();
+			if ($statement) {
+				$sql = $statement->getStatement();
+				$sql .= " LIMIT $itemsPerPage";
+				if ($offset) {
+					$sql .= " OFFSET $offset";
+				}
+				$query->statement($sql);
+			} else {
+				$query->setLimit($itemsPerPage);
+				if ($offset) {
+					$query->setOffset($offset);
+				}
+			}
+			$modifiedObjects = $query->execute();
+		} else {
+			throw new \Exception("Can't paginate over objects that are not in an array or a QueryResult object.");
 		}
-		$modifiedObjects = $query->execute();
+
+
 
 		$pagination = $this->buildPagination();
 

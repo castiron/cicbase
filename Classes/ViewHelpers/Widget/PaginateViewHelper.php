@@ -38,13 +38,13 @@ class PaginateViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\PaginateVie
 	}
 
 	/**
-	 * @param \TYPO3\CMS\Extbase\Persistence\QueryResultInterface $objects
+	 * @param array|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface $objects
 	 * @param string $as
 	 * @param array $configuration
 	 * @param array $arguments
 	 * @return string
 	 */
-	public function render(\TYPO3\CMS\Extbase\Persistence\QueryResultInterface $objects, $as, array $configuration = array('itemsPerPage' => 10, 'insertAbove' => FALSE, 'insertBelow' => TRUE, 'maximumNumberOfLinks' => 99), $arguments = array()) {
+	public function render($objects, $as, array $configuration = array('itemsPerPage' => 10, 'insertAbove' => FALSE, 'insertBelow' => TRUE, 'maximumNumberOfLinks' => 99), $arguments = array()) {
 		return $this->initiateSubRequest();
 	}
 }
