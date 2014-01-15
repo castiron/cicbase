@@ -251,13 +251,16 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param string $key
 	 * @throws \Exception
 	 */
-	public function saveAll(\TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object, $fieldname, \Iterator $fileReferences, $key = '') {
+	public function saveAll(\TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface $object, $fieldname, \TYPO3\CMS\Extbase\Persistence\ObjectStorage $fileReferences, $key = '') {
 
 		$someSavedAlready = FALSE;
+		$savableReferences = array();
 		foreach ($fileReferences as $ref) {
 			if (!$ref instanceof FileReference) {
-				throw new \Exception("FileReferenceFactory cannot save all. There was an element in the list that wasn't a FileReference object.");
+				$fileReferences->detach($ref);
+				continue;
 			}
+			$savableReferences[] = $ref;
 			$uid = $ref->getUid();
 			if ($uid) {
 				$someSavedAlready = TRUE;
@@ -268,7 +271,7 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 
 		// This is a new $object, unlikely to have any existing FileReferences for this field.
 		if (!$object->getUid() || !$someSavedAlready) {
-			foreach ($fileReferences as $ref) {
+			foreach ($savableReferences as $ref) {
 				$this->save($ref, $key);
 			}
 			return;
@@ -278,7 +281,7 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 		$this->removeFileReferences($object->getUid(), $tablenames, $fieldname, $keepers);
 
 		// Save any new ones
-		foreach($fileReferences as $ref) {
+		foreach($savableReferences as $ref) {
 			$this->save($ref, $key);
 		}
 	}

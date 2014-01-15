@@ -16,11 +16,15 @@ use CIC\Cicbase\Domain\Model\FileReference;
  *
  * plugin.tx_ext.settings.files {
  *   file { # default propertyPath
- *     # ...
- *   }
- *   partner_image {
  *     maxSize = 20971520
  *     allowedMimes {
+ *       # ...
+ *     }
+ *   }
+ *
+ *   partner_image < .file
+ *   partner_image {
+ *     allowedMimes { # overriding
  *       bmp = image/bmp
  *       gif = image/gif
  *       jpeg = image/jpeg,image/jpg
@@ -28,12 +32,35 @@ use CIC\Cicbase\Domain\Model\FileReference;
  *       png = image/png
  *     }
  *   }
- *   partner_documents {
+ *
+ *   partner_documents_0 < .file
+ *   partner_documents_1 < .file
+ *   partner_documents_2 < .file
+ *   partner_documents_3 < .file
+ *   # ...
+ *
+ *
+ *   # example of turning off validation
+ *   partner_other {
  *     dontValidateMime = 1
  *     dontValidateSize = 1
  *   }
  * }
  *
+ *
+ * TCA setup (required)
+ * ========================
+ *
+ * 'image' => array(
+ *   'exclude' => 0,
+ *   'label' => 'LLL:EXT:orbest/Resources/Private/Language/locallang_db.xlf:tx_orbest_domain_model_partner.image',
+ *   'config' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getFileFieldTCAConfig('image', array('maxitems' => 1, 'foreign_match_fields' => array('fieldname' => 'image', 'tablenames' => 'tx_orbest_domain_model_partner')))
+ * ),
+ * 'documents' => array(
+ *   'exclude' => 0,
+ *   'label' => 'LLL:EXT:orbest/Resources/Private/Language/locallang_db.xlf:tx_orbest_domain_model_partner.documents',
+ *   'config' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getFileFieldTCAConfig('documents', array('foreign_match_fields' => array('fieldname' => 'documents', 'tablenames' => 'tx_orbest_domain_model_partner')))
+ * ),
  *
  *
  * Controller setup (required)
@@ -41,9 +68,15 @@ use CIC\Cicbase\Domain\Model\FileReference;
  *
  * $this->arguments->getArgument('partner')->getPropertyMappingConfiguration()
  *   ->forProperty('image')
- *   ->setTypeConverterOption($fileConverterName, 'additionalReferenceProperties', array('tablenames' => 'tx_orbest_domain_model_partner'))
  *   ->setTypeConverterOption($fileConverterName, 'propertyPath', 'partner.image');
  *
+ * for ($i = 0; $i < 10; ++$i) {
+ *   $this->arguments->getArgument('partner')->getPropertyMappingConfiguration()
+ *     ->forProperty('documents')
+ *     ->allowProperties($i)
+ *     ->forProperty($i)
+ *     ->setTypeConverterOption($fileConverterName, 'propertyPath', "partner.documents.$i");
+ * }
  *
  *
  * Repository setup (required)
@@ -81,7 +114,7 @@ class FileReferenceConverter extends \TYPO3\CMS\Extbase\Property\TypeConverter\P
 	 * @var array<string>
 	 * @api
 	 */
-	protected $sourceTypes = array('array');
+	protected $sourceTypes = array('array','integer');
 
 	/**
 	 * The target type this converter can convert to.
@@ -185,6 +218,9 @@ class FileReferenceConverter extends \TYPO3\CMS\Extbase\Property\TypeConverter\P
 			if($fileReference instanceof FileReference) {
 				return $fileReference;
 			} else {
+				if (isset($source['valueIfEmpty'])) {
+					return $this->fetchObjectFromPersistence($source['valueIfEmpty'], $targetType);
+				}
 				return NULL;
 			}
 		}

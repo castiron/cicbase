@@ -52,24 +52,65 @@ class UploadViewHelper extends AbstractFormFieldViewHelper {
 	/**
 	 * Renders the textfield.
 	 *
+	 * @param boolean $multiple
 	 * @return string
 	 * @api
 	 */
-	public function render() {
+	public function render($multiple = FALSE) {
 		$name = $this->getName();
+		$multipleString = $multiple ? '[]' : '';
 		$allowedFields = array('name', 'type', 'tmp_name', 'error', 'size');
 		foreach ($allowedFields as $fieldName) {
 			$this->registerFieldNameForFormTokenGeneration($name . '[' . $fieldName . ']');
 		}
 
 		$this->tag->addAttribute('type', 'file');
-		$this->tag->addAttribute('name', $name);
-
-		$value = $this->getValue();
+		$this->tag->addAttribute('name', $name . $multipleString);
 
 		$this->setErrorClassAttribute();
+		$uploadField = $this->tag->render();
+		$valueFields = '';
 
-		return $this->tag->render();
+		$value = $this->getValue(FALSE);
+
+		// If we have a value, render hidden input elements to
+		// preserve the value in case nothing is uploaded.
+		// We'll get actual objects on first form load,
+		// but if there are validation errors, we'll only get
+		// form data which we must sort through.
+		if ($value) {
+
+			$values = array();
+
+			if ($multiple) {
+				$i = 1;
+				foreach ($value as $v) {
+					if ($v instanceof \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface) {
+						$values[$v->getUid()] = $name . '[' . $i . ']';
+					} elseif (is_numeric($v)) {
+						$values[$v] = $name . '[' . $i . ']';
+					}
+					++$i;
+				}
+			} elseif ($value instanceof \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface) {
+				$values[$value->getUid()] = $name . '[valueIfEmpty]';
+			} elseif (is_array($value) && isset ($value['valueIfEmpty'])) {
+				$values[$value['valueIfEmpty']] = $name . '[valueIfEmpty]';
+			}
+
+			foreach ($values as $uid => $name) {
+				$attributes = array(
+					'type' => 'hidden',
+					'name' => $name,
+					'value' => $uid,
+				);
+				$valueFields .= $this->createTag('input', $attributes);
+			}
+
+		}
+
+
+		return $valueFields . $uploadField;
 	}
 }
 ?>
