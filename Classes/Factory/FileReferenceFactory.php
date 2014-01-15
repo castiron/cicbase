@@ -93,6 +93,12 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 	protected $settings = array();
 
 	/**
+	 * @var \TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper
+	 * @inject
+	 */
+	protected $dataMapper;
+
+	/**
 	 * Inject the configuration manager
 	 *
 	 * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager
@@ -265,7 +271,6 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 			if ($uid) {
 				$someSavedAlready = TRUE;
 				$keepers[] = $uid;
-				$tablenames = $ref->getTablenames();
 			}
 		}
 
@@ -278,7 +283,8 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 		}
 
 		// Remove FileReferences for this field, unless we're keeping them.
-		$this->removeFileReferences($object->getUid(), $tablenames, $fieldname, $keepers);
+		$datamap = $this->dataMapper->getDataMap(get_class($object));
+		$this->removeFileReferences($object->getUid(), $datamap->getTableName(), $fieldname, $keepers);
 
 		// Save any new ones
 		foreach($savableReferences as $ref) {
@@ -310,7 +316,8 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 		}
 
 		// Remove all FileReferences for this field
-		$this->removeFileReferences($object->getUid(), $fileReference->getTablenames(), $fieldname);
+		$datamap = $this->dataMapper->getDataMap(get_class($object));
+		$this->removeFileReferences($object->getUid(), $datamap->getTableName(), $fieldname);
 
 		return $this->save($fileReference, $propertyPath);
 	}
