@@ -41,7 +41,6 @@ use CIC\Cicbase\Domain\Model\FileReference;
  *
  * $this->arguments->getArgument('partner')->getPropertyMappingConfiguration()
  *   ->forProperty('image')
- *   ->setTypeConverter($fileConverter)
  *   ->setTypeConverterOption($fileConverterName, 'additionalReferenceProperties', array('tablenames' => 'tx_orbest_domain_model_partner'))
  *   ->setTypeConverterOption($fileConverterName, 'propertyPath', 'partner.image');
  *
@@ -90,7 +89,7 @@ class FileReferenceConverter extends \TYPO3\CMS\Extbase\Property\TypeConverter\P
 	 * @var string
 	 * @api
 	 */
-	protected $targetType = '\TYPO3\CMS\Extbase\Domain\Model\FileReference';
+	protected $targetType = 'CIC\Cicbase\Domain\Model\FileReference';
 
 	/**
 	 * The priority for this converter.
