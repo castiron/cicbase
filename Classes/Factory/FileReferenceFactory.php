@@ -238,9 +238,12 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 
 			// Remove the temp file
 			try {
-				$file->delete();
+
 				$id = $file->getIdentifier();
-				$db->exec_DELETEquery('sys_file', "identifier = '$id'");
+				if (strpos($id, $this->storagePath) != 1) { // i.e. "/cicbase/uploads/2014..."
+					$file->delete();
+					$db->exec_DELETEquery('sys_file', "identifier = '$id'");
+				}
 			} catch (\Exception $e) {
 				// It may have been deleted before if another upload of the same file was in progress.
 			}
