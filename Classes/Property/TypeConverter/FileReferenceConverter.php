@@ -98,7 +98,9 @@ use CIC\Cicbase\Domain\Model\FileReference;
  *     $this->fileReferenceFactory->saveOneToOne($partner, 'image', $image, 'partner.image');
  *   }
  *   $documents = $partner->getDocuments();
- *   $this->fileReferenceFactory->saveAll($partner, 'documents', $documents, 'document');
+ *
+ *   // Notice how you leave off the index (not: partner.documents.0, partner.documents.1, ...)
+ *   $this->fileReferenceFactory->saveAll($partner, 'documents', $documents, 'partner.documents');
  * }
  *
  * @package CIC\Cicbase\Property\TypeConverter

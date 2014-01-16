@@ -294,8 +294,13 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 		$this->removeFileReferences($object->getUid(), $datamap->getTableName(), $fieldname, $keepers);
 
 		// Save any new ones
+		$i = 0;
 		foreach($savableReferences as $ref) {
 			$this->save($ref, $key);
+			// We need to do this because, no matter which reference
+			// is loaded, we need to clear the them all. And $this->save()
+			// doesn't do that exactly.
+			$this->limbo->clearHeld($key.'.'.$i++);
 		}
 	}
 
