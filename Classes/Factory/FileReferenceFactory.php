@@ -164,6 +164,15 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * @param string $propertyPath
+	 * @return \CIC\Cicbase\Domain\Model\FileReference
+	 */
+	public function getHeldFileReference($propertyPath) {
+		return $this->limbo->getHeld($propertyPath);
+	}
+
+
+	/**
+	 * @param string $propertyPath
 	 * @param null $additionalReferenceProperties
 	 * @return \CIC\Cicbase\Domain\Model\FileReference
 	 */
@@ -235,6 +244,9 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 
 			// Update the file reference to use the existing file
 			$fileReference->setUidLocal($existingFile['uid']);
+			$fileReferenceData = $fileReference->toArray();
+			$coreReference = new \TYPO3\CMS\Core\Resource\FileReference($fileReferenceData);
+			$fileReference->setOriginalResource($coreReference);
 
 			// Remove the temp file
 			try {

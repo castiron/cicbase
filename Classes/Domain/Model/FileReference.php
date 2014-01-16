@@ -77,6 +77,16 @@ class FileReference extends \TYPO3\CMS\Extbase\Domain\Model\FileReference implem
 		}
 	}
 
+	public function toArray() {
+		return array(
+			'table_local' => $this->getTableLocal(),
+			'uid_local' => $this->getUidLocal(),
+			'tablenames' => $this->getTablenames(),
+			'title' => $this->getTitle(),
+			'description' => $this->getDescription(),
+		);
+	}
+
 	/**
 	 * @param string $tableLocal
 	 */
