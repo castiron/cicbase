@@ -569,16 +569,31 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * @param $uploadedFileData
-	 * @param $allowedTypes
+	 * @param $allowedMimes
 	 * @return null
+	 * @throws \Exception
 	 */
-	protected function validateType($uploadedFileData,$allowedTypes) {
+	protected function validateType($uploadedFileData, $allowedMimes) {
+		$filePath = $uploadedFileData['tmp_name'];
 		$pathInfo = pathinfo($uploadedFileData['name']);
 		$extension = $pathInfo['extension'];
-		$allowedMimes = GeneralUtility::trimExplode(',',$allowedTypes[$extension]);
-		if(in_array($uploadedFileData['type'],$allowedMimes)) {
-			return NULL;
-		} else {
+		$valid = FALSE;
+		if (!is_array($allowedMimes)) {
+			throw new \Exception("Can't validate file allowed mime types. Must be an array like array(ext => 'mime/type', ...).");
+		}
+		if (function_exists('finfo_file')) {
+			$finfo = finfo_open(FILEINFO_MIME_TYPE);
+			$mime = finfo_file($finfo, $filePath);
+			finfo_close($finfo);
+			$valid = in_array($mime, $allowedMimes);
+		} elseif (function_exists('mime_content_type')) {
+			$mime = mime_content_type($uploadedFileData['tmp_name']);
+			$valid = in_array($mime, $allowedMimes);
+		} elseif (isset($allowedMimes[$extension])) {
+			$valid = TRUE;
+		}
+
+		if (!$valid) {
 			$this->addError('Invalid mime type: '.$uploadedFileData['type'], 1336597086);
 		}
 	}
