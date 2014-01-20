@@ -581,16 +581,20 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 		if (!is_array($allowedMimes)) {
 			throw new \Exception("Can't validate file allowed mime types. Must be an array like array(ext => 'mime/type', ...).");
 		}
-		if (function_exists('finfo_file')) {
-			$finfo = finfo_open(FILEINFO_MIME_TYPE);
-			$mime = finfo_file($finfo, $filePath);
-			finfo_close($finfo);
-			$valid = in_array($mime, $allowedMimes);
-		} elseif (function_exists('mime_content_type')) {
-			$mime = mime_content_type($uploadedFileData['tmp_name']);
-			$valid = in_array($mime, $allowedMimes);
-		} elseif (isset($allowedMimes[$extension])) {
-			$valid = TRUE;
+		if (isset($allowedMimes[$extension])) {
+			$parsedAllowedMimes = GeneralUtility::trimExplode(',', $allowedMimes[$extension]);
+			if (function_exists('finfo_file')) {
+				$finfo = finfo_open(FILEINFO_MIME_TYPE);
+				$mime = finfo_file($finfo, $filePath);
+				finfo_close($finfo);
+				$valid = in_array($mime, $parsedAllowedMimes);
+			} elseif (function_exists('mime_content_type')) {
+				$mime = mime_content_type($uploadedFileData['tmp_name']);
+				$valid = in_array($mime, $parsedAllowedMimes);
+			} else {
+				// At least the extension is permitted, but no real check is done.
+				$valid = TRUE;
+			}
 		}
 
 		if (!$valid) {
