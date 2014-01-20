@@ -59,6 +59,16 @@ class PaginateController extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\Controller\
 					$sql .= " OFFSET $offset";
 				}
 				$query->statement($sql);
+
+				// Since the query object is using a statement instead of QOM,
+				// we need to manually count the result objects. :( This is because
+				// Typo3DbBackend only supports QOM, and won't utilize the existing
+				// $query->statement value.
+				//
+				// @see Typo3DbBackend->getObjectCountByQuery()
+				//
+				$objectArray = $this->objects->toArray();
+				$this->numberOfPages = ceil(count($objectArray) / (integer) $this->configuration['itemsPerPage']);
 			} else {
 				$query->setLimit($itemsPerPage);
 				if ($offset) {
