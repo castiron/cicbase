@@ -1,4 +1,8 @@
 <?php
+namespace CIC\Cicbase\Persistence;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,7 +30,7 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-class Tx_Cicbase_Persistence_QueryFactory extends Tx_Extbase_Persistence_QueryFactory {
+class QueryFactory extends \TYPO3\CMS\Extbase\Persistence\Generic\QueryFactory {
 
 	/**
 	 * Creates a query object working on the given class name
@@ -41,14 +45,14 @@ class Tx_Cicbase_Persistence_QueryFactory extends Tx_Extbase_Persistence_QueryFa
 	 * @return Tx_Extbase_Persistence_QueryInterface
 	 */
 	public function create($className) {
-		$query = $this->objectManager->create('Tx_Extbase_Persistence_QueryInterface', $className);
-		$querySettings = $this->objectManager->create('Tx_Extbase_Persistence_QuerySettingsInterface');
-		$frameworkConfiguration = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
+		$query = $this->objectManager->create('TYPO3\CMS\Extbase\Persistence\QueryInterface', $className);
+		$querySettings = $this->objectManager->create('TYPO3\CMS\Extbase\Persistence\Generic\QuerySettingsInterface');
+		$frameworkConfiguration = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
 		$classes = $frameworkConfiguration['persistence']['classes'];
 		if(isset($classes[$className]) && !empty($classes[$className]['storagePid'])) {
-			$storagePids = t3lib_div::intExplode(',', $classes[$className]['storagePid']);
+			$storagePids = GeneralUtility::intExplode(',', $classes[$className]['storagePid']);
 		} else {
-			$storagePids = t3lib_div::intExplode(',', $frameworkConfiguration['persistence']['storagePid']);
+			$storagePids = GeneralUtility::intExplode(',', $frameworkConfiguration['persistence']['storagePid']);
 		}
 		$querySettings->setStoragePageIds($storagePids);
 		$query->setQuerySettings($querySettings);

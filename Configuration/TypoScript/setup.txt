@@ -9,11 +9,11 @@ tx_cicbase_pi1 {
 
 config.tx_extbase{
 	objects {
-		Tx_Extbase_Persistence_QueryFactory {
-			className = Tx_Cicbase_Persistence_QueryFactory
+		TYPO3\CMS\Extbase\Persistence\Generic\QueryFactory {
+			className = CIC\Cicbase\Persistence\QueryFactory
 		}
-		Tx_Extbase_Persistence_QueryFactoryInterface {
-			className = Tx_Cicbase_Persistence_QueryFactory
+		TYPO3\CMS\Extbase\Persistence\Generic\QueryFactoryInterface {
+			className = CIC\Cicbase\Persistence\QueryFactory
 		}
 	}
 }
