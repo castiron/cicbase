@@ -6,10 +6,10 @@ if (!defined ('TYPO3_MODE')) {
 $TCA['tx_cicbase_domain_model_file'] = array(
 	'ctrl' => $TCA['tx_cicbase_domain_model_file']['ctrl'],
 	'interface' => array(
-		'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, title, description, filename, original_filename, path, awsbucket, mime_type, size, root_directory'
+		'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, title, description, filename, original_filename, path, awsbucket, mime_type, size, root_directory, awslink'
 	),
 	'types' => array(
-		'1' => array('showitem' => 'sys_language_uid;;;;1-1-1, l10n_parent, l10n_diffsource, hidden;;1, title, owner, path, mime_type, filename, original_filename, description, awsbucket, size, root_directory --div--;LLL:EXT:cms/locallang_ttc.xml:tabs.access, starttime, endtime'),
+		'1' => array('showitem' => 'sys_language_uid;;;;1-1-1, l10n_parent, l10n_diffsource, hidden;;1, title, owner, path, mime_type, filename, original_filename, description, awsbucket, awslink, size, root_directory --div--;LLL:EXT:cms/locallang_ttc.xml:tabs.access, starttime, endtime'),
 	),
 	'palettes' => array(
 		'1' => array('showitem' => ''),
@@ -104,6 +104,17 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 						'JSopenParams' => 'height=800,width=500,status=0,menubar=0,scrollbars=1'
 					),
 				),
+			),
+		),
+		# NOTE awslink is not a database column!
+		'awslink' => array(
+			'exclude' => 0,
+			'label' => 'AWS Link',
+			'config' => array(
+				'readOnly' => 1,
+				'type' => 'user',
+				'size' => '30',
+				'userFunc' => 'EXT:cicbase/Classes/Factory/FileFactory.php:Tx_Cicbase_Factory_FileFactory->generateLink',
 			),
 		),
 		'mime_type' => array(
