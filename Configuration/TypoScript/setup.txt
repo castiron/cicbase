@@ -72,23 +72,23 @@ cicbase_mimes {
 	}
 	document {
 		doc = application/msword
-		docx = application/vnd.openxmlformats-officedocument.wordprocessingml.document
+		docx = application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/zip
 		htm = text/html
 		html = text/html
 		mht = message/rfc822
 		numbers = application/x-iwork-numbers-sffnumbers
 		pages = application/x-iwork-pages-sffpages
 		pdf = application/pdf,binary/octet-stream
-		ppt = application/mspowerpoint,application/vnd.ms-powerpoint
-		pptx = application/vnd.openxmlformats-officedocument.presentationml.presentation
+		ppt = application/mspowerpoint,application/vnd.ms-powerpoint,application/vnd.ms-office
+		pptx = application/vnd.openxmlformats-officedocument.presentationml.presentation,application/zip
 		pub = application/x-mspublisher
 		rtf = application/rtf
 		tif = image/tiff
 		txt = text/plain
 		wpd = application/wordperfect
-		wps = application/vnd.ms-works
-		xls = application/excel,application/vnd.ms-excel
-		xlsx = application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+		wps = application/vnd.ms-works,application/vnd.ms-office
+		xls = application/excel,application/vnd.ms-excel,application/vnd.ms-office
+		xlsx = application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/zip
 		xml = text/xml
 		zip = application/x-compressed
 	}
@@ -99,23 +99,23 @@ cicbase_mimes {
 		jpg = image/jpeg,image/jpg
 		png = image/png
 		doc = application/msword
-		docx = application/vnd.openxmlformats-officedocument.wordprocessingml.document
+		docx = application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/zip
 		htm = text/html
 		html = text/html
 		mht = message/rfc822
 		numbers = application/x-iwork-numbers-sffnumbers
 		pages = application/x-iwork-pages-sffpages
 		pdf = application/pdf,binary/octet-stream
-		ppt = application/mspowerpoint,application/vnd.ms-powerpoint
-		pptx = application/vnd.openxmlformats-officedocument.presentationml.presentation
+		ppt = application/mspowerpoint,application/vnd.ms-powerpoint,application/vnd.ms-office
+		pptx = application/vnd.openxmlformats-officedocument.presentationml.presentation,application/zip
 		pub = application/x-mspublisher
 		rtf = application/rtf
 		tif = image/tiff
 		txt = text/plain
 		wpd = application/wordperfect
-		wps = application/vnd.ms-works
-		xls = application/excel,application/vnd.ms-excel
-		xlsx = application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+		wps = application/vnd.ms-works,application/vnd.ms-office
+		xls = application/excel,application/vnd.ms-excel,application/vnd.ms-office
+		xlsx = application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/zip
 		xml = text/xml
 		zip = application/x-compressed
 	}
