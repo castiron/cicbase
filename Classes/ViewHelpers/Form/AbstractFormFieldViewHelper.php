@@ -143,6 +143,11 @@ abstract class AbstractFormFieldViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\
 			$property = str_replace('[]', '', $name);
 		}
 
+		// For multiple uploads, the error is always the first property error.
+		if ($this instanceof \CIC\Cicbase\ViewHelpers\Form\UploadViewHelper && $this->arguments['multiple']) {
+			$property .= '.0';
+		}
+
 		$controllerName = lcfirst($this->controllerContext->getRequest()->getControllerName());
 		$extensionName = lcfirst($this->controllerContext->getRequest()->getControllerExtensionName());
 
