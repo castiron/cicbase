@@ -1,26 +1,36 @@
 <f:if condition="{configuration.insertAbove}">
-	<f:render section="paginator" arguments="{pagination: pagination}" />
+	<f:render section="paginator" arguments="{pagination: pagination}"/>
 </f:if>
 
-<f:renderChildren arguments="{contentArguments}" />
+<f:renderChildren arguments="{contentArguments}"/>
 
 <f:if condition="{configuration.insertBelow}">
-	<f:render section="paginator" arguments="{pagination: pagination}" />
+	<f:render section="paginator" arguments="{pagination: pagination}"/>
 </f:if>
 
 <f:section name="paginator">
 	<f:if condition="{pagination.numberOfPages} > 1">
-	<div class="pagination">
-		<div class="pagination">
+		<li class="publication-list--pagination">
 			<ul>
+
 				<f:if condition="{pagination.previousPage}">
 					<f:then>
-						<li><f:widget.link arguments="{currentPage: pagination.previousPage}">&laquo;</f:widget.link></li>
+						<li>
+							<f:widget.link arguments="{currentPage: pagination.previousPage}">Previous</f:widget.link>
+						</li>
 					</f:then>
 					<f:else>
-						<li class="disabled"><span>&laquo;</span></li>
+						<li class="disabled"><span>Previous</span></li>
 					</f:else>
 				</f:if>
+
+				<f:if condition="{pagination.firstPage}">
+					<li><f:widget.link arguments="{currentPage: pagination.firstPage}">{pagination.firstPage}</f:widget.link></li>
+					<f:if condition="{pagination.firstPage} != {pagination.previousPreviousPage}">
+						<li>...</li>
+					</f:if>
+				</f:if>
+
 				<f:if condition="{pagination.nextPage}">
 					<f:then>
 						<!-- do nothing -->
@@ -28,22 +38,37 @@
 					<f:else>
 						<f:if condition="{pagination.previousPreviousPage}">
 							<f:then>
-								<li><f:widget.link arguments="{currentPage: pagination.previousPreviousPage}">{pagination.previousPreviousPage}</f:widget.link></li>
+								<li>
+									<f:widget.link arguments="{currentPage: pagination.previousPreviousPage}">
+										{pagination.previousPreviousPage}
+									</f:widget.link>
+								</li>
 							</f:then>
 							<f:else>
 								<!-- do nothing -->
 							</f:else>
 						</f:if>
 					</f:else>
-					
 				</f:if>
+
 				<f:if condition="{pagination.previousPage}">
-					<li><f:widget.link arguments="{currentPage: pagination.previousPage}">{pagination.previousPage}</f:widget.link></li>
+					<li>
+						<f:widget.link arguments="{currentPage: pagination.previousPage}">
+							{pagination.previousPage}
+						</f:widget.link>
+					</li>
 				</f:if>
+
 				<li class="active"><span>{pagination.current}</span></li>
+
 				<f:if condition="{pagination.nextPage}">
-					<li><f:widget.link arguments="{currentPage: pagination.nextPage}">{pagination.nextPage}</f:widget.link></li>
+					<li>
+						<f:widget.link arguments="{currentPage: pagination.nextPage}">
+							{pagination.nextPage}
+						</f:widget.link>
+					</li>
 				</f:if>
+
 				<f:if condition="{pagination.previousPage}">
 					<f:then>
 						<!-- do nothing -->
@@ -51,7 +76,11 @@
 					<f:else>
 						<f:if condition="{pagination.nextNextPage}">
 							<f:then>
-								<li><f:widget.link arguments="{currentPage: pagination.nextNextPage}">{pagination.nextNextPage}</f:widget.link></li>
+								<li>
+									<f:widget.link arguments="{currentPage: pagination.nextNextPage}">
+										{pagination.nextNextPage}
+									</f:widget.link>
+								</li>
 							</f:then>
 							<f:else>
 								<!-- do nothing -->
@@ -59,16 +88,29 @@
 						</f:if>
 					</f:else>
 				</f:if>
+
+				<f:if condition="{pagination.lastPage}">
+					<f:if condition="{pagination.lastPage} != {pagination.nextNextPage}">
+						<li>...</li>
+					</f:if>
+					<li>
+						<f:widget.link arguments="{currentPage: pagination.lastPage}">
+							{pagination.lastPage}
+						</f:widget.link>
+					</li>
+				</f:if>
+
 				<f:if condition="{pagination.nextPage}">
 					<f:then>
-						<li><f:widget.link arguments="{currentPage: pagination.nextPage}">&raquo;</f:widget.link></li>
+						<li>
+							<f:widget.link arguments="{currentPage: pagination.nextPage}">Next</f:widget.link>
+						</li>
 					</f:then>
 					<f:else>
-						<li class="disabled"><span>&raquo;</span></li>
+						<li class="disabled"><span>Next</span></li>
 					</f:else>
 				</f:if>
 			</ul>
-		</div>
-	</div>
+		</li>
 	</f:if>
 </f:section>

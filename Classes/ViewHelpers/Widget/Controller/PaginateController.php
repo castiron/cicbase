@@ -98,7 +98,16 @@ class PaginateController extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\Controller\
 	}
 
 	/**
-	 * Returns an array with the keys "pages", "current", "numberOfPages", "nextPage" & "previousPage"
+	 * Returns an array with the keys:
+	 * pages - An array of all pages with meta data about each page, not useful really
+	 * current - The number of the current page
+	 * numberOfPages - The total number of pages
+	 * nextPage - The page number of the next page, only provided if it exists
+	 * nextNextPage - The page number of the page after the next page, only provided if exists
+	 * previousPage - The page number of the previous page, if it exists
+	 * previousPreviousPage - The page number of the page before the previous page, if it exists
+	 * lastPage - The page number of the last page, provided if it's not the same nextPage, nextNextPage, or currentPage
+	 * firstPage - The page number of the first page, provided if it's not the same as previousPage, previousPreviousPage, or currentPage
 	 *
 	 * @return array
 	 */
@@ -112,15 +121,30 @@ class PaginateController extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\Controller\
 			'current' => $this->currentPage,
 			'numberOfPages' => $this->numberOfPages,
 		);
+
+		// If there are more pages, then provide nextPage
 		if ($this->currentPage < $this->numberOfPages) {
 			$pagination['nextPage'] = $this->currentPage + 1;
 		}
+		// If there are more pages and beyond the next one
 		if ($this->currentPage < $this->numberOfPages - 1){
 			$pagination['nextNextPage'] = $this->currentPage + 2;
 		}
+		// If we're not on the first page
 		if ($this->currentPage > 1) {
 			$pagination['previousPage'] = $this->currentPage - 1;
-            $pagination['previousPreviousPage'] = $this->currentPage - 2;
+		}
+		// If we're not on the first or second page
+		if ($this->currentPage > 2) {
+			$pagination['previousPreviousPage'] = $this->currentPage - 2;
+		}
+		// If we're not on the last page and the nextPage is not the last page
+		if ($this->numberOfPages != $this->currentPage && $this->numberOfPages != $pagination['nextPage']) {
+			$pagination['lastPage'] = $this->numberOfPages;
+		}
+		// If we're not on the first page and the previousPage is not the first page
+		if ($this->currentPage != 1 && $pagination['previousPage'] != 1) {
+			$pagination['firstPage'] = 1;
 		}
 
 		return $pagination;
