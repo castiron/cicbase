@@ -576,7 +576,7 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 	protected function validateType($uploadedFileData, $allowedMimes) {
 		$filePath = $uploadedFileData['tmp_name'];
 		$pathInfo = pathinfo($uploadedFileData['name']);
-		$extension = $pathInfo['extension'];
+		$extension = strtolower($pathInfo['extension']);
 		$valid = FALSE;
 		if (!is_array($allowedMimes)) {
 			throw new \Exception("Can't validate file allowed mime types. Must be an array like array(ext => 'mime/type', ...).");
