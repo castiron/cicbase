@@ -37,12 +37,12 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController {
 
 	/**
-	 * @var \CIC\Cicregister\Domain\Model\FrontendUser
+	 * @var \TYPO3\CMS\Extbase\Domain\Model\FrontendUser
 	 */
 	private $currentUser = NULL;
 
 	/**
-	 * @var \CIC\Cicregister\Domain\Repository\FrontendUserRepository
+	 * @var \TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository
 	 * @inject
 	 */
 	protected $frontendUserRepository;
@@ -93,7 +93,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
 
 					// For some reason, this is not injected every time
 					if (!$this->frontendUserRepository) {
-						$this->frontendUserRepository = $this->objectManager->get('\CIC\Orbest\Domain\Repository\FrontendUserRepository');
+						$this->frontendUserRepository = $this->objectManager->get('\TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository');
 					}
 
 					$query = $this->frontendUserRepository->createQuery();
