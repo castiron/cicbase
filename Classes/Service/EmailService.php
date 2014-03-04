@@ -83,8 +83,10 @@ class Tx_Cicbase_Service_EmailService implements Tx_Cicbase_Service_EmailService
 			->setFrom($sender)
 			->setSubject($subject);
 
-		foreach($attachments as $att) {
-			$message->attach($att);
+		if ($attachments) {
+			foreach($attachments as $att) {
+				$message->attach($att);
+			}
 		}
 
 		// Plain text example
