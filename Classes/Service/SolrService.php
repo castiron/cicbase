@@ -102,7 +102,7 @@ class Tx_Cicbase_Service_SolrService {
 	 * The filters that are joined by AND to make a complete Query to Solr
 	 * @var array
 	 */
-	private $filters = array();
+	protected $filters = array();
 
 
 	/**
