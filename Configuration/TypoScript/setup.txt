@@ -24,11 +24,11 @@ config.tx_extbase.persistence.classes {
 			tableName = sys_file_reference
 		}
 	}
-	TYPO3\CMS\Extbase\Domain\Model\FileReference {
-		subclasses {
-			CIC\Cicbase\Domain\Model\FileReference = CIC\Cicbase\Domain\Model\FileReference
-		}
-	}
+#	TYPO3\CMS\Extbase\Domain\Model\FileReference {
+#		subclasses {
+#			CIC\Cicbase\Domain\Model\FileReference = CIC\Cicbase\Domain\Model\FileReference
+#		}
+#	}
 	Tx_Cicbase_Domain_Model_File {
 		mapping {
 			columns {
