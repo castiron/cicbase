@@ -33,16 +33,20 @@ class Tx_Cicbase_ViewHelpers_Fal_ImageViewHelper extends TYPO3\CMS\Fluid\ViewHel
 	 * @param integer $maxWidth maximum width of the image
 	 * @param integer $maxHeight maximum height of the image
 	 * @param boolean $treatIdAsReference given src argument is a sys_file_reference record
+	 * @param boolean $urlOnly Just return the URL of the file
 	 *
 	 * @throws \TYPO3\CMS\Fluid\Core\ViewHelper\Exception
 	 * @return string rendered tag.
 	 */
-	public function render($fileUid = NULL, $width = NULL, $height = NULL, $minWidth = NULL, $minHeight = NULL, $maxWidth = NULL, $maxHeight = NULL, $treatIdAsReference = FALSE) {
+	public function render($fileUid = NULL, $width = NULL, $height = NULL, $minWidth = NULL, $minHeight = NULL, $maxWidth = NULL, $maxHeight = NULL, $treatIdAsReference = FALSE, $urlOnly = FALSE) {
 		$out = '';
 		$fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
 		$file = $fileRepository->findByUid($fileUid);
 		if($file) {
 			$out = parent::render($file->getCombinedIdentifier(), $width, $height, $minWidth, $minHeight, $maxWidth, $maxHeight, $treatIdAsReference);
+		}
+		if ($urlOnly && preg_match('/src="([^"]*)"/', $out, $matches)) {
+			$out = $matches[1];
 		}
 		return $out;
 	}
