@@ -36,16 +36,20 @@ class Tx_Cicbase_ViewHelpers_Fal_ImageReferenceViewHelper extends TYPO3\CMS\Flui
 	 * @param integer $maxWidth maximum width of the image
 	 * @param integer $maxHeight maximum height of the image
 	 * @param boolean $treatIdAsReference given src argument is a sys_file_reference record
+	 * @param boolean $urlOnly Just return the URL of the image
 	 *
 	 * @throws \TYPO3\CMS\Fluid\Core\ViewHelper\Exception
 	 * @return string rendered tag.
 	 */
-	public function render($uid = NULL, $tableName = 'tt_content', $fieldName = 'media', $fieldIndex = 0, $width = NULL, $height = NULL, $minWidth = NULL, $minHeight = NULL, $maxWidth = NULL, $maxHeight = NULL, $treatIdAsReference = FALSE) {
+	public function render($uid = NULL, $tableName = 'tt_content', $fieldName = 'media', $fieldIndex = 0, $width = NULL, $height = NULL, $minWidth = NULL, $minHeight = NULL, $maxWidth = NULL, $maxHeight = NULL, $treatIdAsReference = FALSE, $urlOnly = FALSE) {
 		$out = '';
 		$fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
 		$file = $fileRepository->findByRelation($tableName, $fieldName, $uid);
 		if($file[$fieldIndex]) {
 			$out = parent::render($file[$fieldIndex]->getCombinedIdentifier(), $width, $height, $minWidth, $minHeight, $maxWidth, $maxHeight, $treatIdAsReference);
+		}
+		if ($urlOnly && preg_match('/src="([^"]*)"/', $out, $matches)) {
+			$out = $matches[1];
 		}
 		return $out;
 	}
