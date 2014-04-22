@@ -1,4 +1,8 @@
 <?php
+namespace CIC\Cicbase\ViewHelpers;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,20 +33,20 @@
  *
  */
 
-class Tx_Cicbase_ViewHelpers_IncludeJavascriptViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class IncludeJavascriptViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
-	 * @var t3lib_PageRenderer
+	 * @var \TYPO3\CMS\Core\Page\PageRenderer
 	 */
 	protected $pageRenderer;
 
 	/**
 	 * Inject the pageRenderer
 	 *
-	 * @param t3lib_PageRenderer pageRenderer
+	 * @param \TYPO3\CMS\Core\Page\PageRenderer pageRenderer
 	 * @return void
 	 */
-	public function injectPageRenderer(t3lib_PageRenderer $pageRenderer) {
+	public function injectPageRenderer(\TYPO3\CMS\Core\Page\PageRenderer $pageRenderer) {
 		$this->pageRenderer = $pageRenderer;
 	}
 
@@ -63,13 +67,12 @@ class Tx_Cicbase_ViewHelpers_IncludeJavascriptViewHelper extends Tx_Fluid_Core_V
 	 * @param string $file The relative path of the resource (relative to Public resource directory of the extension).
 	 */
 	public function render($file = NULL) {
-
 		if(!$this->arguments['extensionName']) {
 			$this->arguments['extensionName'] = $this->controllerContext->getRequest()->getControllerExtensionName();
 		}
 
-		$uri = 'EXT:' . t3lib_div::camelCaseToLowerCaseUnderscored($this->arguments['extensionName']) . '/Resources/Public/' . $file;
-		$uri = t3lib_div::getFileAbsFileName($uri);
+		$uri = 'EXT:' . GeneralUtility::camelCaseToLowerCaseUnderscored($this->arguments['extensionName']) . '/Resources/Public/' . $file;
+		$uri = GeneralUtility::getFileAbsFileName($uri);
 		$uri = substr($uri, strlen(PATH_site));
 		switch ($this->arguments['where']) {
 			case 'footer':
