@@ -104,6 +104,11 @@ class Tx_Cicbase_Service_SolrService {
 	 */
 	protected $filters = array();
 
+	/**
+	 * @var array
+	 */
+	protected $sorting = array();
+
 
 	/**
 	 * Guesses the solr connection configuration (useful if called on page request)
@@ -344,9 +349,20 @@ class Tx_Cicbase_Service_SolrService {
 
 		$query->setFieldList($this->getFieldList());
 
-		if(is_array($this->sorting)) {
-			$sortingDirection = strtolower($this->sorting[1] == 'asc' ? \tx_solr_Query::SORT_ASC : \tx_solr_Query::SORT_DESC);
-			$query->setSorting($this->sorting[0].' '.$sortingDirection);
+		if($this->hasSorting()) {
+			$sorts = array();
+			foreach ($this->sorting as $field => $dir) {
+				if ($dir != tx_solr_Query::SORT_DESC && $dir != tx_solr_Query::SORT_ASC) {
+					throw new Exception('Please use tx_solr_Query constants to specify sort order.');
+				}
+				$sorts[] = "$field ".strtolower($dir);
+			}
+			$query->setSorting(implode(',', $sorts));
+		}
+
+		$solrConfiguration = tx_solr_Util::getSolrConfiguration();
+		if (isset($solrConfiguration['search.']['query.']['filter.']) && is_array($solrConfiguration['search.']['query.']['filter.'])) {
+			$this->setFilters($solrConfiguration['search.']['query.']['filter.']);
 		}
 
 		foreach($this->filters as $filter) {
