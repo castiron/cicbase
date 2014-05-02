@@ -68,7 +68,7 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 			}
 		}
 		if(count($tags)) {
-			$highestKey = array_reduce(array_keys($GLOBALS['TSFE']->pSetup['headerData.']), function ($res, $v, $k) {
+			$highestKey = array_reduce(array_keys($GLOBALS['TSFE']->pSetup['headerData.']), function ($res, $v) {
 				return max($res, intval($v));
 			});
 			$headerDataKey = $highestKey ? (string)($highestKey * 2) : '100';
