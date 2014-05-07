@@ -48,11 +48,6 @@ abstract class Tx_Cicbase_Scheduler_AbstractTask extends tx_scheduler_Task {
 	 */
 	protected $configurationManager;
 
-	/**
-	 * @var Tx_Extbase_Service_TypoScriptService
-	 */
-	protected $typoscriptService;
-
 
 	/**
 	 * inject the persistenceManager
@@ -118,7 +113,9 @@ abstract class Tx_Cicbase_Scheduler_AbstractTask extends tx_scheduler_Task {
 		if(!$this->settings) {
 			$configuration = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 			$settings = $configuration['plugin.']['tx_'.strtolower($extensionName).'.']['settings.'];
-			$this->settings =  Tx_Extbase_Utility_TypoScript::convertTypoScriptArrayToPlainArray($settings);
+			if ($settings) {
+				$this->settings =  Tx_Extbase_Utility_TypoScript::convertTypoScriptArrayToPlainArray($settings);
+			}
 		}
 
 	}
