@@ -74,18 +74,6 @@ abstract class Tx_Cicbase_Scheduler_AbstractTask extends tx_scheduler_Task {
 		$this->configurationManager = $configurationManager;
 	}
 
-
-//	/**
-//	 * inject the typoscriptService
-//	 *
-//	 * @param Tx_Extbase_Service_TypoScriptService typoscriptService
-//	 * @return void
-//	 */
-//	public function injectTyposcriptService(Tx_Extbase_Service_TypoScriptService $typoscriptService) {
-//		$this->typoscriptService = $typoscriptService;
-//	}
-
-
 	/**
 	 * A function for injecting dependencies. Should be called first
 	 * thing within the overridden 'execute' method.
@@ -125,13 +113,13 @@ abstract class Tx_Cicbase_Scheduler_AbstractTask extends tx_scheduler_Task {
 
 
 //		// Grab the settings array
-//		$this->configurationManager->setConfiguration(array('extensionName' => $extensionName, 'pluginName' => $pluginName));
-//		$this->settings = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
-//		if(!$this->settings) {
-//			$configuration = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-//			$settings = $configuration['plugin.']['tx_'.strtolower($extensionName).'.']['settings.'];
-//			$this->settings = $this->typoscriptService->convertTypoScriptArrayToPlainArray($settings);
-//		}
+		$this->configurationManager->setConfiguration(array('extensionName' => $extensionName, 'pluginName' => $pluginName));
+		$this->settings = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
+		if(!$this->settings) {
+			$configuration = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+			$settings = $configuration['plugin.']['tx_'.strtolower($extensionName).'.']['settings.'];
+			$this->settings =  Tx_Extbase_Utility_TypoScript::convertTypoScriptArrayToPlainArray($settings);
+		}
 
 	}
 }
