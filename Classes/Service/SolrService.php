@@ -360,9 +360,16 @@ class Tx_Cicbase_Service_SolrService {
 			$query->setSorting(implode(',', $sorts));
 		}
 
+		// Get default filters from the SOLR search configuration
 		$solrConfiguration = tx_solr_Util::getSolrConfiguration();
 		if (isset($solrConfiguration['search.']['query.']['filter.']) && is_array($solrConfiguration['search.']['query.']['filter.'])) {
-			$this->setFilters($solrConfiguration['search.']['query.']['filter.']);
+			$defaultFilters = array();
+			foreach ($solrConfiguration['search.']['query.']['filter.'] as $searchFilter) {
+				$parts = explode(':', $searchFilter);
+				$defaultFilters[$parts[0]] = $parts[1];
+			}
+			// Calling this will trigger any subclasses that may need to make modifications
+			$this->setFilters($defaultFilters);
 		}
 
 		foreach($this->filters as $filter) {
