@@ -223,7 +223,7 @@ class SolrService {
 	 * The query offset
 	 * @var integer
 	 */
-	protected function setQueryOffset($offset) {
+	public function setQueryOffset($offset) {
 		$this->queryOffset = (integer) $offset;
 	}
 
@@ -231,7 +231,7 @@ class SolrService {
 	 * The query offset
 	 * @return integer
 	 */
-	protected function getQueryOffset() {
+	public function getQueryOffset() {
 		return $this->queryOffset;
 	}
 
