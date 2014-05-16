@@ -207,7 +207,7 @@ class SolrService {
 	 * The max number of results to return
 	 * @var integer
 	 */
-	protected function setQueryLimit($limit) {
+	public function setQueryLimit($limit) {
 		$this->queryLimit = (integer) $limit;
 	}
 
@@ -215,7 +215,7 @@ class SolrService {
 	 * The max number of results to return
 	 * @return integer
 	 */
-	protected function getQueryLimit() {
+	public function getQueryLimit() {
 		return $this->queryLimit;
 	}
 
@@ -403,6 +403,11 @@ class SolrService {
 		}
 		return $out;
 	}
+
+    public function debugQuery() {
+        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($this->query);
+
+    }
 
 }
 
