@@ -30,7 +30,7 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  *
  */
-class Tx_Cicbase_Service_SolrService {
+class Tx_Cicbase_Service_SolrService implements t3lib_Singleton {
 	/**
 	 *        @var array
 	 */
