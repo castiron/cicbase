@@ -92,6 +92,11 @@ class SolrService {
 	 */
 	protected $queryOffset = 0;
 
+	/**
+	 * @var mixed|object|boolean
+	 */
+	protected $boostQuery = false;
+
 
 	/**
 	 * The regex for text cleanup
@@ -355,6 +360,9 @@ class SolrService {
 			$sortingDirection = strtolower($this->sorting[1] == 'asc' ? \tx_solr_Query::SORT_ASC : \tx_solr_Query::SORT_DESC);
 			$query->setSorting($this->sorting[0].' '.$sortingDirection);
 		}
+		if($this->boostQuery) {
+			$query->setBoostQuery($this->boostQuery);
+		}
 
 		foreach($this->filters as $filter) {
 			$query->addFilter($filter);
@@ -391,6 +399,22 @@ class SolrService {
 	public function getRecords() {
 		return $this->getResultDocuments();
 	}
+
+
+	/**
+	 * @param bool|mixed|object $boostQuery
+	 */
+	public function setBoostQuery($boostQuery) {
+		$this->boostQuery = $boostQuery;
+	}
+
+	/**
+	 * @return bool|mixed|object
+	 */
+	public function getBoostQuery() {
+		return $this->boostQuery;
+	}
+
 
 	/**
 	 *
