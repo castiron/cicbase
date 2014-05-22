@@ -42,11 +42,15 @@ class Tx_Cicbase_ViewHelpers_Fal_ImageViewHelper extends TYPO3\CMS\Fluid\ViewHel
 		$out = '';
 		$fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
 		$file = $fileRepository->findByUid($fileUid);
-		if($file) {
-			$out = parent::render($file->getCombinedIdentifier(), $width, $height, $minWidth, $minHeight, $maxWidth, $maxHeight, $treatIdAsReference);
-		}
-		if ($urlOnly && preg_match('/src="([^"]*)"/', $out, $matches)) {
-			$out = $matches[1];
+		try {
+			if($file) {
+				$out = parent::render($file->getCombinedIdentifier(), $width, $height, $minWidth, $minHeight, $maxWidth, $maxHeight, $treatIdAsReference);
+			}
+			if ($urlOnly && preg_match('/src="([^"]*)"/', $out, $matches)) {
+				$out = $matches[1];
+			}
+		} catch (Exception $e) {
+			$out = null;
 		}
 		return $out;
 	}
