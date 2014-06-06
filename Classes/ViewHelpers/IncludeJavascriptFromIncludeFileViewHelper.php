@@ -59,7 +59,8 @@ class IncludeJavascriptFromIncludeFileViewHelper extends \TYPO3\CMS\Fluid\Core\V
 		}
 
 		$lines = array();
-		$basePath = $this->getRelativeFromAbsolutePath(pathinfo($filePath)['dirname']);
+		$pathInfo = pathinfo($filePath);
+		$basePath = $this->getRelativeFromAbsolutePath($pathInfo['dirname']);
 		foreach (GeneralUtility::trimExplode(chr(10), $fileContents) as $line) {
 			$file = "$basePath/$line";
 			if (file_exists($file)) {
