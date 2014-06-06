@@ -1,5 +1,5 @@
 <?php
-
+namespace CIC\Cicbase\ViewHelpers;
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
  *                                                                        *
@@ -31,8 +31,9 @@
  * @scope prototype
  */
 
-class Tx_Cicbase_ViewHelpers_TitleViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
 
+
+class TitleViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * @param string $mode Method for adding the new title to the existing one.
