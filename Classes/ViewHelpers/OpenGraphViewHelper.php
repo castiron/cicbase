@@ -27,6 +27,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
+	const IDENTIFIER_TS_KEY = '_openGraphMerge';
+	const DEFAULT_HEADER_DATA_KEY = '100';
+
 	/**
 	 *
 	 */
@@ -41,6 +44,7 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 		$this->registerArgument('locale', 'string', 'Locale');
 		$this->registerArgument('siteName', 'string', 'Site Name');
 		$this->registerArgument('video', 'string', 'Video');
+		$this->registerArgument('merge', 'boolean', 'Try to merge these og items with any previously specified ones (that used this viewhelper)');
 	}
 
 	/**
@@ -61,21 +65,57 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 						}
 						$tags[] = '<meta property="og:' . strtolower($k) . '"' . ' content="' . htmlspecialchars($v) . '" />';
 						break;
+					case 'merge':
+						break;
 					default:
 						$tags[] = '<meta property="og:' . strtolower($k) . '"' . ' content="' . htmlspecialchars($v) . '" />';
-				break;
+						break;
 				}
 			}
 		}
 		if(count($tags)) {
-			$highestKey = array_reduce(array_keys($GLOBALS['TSFE']->pSetup['headerData.']), function ($res, $v) {
-				return max($res, intval($v));
-			});
-			$headerDataKey = $highestKey ? (string)($highestKey * 2) : '100';
+			$headerDataKey = $this->getHeaderDataKey();
 			$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey] = 'TEXT';
-			$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.' ] = array(
+			$existingConf = $GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.' ];
+			if(!$existingConf) {
+				$existingConf = array();
+			}
+			$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.' ] = array_merge($existingConf, array(
 				'value' => implode('', $tags),
-			);
+			));
+			if($this->arguments['merge']) {
+				$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.'][$this::IDENTIFIER_TS_KEY] = $headerDataKey;
+			}
 		}
+	}
+
+	/**
+	 * Gets a header data key, either a brand new, unused one, or the key of the last 'merge' one
+	 *
+	 * @return string
+	 */
+	protected function getHeaderDataKey() {
+		if($this->arguments['merge']) {
+			$key = array_reduce($GLOBALS['TSFE']->pSetup['headerData.'], function ($res, $v) {
+				if(is_array($v) && $v[$this::IDENTIFIER_TS_KEY]) {
+					return $v[$this::IDENTIFIER_TS_KEY];
+				}
+				return $res;
+			}, false);
+		}
+		if(!$key) {
+			$key = $this->getSuperlativeHeaderDataKey();
+		}
+		return $key;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	protected function getSuperlativeHeaderDataKey() {
+		$highestKey = array_reduce(array_keys($GLOBALS['TSFE']->pSetup['headerData.']), function ($res, $v) {
+			return max($res, intval($v));
+		});
+		return $highestKey ? (string)($highestKey * 2) : $this::DEFAULT_HEADER_DATA_KEY;
 	}
 }
