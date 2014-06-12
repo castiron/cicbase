@@ -27,6 +27,13 @@ CREATE TABLE tx_cicbase_zipcodes (
   PRIMARY KEY (zipcode)
 );
 
+
+CREATE TABLE tx_cicbase_migrations (
+  version int(11) unsigned NOT NULL DEFAULT '0',
+  ext_key varchar(255) DEFAULT '' NOT NULL,
+  PRIMARY KEY (version)
+);
+
 CREATE TABLE tx_cicbase_domain_model_file (
   uid int(11) NOT NULL auto_increment,
   pid int(11) DEFAULT '0' NOT NULL,
