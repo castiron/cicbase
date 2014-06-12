@@ -31,7 +31,7 @@ namespace CIC\Cicbase\Service;
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  *
  */
-class SolrService {
+class SolrService implements \t3lib_Singleton {
 	/**
 	 *        @var array
 	 */
@@ -108,7 +108,7 @@ class SolrService {
 	 * The filters that are joined by AND to make a complete Query to Solr
 	 * @var array
 	 */
-	private $filters = array();
+	protected $filters = array();
 
 	/**
 	 * @var TYPO3\CMS\Core\TypoScript\Parser\TypoScriptParser
@@ -116,6 +116,10 @@ class SolrService {
 	 */
 	protected $typoscriptParser;
 
+	/**
+	 * @var array
+	 */
+	protected $sorting = array();
 
 	/**
 	 * Guesses the solr connection configuration (useful if called on page request)
@@ -353,15 +357,41 @@ class SolrService {
 		$solrConnection = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_solr_ConnectionManager')->getConnection();
 		$search = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_solr_Search', $solrConnection);
 		$query = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_solr_Query', $this->getKeywords());
+		$solrConfiguration = \tx_solr_Util::getSolrConfiguration();
 
 		$query->setFieldList($this->getFieldList());
 
-		if(is_array($this->sorting)) {
-			$sortingDirection = strtolower($this->sorting[1] == 'asc' ? \tx_solr_Query::SORT_ASC : \tx_solr_Query::SORT_DESC);
-			$query->setSorting($this->sorting[0].' '.$sortingDirection);
+		if($this->hasSorting()) {
+			$sortArray = $this->sorting;
+
+			// Handle the case where the sorting array is like array('field', 'asc') instead of array('field' => 'asc')
+			if (count($sortArray) == 2 && is_numeric(key($sortArray))) {
+				$sortArray = array($sortArray[0] => $sortArray[1]);
+			}
+
+			$sorts = array();
+			foreach ($sortArray as $field => $dir) {
+				if ($dir != \tx_solr_Query::SORT_DESC && $dir != \tx_solr_Query::SORT_ASC) {
+					$dir = \tx_solr_Query::SORT_ASC; // an implicit default
+				}
+				$sorts[] = "$field ".strtolower($dir);
+			}
+			$query->setSorting(implode(',', $sorts));
 		}
 		if($this->boostQuery) {
 			$query->setBoostQuery($this->boostQuery);
+		}
+
+
+		// Get default filters from the SOLR search configuration
+		if (isset($solrConfiguration['search.']['query.']['filter.']) && is_array($solrConfiguration['search.']['query.']['filter.'])) {
+			$defaultFilters = array();
+			foreach ($solrConfiguration['search.']['query.']['filter.'] as $searchFilter) {
+				$parts = explode(':', $searchFilter);
+				$defaultFilters[$parts[0]] = $parts[1];
+			}
+			// Calling this will trigger any subclasses that may need to make modifications
+			$this->setFilters($defaultFilters);
 		}
 
 		foreach($this->filters as $filter) {

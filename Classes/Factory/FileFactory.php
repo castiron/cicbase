@@ -238,6 +238,29 @@ class FileFactory implements \TYPO3\CMS\Core\SingletonInterface {
 	}
 
 	/**
+	 * A function for rendering the file link in the TYPO3 backend.
+	 *
+	 * @param array $PA
+	 * @param t3lib_TCEforms $t3lib_tceforms
+	 * @return string
+	 */
+	public function generateLink($PA, $t3lib_tceforms) {
+		$row = $PA['row'];
+		$domain = 's3.amazonaws.com';
+		$bucket = $row['awsbucket'];
+		$path = $row['path'];
+		$filename = $row['filename'];
+		$pathAndFilename = $path ? "$path/$filename" : $filename;
+
+		if (!$bucket) {
+			return '<div>There is no link available until the file is saved.</div>';
+		}
+
+		$url = "http://$bucket.$domain/$pathAndFilename";
+		return "<a href=\"$url\" target=\"_blank\" style=\"text-decoration: underline; color: blue;\">$url</a>";
+	}
+
+	/**
 	 * Grabs string values from the locallang.xml file.
 	 *
 	 * @static

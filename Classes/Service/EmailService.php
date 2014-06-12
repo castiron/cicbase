@@ -447,7 +447,7 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 		/** @var \TYPO3\CMS\Fluid\View\StandaloneView $emailView */
 		$emailView = $this->objectManager->get('TYPO3\CMS\Fluid\View\StandaloneView');
 		$emailView->setFormat('html');
-		$extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
+		$extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
 		$templateRootPath = GeneralUtility::getFileAbsFileName($extbaseFrameworkConfiguration['view']['templateRootPath']);
 		$templatePathAndFilename = $templateRootPath . '/Email/' . $templateName;
 		$emailView->setTemplatePathAndFilename($templatePathAndFilename);
@@ -461,8 +461,10 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 			->setFrom($sender)
 			->setSubject($subject);
 
-		foreach($attachments as $att) {
-			$message->attach($att);
+		if ($attachments) {
+			foreach($attachments as $att) {
+				$message->attach($att);
+			}
 		}
 
 		// Plain text example
