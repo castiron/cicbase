@@ -84,7 +84,7 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 				'value' => implode('', $tags),
 			));
 			if($this->arguments['merge']) {
-				$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.'][$this::IDENTIFIER_TS_KEY] = $headerDataKey;
+				$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.'][Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::IDENTIFIER_TS_KEY] = $headerDataKey;
 			}
 		}
 	}
@@ -97,8 +97,8 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	protected function getHeaderDataKey() {
 		if($this->arguments['merge']) {
 			$key = array_reduce($GLOBALS['TSFE']->pSetup['headerData.'], function ($res, $v) {
-				if(is_array($v) && $v[$this::IDENTIFIER_TS_KEY]) {
-					return $v[$this::IDENTIFIER_TS_KEY];
+				if(is_array($v) && $v[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::IDENTIFIER_TS_KEY]) {
+					return $v[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::IDENTIFIER_TS_KEY];
 				}
 				return $res;
 			}, false);
@@ -116,6 +116,6 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 		$highestKey = array_reduce(array_keys($GLOBALS['TSFE']->pSetup['headerData.']), function ($res, $v) {
 			return max($res, intval($v));
 		});
-		return $highestKey ? (string)($highestKey * 2) : $this::DEFAULT_HEADER_DATA_KEY;
+		return $highestKey ? (string)($highestKey * 2) : Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::DEFAULT_HEADER_DATA_KEY;
 	}
 }
