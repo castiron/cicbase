@@ -118,7 +118,11 @@ class MigrationRunner {
 		$migrationObject = $this->objectManager->get($class);
 		try {
 			$migrationObject->run();
-			$this->handleMigrationSuccess($migration, $migrationObject);
+			if($GLOBALS['TYPO3_DB']->sql_error()) {
+				throw new \Exception('SQL Error');
+			} else {
+				$this->handleMigrationSuccess($migration, $migrationObject);
+			}
 		} catch (\Exception $e) {
 			$this->handleMigrationFailure($migration, $migrationObject);
 		}
