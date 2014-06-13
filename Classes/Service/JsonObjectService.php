@@ -60,7 +60,7 @@ class Tx_Cicbase_Service_JsonObjectService implements t3lib_Singleton {
 	public function transform($model) {
 		$tag = microtime();
 		$class = get_class($model);
-		if($class == 'Tx_Extbase_Persistence_ObjectStorage' || $class == 'Tx_Extbase_Persistence_LazyObjectStorage') {
+		if($class == 'TYPO3\CMS\Extbase\Persistence\ObjectStorage' || $class == 'Tx_Extbase_Persistence_ObjectStorage' || $class == 'Tx_Extbase_Persistence_LazyObjectStorage') {
 			$out = array();
 			foreach($model as $subModel) {
 				$out[] = $this->transform($subModel);
@@ -75,7 +75,6 @@ class Tx_Cicbase_Service_JsonObjectService implements t3lib_Singleton {
 				// The Goal here is to be able to expose properties and methods with the JSONExpose annotation.
 				if ($property == 'uid' || array_key_exists('JSONExpose', $methodTags) || $this->reflectionService->isPropertyTaggedWith($class, $property, 'JSONExpose')) {
 					$value = $model->$getMethodName();
-
 					// TODO, not sure about this check for lazy loading. Would be good to write a test for it.
 					if ($value instanceof Tx_Extbase_Persistence_LazyLoadingProxy) {
 						$transformedObject->$property = 'lazy';
