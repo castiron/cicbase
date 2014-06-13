@@ -75,7 +75,6 @@ class JsonObjectService implements \TYPO3\CMS\Core\SingletonInterface {
 				// The Goal here is to be able to expose properties and methods with the JSONExpose annotation.
 				if ($property == 'uid' || array_key_exists('JSONExpose', $methodTags) || $this->reflectionService->isPropertyTaggedWith($class, $property, 'JSONExpose')) {
 					$value = $model->$getMethodName();
-
 					// TODO, not sure about this check for lazy loading. Would be good to write a test for it.
 					if ($value instanceof \TYPO3\CMS\Extbase\Persistence\Generic\LazyLoadingProxy) {
 						$transformedObject->$property = 'lazy';
