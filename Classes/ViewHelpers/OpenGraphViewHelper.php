@@ -84,7 +84,7 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	 * @param $headerDataKey
 	 */
 	protected function markHeaderDataKeyAsMergeable($headerDataKey) {
-		$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.'][self::MERGE_TS_KEY] = $headerDataKey;
+		$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.'][Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::MERGE_TS_KEY] = $headerDataKey;
 	}
 
 	/**
@@ -140,21 +140,21 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	 * @param $n
 	 */
 	protected function setImageCount($n) {
-		$GLOBALS['TSFE']->register[self::REGISTER_KEY]['imageCount'] = $n;
+		$GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['imageCount'] = $n;
 	}
 
 	/**
 	 * @return int
 	 */
 	protected function getImageCount() {
-		return $GLOBALS['TSFE']->register[self::REGISTER_KEY]['imageCount'] ? $GLOBALS['TSFE']->register[self::REGISTER_KEY]['imageCount'] : 0;
+		return $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['imageCount'] ? $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['imageCount'] : 0;
 	}
 
 	/**
 	 *
 	 */
 	protected function canAddImages() {
-		return $this->getImageCount() < self::MAX_IMAGE_COUNT;
+		return $this->getImageCount() < Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::MAX_IMAGE_COUNT;
 	}
 
 	/**
@@ -197,14 +197,14 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	 * @param $data
 	 */
 	protected function stashMergeableTags($data) {
-		$GLOBALS['TSFE']->register[self::REGISTER_KEY]['tags'] = $data;
+		$GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tags'] = $data;
 	}
 
 	/**
 	 *
 	 */
 	protected function getStashedMergeableTags() {
-		return $GLOBALS['TSFE']->register[self::REGISTER_KEY]['tags'] ? $GLOBALS['TSFE']->register[self::REGISTER_KEY]['tags'] : array();
+		return $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tags'] ? $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tags'] : array();
 	}
 
 	/**
@@ -215,8 +215,8 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	protected function getHeaderDataKey() {
 		if($this->arguments['merge']) {
 			$key = array_reduce($GLOBALS['TSFE']->pSetup['headerData.'], function ($res, $v) {
-				if(is_array($v) && $v[self::MERGE_TS_KEY]) {
-					return $v[self::MERGE_TS_KEY];
+				if(is_array($v) && $v[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::MERGE_TS_KEY]) {
+					return $v[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::MERGE_TS_KEY];
 				}
 				return $res;
 			}, false);
@@ -234,6 +234,6 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 		$highestKey = array_reduce(array_keys($GLOBALS['TSFE']->pSetup['headerData.']), function ($res, $v) {
 			return max($res, intval($v));
 		});
-		return $highestKey ? (string)($highestKey * 2) : self::DEFAULT_HEADER_DATA_KEY;
+		return $highestKey ? (string)($highestKey * 2) : Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::DEFAULT_HEADER_DATA_KEY;
 	}
 }
