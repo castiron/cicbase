@@ -172,7 +172,7 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 							$out[$k] = $data[$k];
 							break;
 						case 'concat':
-							$out[$k] = $v . $data[$k];
+							$out[$k] = $data[$k] . $v; // Prepend, because FB linter picks these up in reverse order
 							break;
 					}
 				} else {
