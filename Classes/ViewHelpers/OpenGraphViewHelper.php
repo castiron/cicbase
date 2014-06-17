@@ -27,8 +27,12 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
-	const IDENTIFIER_TS_KEY = '_openGraphMerge';
+	const MERGE_TS_KEY = '_openGraphMerge';
 	const DEFAULT_HEADER_DATA_KEY = '100';
+	const REGISTER_KEY = 'CicOpenGraph';
+	const MAX_IMAGE_COUNT = 3;
+
+	var $currentTagSet = array();
 
 	/**
 	 *
@@ -51,42 +55,156 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	 *
 	 */
 	public function render() {
+		$tags = $this->generateTags();
+		if($this->arguments['merge']) {
+			$tags = $this->mergeWithStashedTags($tags);
+		}
+		if(count($tags)) {
+			$this->updatePageHeaderData($tags);
+		}
+	}
+
+	/**
+	 * @param $tags array
+	 */
+	protected function updatePageHeaderData($tags) {
+		$headerDataKey = $this->getHeaderDataKey();
+
+		if($this->arguments['merge']) {
+			$this->markHeaderDataKeyAsMergeable($headerDataKey);
+		}
+
+		$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey] = 'TEXT';
+		$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.' ] = array(
+			'value' => implode('', $tags),
+		);
+	}
+
+	/**
+	 * @param $headerDataKey
+	 */
+	protected function markHeaderDataKeyAsMergeable($headerDataKey) {
+		$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.'][self::MERGE_TS_KEY] = $headerDataKey;
+	}
+
+	/**
+	 * @param $headerDataKey string
+	 * @return array
+	 */
+	protected function getExistingHeaderDataConf($headerDataKey) {
+		return $GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.' ] ? $GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.' ] : array();
+	}
+
+	/**
+	 * @return array
+	 * TODO: Duck type this thing
+	 */
+	protected function generateTags() {
 		$tags = array();
 		foreach($this->arguments as $k => $v) {
 			if($v) {
 				$k = GeneralUtility::camelCaseToLowerCaseUnderscored($k);
 				switch($k) {
-					case 'image':
-						if(!GeneralUtility::isValidUrl($v)) {
-							$v = GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . $v;
-							if (!GeneralUtility::isValidUrl($v)) {
-								break;
-							}
-						}
-						$tags[] = '<meta property="og:' . strtolower($k) . '"' . ' content="' . htmlspecialchars($v) . '" />';
-						break;
 					case 'merge':
 						break;
+					case 'image':
+						if ($this->canAddImages()) {
+							if(!GeneralUtility::isValidUrl($v)) {
+								$v = GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . $v;
+								if (!GeneralUtility::isValidUrl($v)) {
+									break;
+								}
+							}
+							$tags[$k] = '<meta property="og:' . strtolower($k) . '"' . ' content="' . htmlspecialchars($v) . '" />';
+							$this->increaseImageCount();
+						}
+						break;
 					default:
-						$tags[] = '<meta property="og:' . strtolower($k) . '"' . ' content="' . htmlspecialchars($v) . '" />';
+						$tags[$k] = '<meta property="og:' . strtolower($k) . '"' . ' content="' . htmlspecialchars($v) . '" />';
 						break;
 				}
 			}
 		}
-		if(count($tags)) {
-			$headerDataKey = $this->getHeaderDataKey();
-			$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey] = 'TEXT';
-			$existingConf = $GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.' ];
-			if(!$existingConf) {
-				$existingConf = array();
-			}
-			$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.' ] = array_merge($existingConf, array(
-				'value' => implode('', $tags),
-			));
-			if($this->arguments['merge']) {
-				$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.'][Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::IDENTIFIER_TS_KEY] = $headerDataKey;
+		return $tags;
+	}
+
+	/**
+	 *
+	 */
+	protected function increaseImageCount() {
+		$n = $this->getImageCount();
+		$this->setImageCount($n+1);
+	}
+
+	/**
+	 * @param $n
+	 */
+	protected function setImageCount($n) {
+		$GLOBALS['TSFE']->register[self::REGISTER_KEY]['imageCount'] = $n;
+	}
+
+	/**
+	 * @return int
+	 */
+	protected function getImageCount() {
+		return $GLOBALS['TSFE']->register[self::REGISTER_KEY]['imageCount'] ? $GLOBALS['TSFE']->register[self::REGISTER_KEY]['imageCount'] : 0;
+	}
+
+	/**
+	 *
+	 */
+	protected function canAddImages() {
+		return $this->getImageCount() < self::MAX_IMAGE_COUNT;
+	}
+
+	/**
+	 * @param $data array
+	 * @return array
+	 */
+	protected function mergeWithStashedTags($data) {
+		$out = $data;
+		$existing = $this->getStashedMergeableTags();
+		if(count($existing)) {
+			foreach($existing as $k => $v) {
+				if($data[$k]) {
+					switch($this->getMergeStrategyForField($k)) {
+						default:
+							$out[$k] = $data[$k];
+							break;
+						case 'concat':
+							$out[$k] = $v . $data[$k];
+							break;
+					}
+				} else {
+					$out[$k] = $data[$k];
+				}
 			}
 		}
+		$this->stashMergeableTags($out);
+		return $out;
+	}
+
+	/**
+	 * STUB METHOD.  REWRITE AS NEEDED.
+	 * @param $f
+	 * @return string
+	 */
+	protected function getMergeStrategyForField($f) {
+		return $f === 'image' ? 'concat' : '';
+	}
+
+	/**
+	 * @param $data
+	 */
+	protected function stashMergeableTags($data) {
+		$GLOBALS['TSFE']->register[self::REGISTER_KEY]['tags'] = $data;
+	}
+
+	/**
+	 *
+	 */
+	protected function getStashedMergeableTags() {
+		return $GLOBALS['TSFE']->register[self::REGISTER_KEY]['tags'] ? $GLOBALS['TSFE']->register[self::REGISTER_KEY]['tags'] : array();
 	}
 
 	/**
@@ -97,8 +215,8 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	protected function getHeaderDataKey() {
 		if($this->arguments['merge']) {
 			$key = array_reduce($GLOBALS['TSFE']->pSetup['headerData.'], function ($res, $v) {
-				if(is_array($v) && $v[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::IDENTIFIER_TS_KEY]) {
-					return $v[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::IDENTIFIER_TS_KEY];
+				if(is_array($v) && $v[self::MERGE_TS_KEY]) {
+					return $v[self::MERGE_TS_KEY];
 				}
 				return $res;
 			}, false);
@@ -116,6 +234,6 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 		$highestKey = array_reduce(array_keys($GLOBALS['TSFE']->pSetup['headerData.']), function ($res, $v) {
 			return max($res, intval($v));
 		});
-		return $highestKey ? (string)($highestKey * 2) : Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::DEFAULT_HEADER_DATA_KEY;
+		return $highestKey ? (string)($highestKey * 2) : self::DEFAULT_HEADER_DATA_KEY;
 	}
 }
