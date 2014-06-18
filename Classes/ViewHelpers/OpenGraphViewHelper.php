@@ -16,7 +16,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * Sets various Open Graph tags in <head> of page. NOTE: Doesn't work in non-cached context.
  * TODO: Make this work with non-cached extensions
- * TODO: Ensure duplicates are not added to page? This isn't really a great approach to OpenGraph tags, in that case.  Need a widget or something a little more powerful.
  *
  * @package Cicbase
  * @subpackage ViewHelpers
@@ -32,7 +31,6 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	const REGISTER_KEY = 'CicOpenGraph';
 	const MAX_IMAGE_COUNT = 3;
 
-	var $currentTagSet = array();
 
 	/**
 	 *
@@ -78,6 +76,25 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 		$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.' ] = array(
 			'value' => implode('', $tags),
 		);
+
+		$this->stashHeaderDataKey($headerDataKey);
+	}
+
+	/**
+	 * @param $headerDataKey
+	 */
+	protected function stashHeaderDataKey($headerDataKey) {
+		$keys = $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['usedKeys'] ? $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['usedKeys'] : array();
+		$GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['usedKeys'] = array_merge($keys, array(
+			$headerDataKey => $headerDataKey,
+		));
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function getStashedHeaderDataKeys() {
+		return $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['usedKeys'] ? $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['usedKeys'] : array();
 	}
 
 	/**
@@ -222,7 +239,24 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 			}, false);
 		}
 		if(!$key) {
-			$key = $this->getSuperlativeHeaderDataKey();
+			$key = $this->generateHeaderDataKey();
+		}
+		return $key;
+	}
+
+	/**
+	 * Get a key lower than the lowest one used by this viewhelper.
+	 * This will ensure that the og tags are output in the reverse of
+	 * the order in which they were added.  Facebook appears to pick
+	 * up the last og:image tag first, when rendering share media.
+	 */
+	protected function generateHeaderDataKey() {
+		$key = $this->getSuperlativeHeaderDataKey();
+		$usedKeys = $this->getStashedHeaderDataKeys();
+		sort($usedKeys, SORT_NUMERIC);
+		$lowest = intval(array_shift(array_values($usedKeys)));
+		if($lowest) {
+			$key = $lowest - 1;
 		}
 		return $key;
 	}
