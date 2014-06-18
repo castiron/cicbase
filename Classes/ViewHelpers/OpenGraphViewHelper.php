@@ -54,10 +54,10 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	 */
 	public function render() {
 		$tags = $this->generateTags();
-		if($this->arguments['merge']) {
-			$tags = $this->mergeWithStashedTags($tags);
-		}
 		if(count($tags)) {
+			if($this->arguments['merge']) {
+				$tags = $this->mergeWithStashedTags($tags);
+			}
 			$this->updatePageHeaderData($tags);
 		}
 	}
@@ -69,13 +69,16 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 		$headerDataKey = $this->getHeaderDataKey();
 
 		$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey] = 'TEXT';
-		$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.' ] = array(
-			'value' => implode('', $tags),
-		);
 
 		if($this->arguments['merge']) {
 			$this->markHeaderDataKeyAsMergeable($headerDataKey);
+			$tagSet = $this->getStashedMergeableTags();
+		} else {
+			$tagSet = $tags;
 		}
+		$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.' ] = array(
+			'value' => implode('', $tagSet),
+		);
 
 		$this->stashHeaderDataKey($headerDataKey);
 	}
@@ -131,12 +134,20 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 									break;
 								}
 							}
-							$tags[$k] = '<meta property="og:' . strtolower($k) . '"' . ' content="' . htmlspecialchars($v) . '" />';
-							$this->increaseImageCount($tags[$k]);
+							$temp = '<meta property="og:' . strtolower($k) . '"' . ' content="' . htmlspecialchars($v) . '" />';
+							if (!$this->alreadyUsingTag($temp)) {
+								$this->increaseImageCount();
+								$this->trackTag($temp);
+								$tags[$k] = $temp;
+							}
 						}
 						break;
 					default:
-						$tags[$k] = '<meta property="og:' . strtolower($k) . '"' . ' content="' . htmlspecialchars($v) . '" />';
+						$temp = '<meta property="og:' . strtolower($k) . '"' . ' content="' . htmlspecialchars($v) . '" />';
+						if (!$this->alreadyUsingTag($temp)) {
+							$this->trackTag($temp);
+							$tags[$k] = $temp;
+						}
 						break;
 				}
 			}
@@ -147,16 +158,15 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	/**
 	 *
 	 */
-	protected function increaseImageCount($tag) {
+	protected function increaseImageCount() {
 		$n = $this->getImageCount();
 		$this->setImageCount($n+1);
-		$this->trackImageTag($tag);
 	}
 
 	/**
 	 * @param $tag
 	 */
-	protected function trackImageTag($tag) {
+	protected function trackTag($tag) {
 		$tracked = $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tagHashes'] ? $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tagHashes'] : array();
 		$tracked[] = GeneralUtility::shortMD5($tag);
 		$GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tagHashes'] = $tracked;
@@ -167,7 +177,11 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	 * @return bool
 	 */
 	protected function alreadyUsingTag($tag) {
-		return array_search(\TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5($tag), $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tagHashes']) !== false;
+		if (!$GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tagHashes']) {
+			$GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tagHashes'] = array();
+		}
+		$out = array_search(\TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5($tag), $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tagHashes']) !== false;
+		return $out;
 	}
 
 	/**
@@ -200,13 +214,15 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 		$existing = $this->getStashedMergeableTags();
 		if(count($existing)) {
 			foreach($existing as $k => $v) {
-				if($data[$k] && !$this->alreadyUsingTag($data[$k])) {
+				if($data[$k]) {
 					switch($this->getMergeStrategyForField($k)) {
 						default:
 							$out[$k] = $data[$k];
 							break;
 						case 'concat':
-							$out[$k] = $data[$k] . $v; // Prepend, because FB linter picks these up in reverse order
+							if (!$this->alreadyUsingTag($data[$k])) {
+								$out[$k] = $data[$k] . $v; // Prepend, because FB linter picks these up in reverse order
+							}
 							break;
 					}
 				} else {
@@ -231,7 +247,7 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	 * @param $data
 	 */
 	protected function stashMergeableTags($data) {
-		$GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tags'] = $data;
+		$GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tags'] = array_merge($this->getStashedMergeableTags(),$data);
 	}
 
 	/**
