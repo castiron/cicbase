@@ -16,6 +16,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * Sets various Open Graph tags in <head> of page. NOTE: Doesn't work in non-cached context.
  * TODO: Make this work with non-cached extensions
+ * TODO: Rewrite this whole thing, it's kind of a mess
  *
  * @package Cicbase
  * @subpackage ViewHelpers
@@ -30,7 +31,6 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	const DEFAULT_HEADER_DATA_KEY = '100';
 	const REGISTER_KEY = 'CicOpenGraph';
 	const MAX_IMAGE_COUNT = 3;
-
 
 	/**
 	 *
@@ -68,14 +68,14 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	protected function updatePageHeaderData($tags) {
 		$headerDataKey = $this->getHeaderDataKey();
 
-		if($this->arguments['merge']) {
-			$this->markHeaderDataKeyAsMergeable($headerDataKey);
-		}
-
 		$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey] = 'TEXT';
 		$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.' ] = array(
 			'value' => implode('', $tags),
 		);
+
+		if($this->arguments['merge']) {
+			$this->markHeaderDataKeyAsMergeable($headerDataKey);
+		}
 
 		$this->stashHeaderDataKey($headerDataKey);
 	}
@@ -84,8 +84,7 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	 * @param $headerDataKey
 	 */
 	protected function stashHeaderDataKey($headerDataKey) {
-		$keys = $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['usedKeys'] ? $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['usedKeys'] : array();
-		$GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['usedKeys'] = array_merge($keys, array(
+		$GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['usedKeys'] = array_merge($this->getStashedHeaderDataKeys(), array(
 			$headerDataKey => $headerDataKey,
 		));
 	}
@@ -133,7 +132,7 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 								}
 							}
 							$tags[$k] = '<meta property="og:' . strtolower($k) . '"' . ' content="' . htmlspecialchars($v) . '" />';
-							$this->increaseImageCount();
+							$this->increaseImageCount($tags[$k]);
 						}
 						break;
 					default:
@@ -148,9 +147,27 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	/**
 	 *
 	 */
-	protected function increaseImageCount() {
+	protected function increaseImageCount($tag) {
 		$n = $this->getImageCount();
 		$this->setImageCount($n+1);
+		$this->trackImageTag($tag);
+	}
+
+	/**
+	 * @param $tag
+	 */
+	protected function trackImageTag($tag) {
+		$tracked = $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tagHashes'] ? $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tagHashes'] : array();
+		$tracked[] = GeneralUtility::shortMD5($tag);
+		$GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tagHashes'] = $tracked;
+	}
+
+	/**
+	 * @param $tag
+	 * @return bool
+	 */
+	protected function alreadyUsingTag($tag) {
+		return array_search(\TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5($tag), $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tagHashes']) !== false;
 	}
 
 	/**
@@ -183,7 +200,7 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 		$existing = $this->getStashedMergeableTags();
 		if(count($existing)) {
 			foreach($existing as $k => $v) {
-				if($data[$k]) {
+				if($data[$k] && !$this->alreadyUsingTag($data[$k])) {
 					switch($this->getMergeStrategyForField($k)) {
 						default:
 							$out[$k] = $data[$k];
@@ -245,6 +262,13 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	}
 
 	/**
+	 *
+	 */
+	protected function useReverseOutputOrder() {
+		return true;
+	}
+
+	/**
 	 * Get a key lower than the lowest one used by this viewhelper.
 	 * This will ensure that the og tags are output in the reverse of
 	 * the order in which they were added.  Facebook appears to pick
@@ -252,13 +276,22 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	 */
 	protected function generateHeaderDataKey() {
 		$key = $this->getSuperlativeHeaderDataKey();
-		$usedKeys = $this->getStashedHeaderDataKeys();
-		sort($usedKeys, SORT_NUMERIC);
-		$lowest = intval(array_shift(array_values($usedKeys)));
-		if($lowest) {
-			$key = $lowest - 1;
+		if($this->useReverseOutputOrder()) {
+			$lowest = $this->findLowestKey();
+			if($lowest) {
+				$key = $lowest - 1;
+			}
 		}
 		return $key;
+	}
+
+	/**
+	 * @return int
+	 */
+	protected function findLowestKey() {
+		$usedKeys = $this->getStashedHeaderDataKeys();
+		sort($usedKeys, SORT_NUMERIC);
+		return intval(array_shift(array_values($usedKeys)));
 	}
 
 	/**
