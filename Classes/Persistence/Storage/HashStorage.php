@@ -157,6 +157,17 @@ class HashStorage extends \TYPO3\CMS\Extbase\Persistence\ObjectStorage {
 	}
 
 	/**
+	 * Checks if the storage contains the object provided.
+	 *
+	 * @param Object $object The object to look for.
+	 * @return boolean Returns TRUE if the object is in the storage, FALSE otherwise.
+	 */
+	public function contains($object) {
+		$offset = $this->hash($object);
+		return $this->offsetExists($offset);
+	}
+
+	/**
 	 * Adds an object in the storage, and optionaly associate it to some data.
 	 *
 	 * @param object $object The object to add.
