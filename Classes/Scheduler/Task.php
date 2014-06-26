@@ -1,4 +1,6 @@
 <?php
+namespace CIC\Cicbase\Scheduler;
+
 /***************************************************************
 *  Copyright notice
 *
@@ -29,7 +31,7 @@
  * @package cicbase
  * @subpackage Scheduler
  */
-class Tx_Cicbase_Scheduler_Task extends Tx_Scheduler_Task {
+class Task extends \TYPO3\CMS\Scheduler\Task\AbstractTask {
 
 	/**
 	 * @var string
@@ -47,14 +49,14 @@ class Tx_Cicbase_Scheduler_Task extends Tx_Scheduler_Task {
 	protected $defaults;
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManager
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
 	 */
 	protected $objectManager;
 
 	/**
-	 * @param Tx_Extbase_Object_ObjectManager $objectManager
+	 * @param \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager
 	 */
-	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager) {
+	public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManager $objectManager) {
 		$this->objectManager = $objectManager;
 	}
 
@@ -65,22 +67,24 @@ class Tx_Cicbase_Scheduler_Task extends Tx_Scheduler_Task {
 	 */
 	public function execute() {
 		list ($extensionName, $controllerName, $commandName) = explode(':', $this->commandIdentifier);
-		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
 		$this->injectObjectManager($objectManager);
-		$request = $this->objectManager->create('Tx_Extbase_MVC_CLI_Request');
-		$dispatcher = $this->objectManager->get('Tx_Extbase_MVC_Dispatcher');
-		$response = $this->objectManager->create('Tx_Extbase_MVC_CLI_Response');
+		$request = $this->objectManager->create('TYPO3\CMS\Extbase\Mvc\Cli\Request');
+		$dispatcher = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Dispatcher');
+		$response = $this->objectManager->create('TYPO3\CMS\Extbase\Mvc\Cli\Response');
 		try {
-			$upperCamelCaseExtensionName = t3lib_div::underscoredToUpperCamelCase($extensionName);
-			$upperCamelCaseControllerName = t3lib_div::underscoredToUpperCamelCase($controllerName);
+			$upperCamelCaseExtensionName = \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($extensionName);
+			$upperCamelCaseControllerName = \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($controllerName);
+			// TODO build class name a different way now that we have namespaces
+			// see https://www.pivotaltracker.com/story/show/73980994
 			$controllerObjectName = sprintf('Tx_%s_Command_%sCommandController', $upperCamelCaseExtensionName, $upperCamelCaseControllerName);
 			$request->setControllerCommandName($commandName);
 			$request->setControllerObjectName($controllerObjectName);
 			$request->setArguments((array) $this->arguments);
 			$dispatcher->dispatch($request, $response);
 			return TRUE;
-		} catch (Exception $e) {
-			t3lib_div::sysLog($e->getMessage(), $extensionName, $e->getCode());
+		} catch (\Exception $e) {
+			\TYPO3\CMS\Core\Utility\GeneralUtility::sysLog($e->getMessage(), $extensionName, $e->getCode());
 			return FALSE;
 		}
 	}

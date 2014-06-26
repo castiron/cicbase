@@ -1,5 +1,7 @@
 <?php
 
+namespace CIC\Cicbase\ViewHelpers\Format;
+
 /*                                                                        *
  * This script is backported from the FLOW3 package "TYPO3.Fluid".        *
  *                                                                        *
@@ -40,7 +42,7 @@
  *
  * @api
  */
-class Tx_Cicbase_ViewHelpers_Format_CurrencyViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class CurrencyViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * @param string $currencySign (optional) The currency sign, eg $ or €.

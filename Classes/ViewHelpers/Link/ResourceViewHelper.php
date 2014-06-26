@@ -1,4 +1,7 @@
 <?php
+
+namespace CIC\Cicbase\ViewHelpers\Link;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,7 +29,7 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-class Tx_Cicbase_ViewHelpers_Link_ResourceViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractTagBasedViewHelper {
+class ResourceViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper {
 
 	/**
 	 * @var string
@@ -40,6 +43,7 @@ class Tx_Cicbase_ViewHelpers_Link_ResourceViewHelper extends Tx_Fluid_Core_ViewH
 
 	/**
 	 * @param string $url
+	 * @return string
 	 */
 	public function render($url) {
 		$uriBuilder = $this->controllerContext->getUriBuilder();

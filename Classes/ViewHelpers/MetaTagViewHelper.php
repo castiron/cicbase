@@ -1,5 +1,7 @@
 <?php
 
+namespace CIC\Cicbase\ViewHelpers;
+
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
  *                                                                        *
@@ -25,7 +27,7 @@
  * @scope prototype
  */
 
-class Tx_Cicbase_ViewHelpers_MetaTagViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class MetaTagViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * These are hard-coded here, and refer to typoscript config keys in the COA that is plugin.tx_seobasics
@@ -48,7 +50,7 @@ class Tx_Cicbase_ViewHelpers_MetaTagViewHelper extends Tx_Fluid_Core_ViewHelper_
 		/**
 		 * Check in headerData objects
 		 */
-		$cObj = t3lib_div::makeInstance('tslib_cObj');
+		$cObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer');
 		$cObj->start($GLOBALS['TSFE']->page);
 
 		if(is_array($GLOBALS['TSFE']->pSetup['headerData.'])) {
@@ -81,7 +83,7 @@ class Tx_Cicbase_ViewHelpers_MetaTagViewHelper extends Tx_Fluid_Core_ViewHelper_
 		/**
 		 * Look in seo_basics config and kill it out if it's there
 		 */
-		if(t3lib_extMgm::isLoaded('seo_basics') && $key = $this->seoBasicsConfKeys[$name]) {
+		if(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('seo_basics') && $key = $this->seoBasicsConfKeys[$name]) {
 			unset($GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_seobasics.'][$key]);
 			unset($GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_seobasics.'][$key . '.']);
 		}

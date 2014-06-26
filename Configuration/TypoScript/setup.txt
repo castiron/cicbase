@@ -29,7 +29,7 @@ config.tx_extbase.persistence.classes {
 #			CIC\Cicbase\Domain\Model\FileReference = CIC\Cicbase\Domain\Model\FileReference
 #		}
 #	}
-	Tx_Cicbase_Domain_Model_File {
+	CIC\Cicbase\Domain\Model\File {
 		mapping {
 			columns {
 				crdate.MapOnProperty = crdate
@@ -37,12 +37,12 @@ config.tx_extbase.persistence.classes {
 			}
 		}
 	}
-    Tx_Cicbase_Domain_Model_DigitalAsset {
+    CIC\Cicbase\Domain\Model\DigitalAsset {
 	    mapping {
 		    tableName = tx_dam
 	    }
     }
-    Tx_Cicbase_Domain_Model_State {
+    CIC\Cicbase\Domain\Model\State {
         mapping {
             tableName = static_country_zones
             columns {
@@ -51,7 +51,7 @@ config.tx_extbase.persistence.classes {
             }
         }
     }
-    Tx_Cicbase_Domain_Model_Zip {
+    CIC\Cicbase\Domain\Model\Zip {
         mapping {
             tableName = tx_cicbase_zipcodes
             columns {

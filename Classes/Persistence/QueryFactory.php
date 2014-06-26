@@ -42,7 +42,7 @@ class QueryFactory extends \TYPO3\CMS\Extbase\Persistence\Generic\QueryFactory {
 	 * config.extBase.persistence.classes.CLASSNAME.newRecordStoragePid
 	 *
 	 * @param string $className The class name
-	 * @return Tx_Extbase_Persistence_QueryInterface
+	 * @return \TYPO3\CMS\Extbase\Persistence\QueryInterface
 	 */
 	public function create($className) {
 		$query = $this->objectManager->create('TYPO3\CMS\Extbase\Persistence\QueryInterface', $className);

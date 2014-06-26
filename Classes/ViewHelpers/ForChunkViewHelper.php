@@ -1,5 +1,7 @@
 <?php
 
+namespace CIC\Cicbase\ViewHelpers;
+
 /*                                                                        *
  * This script belongs to the FLOW3 package "Cicbase".                    *
  *                                                                        *
@@ -20,18 +22,19 @@
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
-class Tx_Cicbase_ViewHelpers_ForChunkViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class ForChunkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * Chunks each, iterates through chunks of $each and renders child nodes; this is a modified version of the for viewhelper in fluid
 	 *
-	 * @param array $each The array or Tx_Extbase_Persistence_ObjectStorage to iterated over
+	 * @param array $each The array or \TYPO3\CMS\Extbase\Persistence\ObjectStorage to iterated over
 	 * @param string $as The name of the iteration variable
 	 * @param string $key The name of the variable to store the current array key
 	 * @param integer $chunkSize The size of the chunks to break this into
 	 * @param boolean $reverse If enabled, the iterator will start with the last element and proceed reversely
 	 * @param string $iteration The name of the variable to store iteration information (index, cycle, isFirst, isLast, isEven, isOdd)
 	 * @return string Rendered string
+	 * @throws \TYPO3\CMS\Fluid\Core\ViewHelper\Exception
 	 * @author Lucas Thurston <lucas@castironcoding.com>
 	 * @author Sebastian Kurfürst <sebastian@typo3.org>
 	 * @author Bastian Waidelich <bastian@typo3.org>
@@ -43,8 +46,8 @@ class Tx_Cicbase_ViewHelpers_ForChunkViewHelper extends Tx_Fluid_Core_ViewHelper
 		if ($each === NULL) {
 			return '';
 		}
-		if (is_object($each) && !$each instanceof Traversable) {
-			throw new Tx_Fluid_Core_ViewHelper_Exception('ForViewHelper only supports arrays and objects implementing Traversable interface' , 1248728393);
+		if (is_object($each) && !$each instanceof \Traversable) {
+			throw new \TYPO3\CMS\Fluid\Core\ViewHelper\Exception('ForViewHelper only supports arrays and objects implementing Traversable interface' , 1248728393);
 		}
 
 		if ($reverse === TRUE) {
@@ -99,18 +102,18 @@ class Tx_Cicbase_ViewHelpers_ForChunkViewHelper extends Tx_Fluid_Core_ViewHelper
 	 * Chunks an object storage
 	 * @param array the unchunked object storage or other iterable 
 	 * @param int $chunkSize How many per chunk
-	 * @return Tx_Extbase_Persistence_ObjectStorage chunked object storages 
+	 * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage chunked object storages
 	 */
 	protected function chunkIterable($mixed,$chunkSize) {
-		$chunkedObjectStorage = t3lib_div::makeInstance('Tx_Extbase_Persistence_ObjectStorage');
-		$workingChunk = t3lib_div::makeInstance('Tx_Extbase_Persistence_ObjectStorage');
+		$chunkedObjectStorage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Persistence\ObjectStorage');
+		$workingChunk = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Persistence\ObjectStorage');
 		
 		$c = 0;
 		$dangler = false;
 		foreach($mixed as $item) {
 			if($c >= $chunkSize) {
 				$chunkedObjectStorage->attach($workingChunk);
-				$workingChunk = t3lib_div::makeInstance('Tx_Extbase_Persistence_ObjectStorage');
+				$workingChunk = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Persistence\ObjectStorage');
 				$c = 0;
 				$dangler = false;
 			}

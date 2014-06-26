@@ -1,4 +1,6 @@
 <?php
+namespace CIC\Cicbase\Domain\Repository;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -23,7 +25,7 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence_Repository {
+class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 
 	protected $baseStoragePath = 'fileadmin/cicbase/documents';
 	protected $holdStoragePath = 'typo3temp/cicbase/documents';
@@ -31,17 +33,17 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 	protected $cicbaseConfiguration;
 
 	/**
-	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
+	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
 
 	/**
 	 * inject the configurationManager
 	 *
-	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface configurationManager
+	 * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface configurationManager
 	 * @return void
 	 */
-	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
+	public function injectConfigurationManager(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
 	}
 
@@ -78,13 +80,13 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 	/**
 	 * Returns the cache object
 	 * @return mixed
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	protected function getCache() {
 		try {
 			$cache = $GLOBALS['typo3CacheManager']->getCache('cicbase_cache');
-		} catch (t3lib_cache_exception_NoSuchCache $e) {
-			throw new Exception ('Unable to load the cicbase cache.');
+		} catch (\TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException $e) {
+			throw new \Exception ('Unable to load the cicbase cache.');
 		}
 		return $cache;
 	}
@@ -100,7 +102,7 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 
 	/**
 	 * Returns the held file
-	 * @return Tx_Cicbase_Domain_Model_File|null
+	 * @return \CIC\Cicbase\Domain\Model\File|null
 	 */
 	public function getHeld($key = '') {
 		$cache = $this->getCache();
@@ -121,18 +123,18 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 
 	/**
 	 * Holds an uploaded file
-	 * @param Tx_Cicbase_Domain_Model_File $fileObject
+	 * @param \CIC\Cicbase\Domain\Model\File $fileObject
 	 * @param string $key
-	 * @return Tx_Cicbase_Domain_Model_File|Tx_Extbase_Error_Error
-	 * @throws Exception
+	 * @return \CIC\Cicbase\Domain\Model\File|\TYPO3\CMS\Extbase\Error\Error
+	 * @throws \Exception
 	 */
-	public function hold(Tx_Cicbase_Domain_Model_File $fileObject, $key = '') {
+	public function hold(\CIC\Cicbase\Domain\Model\File $fileObject, $key = '') {
 		$baseStoragePath = $this->getHoldStoragePath();
 		if($fileObject->getIsSaved() == false) {
 			$relativeDestinationPath = $this->getRelativeDestinationPath($fileObject, $baseStoragePath);
 			$destinationFilename = $this->getDestinationFilename($fileObject);
 			$results = $this->moveToDestination($relativeDestinationPath, $destinationFilename, $fileObject, false);
-			if($results instanceof Tx_Extbase_Error_Error) {
+			if($results instanceof \TYPO3\CMS\Extbase\Error\Error) {
 				return $results;
 			} else {
 				$cache = $this->getCache();
@@ -141,16 +143,16 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 				return $fileObject;
 			}
 		} else {
-			throw new Exception ('Cannot hold a file object that has already been saved.');
+			throw new \Exception ('Cannot hold a file object that has already been saved.');
 		}
 	}
 
 	/**
 	 * Returns the destination file name
-	 * @param Tx_Cicbase_Domain_Model_File $fileObject
+	 * @param \CIC\Cicbase\Domain\Model\File $fileObject
 	 * @return string
 	 */
-	protected function getDestinationFilename(Tx_Cicbase_Domain_Model_File $fileObject) {
+	protected function getDestinationFilename(\CIC\Cicbase\Domain\Model\File $fileObject) {
 		$pathInfo = pathinfo($fileObject->getOriginalFilename());
 		$extension = $pathInfo['extension'];
 		$now = microtime(true);
@@ -160,11 +162,11 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 	}
 
 	/**
-	 * @param Tx_Cicbase_Domain_Model_File $fileObject
+	 * @param \CIC\Cicbase\Domain\Model\File $fileObject
 	 * @param $storagePath
 	 * @return string
 	 */
-	protected function getRelativeDestinationPath(Tx_Cicbase_Domain_Model_File $fileObject, $storagePath) {
+	protected function getRelativeDestinationPath(\CIC\Cicbase\Domain\Model\File $fileObject, $storagePath) {
 		$pathInfo = pathinfo($fileObject->getOriginalFilename());
 		$extension = $pathInfo['extension'];
 		$now = time();
@@ -176,12 +178,12 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 	}
 
 	/**
-	 * @return AmazonS3
+	 * @return \AmazonS3
 	 */
 	protected function initializeS3() {
-		$extensionPath = t3lib_extMgm::extPath('cicbase');
+		$extensionPath = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('cicbase');
 		require_once($extensionPath . 'Vendor/awssdk/sdk.class.php');
-		CFCredentials::set(array(
+		\CFCredentials::set(array(
 			'production' => array(
 				'key' => $this->cicbaseConfiguration['AWSKey'],
 				'secret' => $this->cicbaseConfiguration['AWSSecret'],
@@ -190,19 +192,19 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 			),
 			'@default' => 'production'
 		));
-		$s3 = new AmazonS3();
+		$s3 = new \AmazonS3();
 		return $s3;
 	}
 
 	/**
 	 * @param $relativeDestinationPath
 	 * @param $destinationFilename
-	 * @param Tx_Cicbase_Domain_Model_File $fileObject
+	 * @param \CIC\Cicbase\Domain\Model\File $fileObject
 	 * @param boolean $isFinalDestination
-	 * @return Tx_Extbase_Error_Error
-	 * @throws Exception
+	 * @return \TYPO3\CMS\Extbase\Error\Error
+	 * @throws \Exception
 	 */
-	protected function moveToAWSDestination($relativeDestinationPath, $destinationFilename,Tx_Cicbase_Domain_Model_File $fileObject, $isFinalDestination) {
+	protected function moveToAWSDestination($relativeDestinationPath, $destinationFilename,\CIC\Cicbase\Domain\Model\File $fileObject, $isFinalDestination) {
 
 		// make sure we have adequate configuration.
 		if(	!$this->cicbaseConfiguration['AWSTemporaryBucketName'] ||
@@ -210,7 +212,7 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 			!$this->cicbaseConfiguration['AWSKey'] ||
 			!$this->cicbaseConfiguration['AWSSecret']
 		) {
-			throw new Exception ('AWS File Storage is enabled, yet it is not properly configured in the extension manager');
+			throw new \Exception ('AWS File Storage is enabled, yet it is not properly configured in the extension manager');
 		}
 
 		// initialize the S3 object.
@@ -234,12 +236,12 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 			$response = $s3->copy_object(
 				$sourceConfig,
 				$destinationConfig,
-				array('acl' => AmazonS3::ACL_PUBLIC)
+				array('acl' => \AmazonS3::ACL_PUBLIC)
 			);
 			if($response->isOk()) {
 				$deleteResponse = $s3->delete_object($sourceBucket, $source . '/' . $fileObject->getFilename());
 			} else {
-				return new Tx_Extbase_Error_Error('Unable to save file to AWS S3', 1336600878);
+				return new \TYPO3\CMS\Extbase\Error\Error('Unable to save file to AWS S3', 1336600878);
 			}
 		} else {
 			// create a new object
@@ -253,7 +255,7 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 			$fileObject->setPath($relativeDestinationPath);
 			$fileObject->setAwsBucket($destinationBucket);
 		} else {
-			return new Tx_Extbase_Error_Error('Unable to save file to AWS S3', 1336600875);
+			return new \TYPO3\CMS\Extbase\Error\Error('Unable to save file to AWS S3', 1336600875);
 		}
 	}
 
@@ -262,33 +264,33 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 	 * @param string $destinationFilename
 	 * @param $fileObject
 	 * @param $isFinalDestination
-	 * @return Tx_Extbase_Error_Error
-	 * @throws Exception
+	 * @return \TYPO3\CMS\Extbase\Error\Error
+	 * @throws \Exception
 	 */
 	protected function moveToDestination($relativeDestinationPath, $destinationFilename, $fileObject, $isFinalDestination) {
 		if($this->cicbaseConfiguration['enableAWS'] == true) {
 			return $this->moveToAWSDestination($relativeDestinationPath, $destinationFilename, $fileObject, $isFinalDestination);
 		} else {
-			$absoluteDestinationPath = t3lib_div::getFileAbsFileName($relativeDestinationPath);
+			$absoluteDestinationPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($relativeDestinationPath);
 			if (!file_exists($absoluteDestinationPath)) {
 				try {
-					t3lib_div::mkdir_deep($absoluteDestinationPath);
-				} catch (Exception $e) {
+					\TYPO3\CMS\Core\Utility\GeneralUtility::mkdir_deep($absoluteDestinationPath);
+				} catch (\Exception $e) {
 					// This is a 'compile-time' error, not a run-time one.
 					// Throwing an exception is appropriate.
-					throw new Exception ('Cannot create directory for storing files: ' . $absoluteDestinationPath);
+					throw new \Exception ('Cannot create directory for storing files: ' . $absoluteDestinationPath);
 				}
 			}
 			$source = $fileObject->getPath();
 			$absoluteDestinationPathAndFilename = $absoluteDestinationPath . '/' . $destinationFilename;
 			if(is_uploaded_file($source)) {
-				if (!t3lib_div::upload_copy_move($source, $absoluteDestinationPathAndFilename)) {
-					return new Tx_Extbase_Error_Error('Unable to save file', 1336600870);
+				if (!\TYPO3\CMS\Core\Utility\GeneralUtility::upload_copy_move($source, $absoluteDestinationPathAndFilename)) {
+					return new \TYPO3\CMS\Extbase\Error\Error('Unable to save file', 1336600870);
 				}
 			} else {
 				$source = $fileObject->getPath().'/'.$fileObject->getFilename();
 				if(!rename($source, $absoluteDestinationPathAndFilename)) {
-					return new Tx_Extbase_Error_Error('Unable to save file', 1336600870);
+					return new \TYPO3\CMS\Extbase\Error\Error('Unable to save file', 1336600870);
 				}
 			}
 			$fileObject->setFilename($destinationFilename);
@@ -299,8 +301,8 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 	/**
 	 * @param  $fileObject
 	 * @param string $key
-	 * @return Tx_Extbase_Error_Error|void
-	 * @throws Exception
+	 * @return \TYPO3\CMS\Extbase\Error\Error|void
+	 * @throws \Exception
 	 */
 	public function add($fileObject, $key = '') {
 		$baseStoragePath = $this->getBaseStoragePath($key);
@@ -308,7 +310,7 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
 			$relativeDestinationPath = $this->getRelativeDestinationPath($fileObject, $baseStoragePath);
 			$destinationFilename = $this->getDestinationFilename($fileObject);
 			$results = $this->moveToDestination($relativeDestinationPath, $destinationFilename, $fileObject, true);
-			if($results instanceof Tx_Extbase_Error_Error) {
+			if($results instanceof \TYPO3\CMS\Extbase\Error\Error) {
 				return $results;
 			} else {
 				$fileObject->setIsSaved(true);
@@ -323,13 +325,13 @@ class Tx_Cicbase_Domain_Repository_FileRepository extends Tx_Extbase_Persistence
  	 * Used to set object-specific storage pids, if desired.
 	 */
 	public function initializeObject() {
-		$frameworkConfig = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
+		$frameworkConfig = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
 		$ext = $frameworkConfig['extensionName'];
 		$plugin = $frameworkConfig['pluginName'];
-		$configuration = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, $ext, $plugin);
+		$configuration = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, $ext, $plugin);
 		if ($configuration['storagePids'][$this->objectType]) {
 			$this->internalPid = $configuration['storagePids'][$this->objectType];
-			$this->defaultQuerySettings = $this->objectManager->create('Tx_Extbase_Persistence_Typo3QuerySettings');
+			$this->defaultQuerySettings = $this->objectManager->create('TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings');
 			$this->defaultQuerySettings->setStoragePageIds(explode(',', $configuration['storagePids'][$this->objectType]));
 		}
 	}

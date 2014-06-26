@@ -1,12 +1,14 @@
 <?php
 
+namespace CIC\Cicbase\Formhandler\Finisher;
+
 /**
  * This finisher clears the posts form data to salesforce
  *
  * Example configuration:
  *
  * <code>
- * finishers.2.class = Tx_Cicbase_Formhandler_Finisher_Salesforce
+ * finishers.2.class = CIC\Cicbase\Formhandler\Finisher\Salesforce
  * finishers.2.config.oid = 00392842
  * finishers.2.config.debug = 0
  * finishers.2.config.email = jerryspringer@coolesttalkshowhost.com
@@ -18,7 +20,7 @@
  * </code>
  */
 
-class Tx_Cicbase_Formhandler_Finisher_Salesforce extends Tx_Formhandler_AbstractFinisher {
+class Salesforce extends \Tx_Formhandler_AbstractFinisher {
 
 	/**
 	 * The main method called by the controller
@@ -26,7 +28,7 @@ class Tx_Cicbase_Formhandler_Finisher_Salesforce extends Tx_Formhandler_Abstract
 	 * @return array The probably modified GET/POST parameters
 	 */
 	public function process() {
-		$salesforceLead = new Tx_Cicbase_Domain_Model_SalesforceLead;
+		$salesforceLead = new \CIC\Cicbase\Domain\Model\SalesforceLead;
 		$salesforceLead->setOid($this->settings['oid']);
 		$salesforceLead->setDebug($this->settings['debug']);
 		$salesforceLead->setDebugEmail($this->settings['debugEmail']);

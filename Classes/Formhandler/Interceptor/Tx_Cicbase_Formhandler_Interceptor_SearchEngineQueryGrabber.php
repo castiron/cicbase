@@ -1,11 +1,14 @@
 <?php
+
+namespace CIC\Cicbase\Formhandler\Interceptor;
+
 /**
  * <code>
- * saveInterceptors.1.class = Tx_Cicbase_Formhandler_Interceptor_SearchEngineQueryGrabber
+ * saveInterceptors.1.class = CIC\Cicbase\Formhandler\Interceptor\SearchEngineQueryGrabber
  * saveInterceptros.1.config.fieldname = myhiddenfieldname
  * </code>
  */
-class Tx_Cicbase_Formhandler_Interceptor_SearchEngineQueryGrabber extends Tx_Formhandler_AbstractInterceptor {
+class SearchEngineQueryGrabber extends \Tx_Formhandler_AbstractInterceptor {
 
 	/**
 	 * The main method called by the controller

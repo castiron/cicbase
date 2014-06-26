@@ -1,5 +1,7 @@
 <?php
-class Tx_Cicbase_Command_ExampleCommandController extends Tx_Extbase_MVC_Controller_CommandController {
+namespace CIC\Cicbase\Command;
+
+class ExampleCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandController {
 
 	/**
 	 * Example Command Controller
@@ -9,12 +11,12 @@ class Tx_Cicbase_Command_ExampleCommandController extends Tx_Extbase_MVC_Control
 		// Do stuff here!
 		if (TYPO3_MODE == 'BE') {
 			$message = $this->objectManager->get(
-				't3lib_FlashMessage',
+				'TYPO3\CMS\Core\Messaging\FlashMessage',
 				'Now go make something cool.',
 				'Awesome',
-				t3lib_FlashMessage::OK
+				\TYPO3\CMS\Core\Messaging\FlashMessage::OK
 			);
-			t3lib_FlashMessageQueue::addMessage($message);
+			\TYPO3\CMS\Core\Messaging\FlashMessageQueue::addMessage($message);
 		}
 	}
 }

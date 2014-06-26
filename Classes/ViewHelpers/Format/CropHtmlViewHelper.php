@@ -1,5 +1,7 @@
 <?php
 
+namespace CIC\Cicbase\ViewHelpers\Format;
+
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
  *                                                                        *
@@ -39,10 +41,10 @@
  * @see http://typo3.org/documentation/document-library/references/doc_core_tsref/4.2.0/view/1/5/#id4198758
  *
  */
-class Tx_Cicbase_ViewHelpers_Format_CropHtmlViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class CropHtmlViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
-	 * @var	tslib_cObj
+	 * @var	\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
 	 */
 	protected $contentObject;
 
@@ -61,15 +63,15 @@ class Tx_Cicbase_ViewHelpers_Format_CropHtmlViewHelper extends Tx_Fluid_Core_Vie
 	protected $escapingInterceptorEnabled = FALSE;
 
 	/**
-	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
+	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
 
 	/**
-	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager
+	 * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager
 	 * @return void
 	 */
-	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
+	public function injectConfigurationManager(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
 		$this->contentObject = $this->configurationManager->getContentObject();
 	}
@@ -116,7 +118,7 @@ class Tx_Cicbase_ViewHelpers_Format_CropHtmlViewHelper extends Tx_Fluid_Core_Vie
 
 		$value = $this->renderChildren();
 		$value = $this->htmlSubstr($value,0,200,true,'...');
-t3lib_div::debug($value,'value');
+		\TYPO3\CMS\Core\Utility\DebugUtility::debug($value,'value');
 
 		$content = $this->contentObject->parseFunc($value, array(), '< ' . $parseFuncTSPath);
 
@@ -128,15 +130,15 @@ t3lib_div::debug($value,'value');
 
 	/**
 	 * Copies the specified parseFunc configuration to $GLOBALS['TSFE']->tmpl->setup in Backend mode
-	 * This somewhat hacky work around is currently needed because the parseFunc() function of tslib_cObj relies on those variables to be set
+	 * This somewhat hacky work around is currently needed because the parseFunc() function of \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer relies on those variables to be set
 	 *
 	 * @return void
 	 * @author Bastian Waidelich <bastian@typo3.org>
 	 */
 	protected function simulateFrontendEnvironment() {
 		$this->tsfeBackup = isset($GLOBALS['TSFE']) ? $GLOBALS['TSFE'] : NULL;
-		$GLOBALS['TSFE'] = new stdClass();
-		$GLOBALS['TSFE']->tmpl->setup = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+		$GLOBALS['TSFE'] = new \stdClass();
+		$GLOBALS['TSFE']->tmpl->setup = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 	}
 
 	/**

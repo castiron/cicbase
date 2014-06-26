@@ -1,25 +1,27 @@
 <?php
 
-class Tx_Cicbase_ViewHelpers_Widget_FileUploadViewHelper extends Tx_Fluid_Core_Widget_AbstractWidgetViewHelper {
+namespace CIC\Cicbase\ViewHelpers\Widget;
+
+class FileUploadViewHelper extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetViewHelper {
 
 	/**
-	 * @var Tx_Cicbase_ViewHelpers_Widget_Controller_FileUploadController
+	 * @var \CIC\Cicbase\ViewHelpers\Widget\Controller\FileUploadController
 	 */
 	protected $controller;
 	
 	/**
 	 * inject the controller
 	 *
-	 * @param Tx_Cicbase_ViewHelpers_Widget_Controller_FileUploadController controller
+	 * @param \CIC\Cicbase\ViewHelpers\Widget\Controller\FileUploadController controller
 	 * @return void
 	 */
-	public function injectController(Tx_Cicbase_ViewHelpers_Widget_Controller_FileUploadController $controller) {
+	public function injectController(\CIC\Cicbase\ViewHelpers\Widget\Controller\FileUploadController $controller) {
 		$this->controller = $controller;
 	}
 	
 	/**
 	 *
-	 * @param Tx_Extbase_Persistence_QueryResultInterface $objects
+	 * @param \TYPO3\CMS\Extbase\Persistence\QueryResultInterface $objects
 	 * @param string $as
 	 * @param array $configuration
 	 * @return string

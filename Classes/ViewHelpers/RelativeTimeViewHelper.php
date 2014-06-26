@@ -1,5 +1,7 @@
 <?php
 
+namespace CIC\Cicbase\ViewHelpers;
+
 /*                                                                        *
  * This script belongs to the FLOW3 package "Cicbase".                    *
  *                                                                        *
@@ -20,7 +22,7 @@
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
-class Tx_Cicbase_ViewHelpers_RelativeTimeViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class RelativeTimeViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 	/**
 		* Returns a string representing a time relative to the current moment, like "12 days ago," "2 minutes from now," "23 hours ago," "6 days from now," etc.
 	 	* Automatically adjust granularity based on the amount of time.

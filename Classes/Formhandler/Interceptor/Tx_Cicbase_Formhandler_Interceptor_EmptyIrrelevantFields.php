@@ -1,7 +1,10 @@
 <?php
+
+namespace CIC\Cicbase\ViewHelpers\Formhandler\Interceptor;
+
 /**
  * <code>
- * saveInterceptors.1.class = Tx_Cicbase_Formhandler_Interceptor_EmptyIrrelevantFields
+ * saveInterceptors.1.class = CIC\Cicbase\ViewHelpers\Formhandler\Interceptor\EmptyIrrelevantFields
  * saveInterceptors.1.config.fields {
  *			lead_source_search_engine {
  *				unless = equals
@@ -14,7 +17,7 @@
  * }
  * </code>
  */
-class Tx_Cicbase_Formhandler_Interceptor_EmptyIrrelevantFields extends Tx_Formhandler_AbstractInterceptor {
+class EmptyIrrelevantFields extends \Tx_Formhandler_AbstractInterceptor {
 
 	/**
 	 * The main method called by the controller

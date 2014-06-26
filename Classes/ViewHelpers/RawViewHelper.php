@@ -1,5 +1,7 @@
 <?php
 
+namespace CIC\Cicbase\ViewHelpers;
+
 /**
 	* Add Slashes viewhelper
 	*
@@ -7,7 +9,7 @@
 	* @subpackage Fluid
 	* @version
 	*/
-class Tx_Cicbase_ViewHelpers_RawViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class RawViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 		* Returns a raw value

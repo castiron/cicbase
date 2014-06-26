@@ -1,5 +1,7 @@
 <?php
 
+namespace CIC\Cicbase\ViewHelpers;
+
 /*                                                                        *
  * This script belongs to the FLOW3 package "Cicregister".                      *
  *                                                                        *
@@ -25,7 +27,7 @@
  *
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License, version 3 or later
  */
-class Tx_Cicbase_ViewHelpers_IfFormWasSubmittedViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractConditionViewHelper {
+class IfFormWasSubmittedViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionViewHelper {
 
 	/**
 	 * renders <f:then> child if $condition is true, otherwise renders <f:else> child.

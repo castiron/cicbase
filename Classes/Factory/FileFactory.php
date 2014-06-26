@@ -1,4 +1,7 @@
 <?php
+
+namespace CIC\Cicbase\Factory;
+
 /***************************************************************
  *  Copyright notice
  *  (c) 2012 Peter Soots <peter@castironcoding.com>, Cast Iron Coding
@@ -17,22 +20,22 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
+class FileFactory implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManager
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
 	 */
 	protected $objectManager;
 
 	/**
-	 * @var Tx_Extbase_Configuration_ConfigurationManager
+	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManager
 	 */
 	protected $configurationManager;
 
 	/**
 	 * A list of property mapping messages (errors, warnings) which have occured on last mapping.
 	 *
-	 * @var Tx_Extbase_Error_Result
+	 * @var \TYPO3\CMS\Extbase\Error\Result
 	 */
 	protected $messages;
 
@@ -42,52 +45,52 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 	protected $propertyPath = '';
 
 	/**
-	 * @var Tx_Cicbase_Domain_Repository_FileRepository
+	 * @var \CIC\Cicbase\Domain\Repository\FileRepository
 	 */
 	protected $fileRepository;
 
 	/**
-	 * @var Tx_Extbase_Persistence_Manager
+	 * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
 	 */
 	protected $persistenceManager;
 
 	/**
 	 * inject the persistenceManager
 	 *
-	 * @param Tx_Extbase_Persistence_Manager persistenceManager
+	 * @param \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager persistenceManager
 	 * @return void
 	 */
-	public function injectPersistenceManager(Tx_Extbase_Persistence_Manager $persistenceManager) {
+	public function injectPersistenceManager(\TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager $persistenceManager) {
 		$this->persistenceManager = $persistenceManager;
 	}
 
 	/**
 	 * inject the configurationManager
 	 *
-	 * @param Tx_Extbase_Configuration_ConfigurationManager configurationManager
+	 * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManager configurationManager
 	 * @return void
 	 */
-	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManager $configurationManager) {
+	public function injectConfigurationManager(\TYPO3\CMS\Extbase\Configuration\ConfigurationManager $configurationManager) {
 		$this->configurationManager = $configurationManager;
 	}
 
 	/**
 	 * inject the objectManager
 	 *
-	 * @param Tx_Extbase_Object_ObjectManager objectManager
+	 * @param \TYPO3\CMS\Extbase\Object\ObjectManager objectManager
 	 * @return void
 	 */
-	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager) {
+	public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManager $objectManager) {
 		$this->objectManager = $objectManager;
 	}
 
 	/**
 	 * inject the fileRepository
 	 *
-	 * @param Tx_Cicbase_Domain_Repository_FileRepository fileRepository
+	 * @param \CIC\Cicbase\Domain\Repository\FileRepository fileRepository
 	 * @return void
 	 */
-	public function injectFileRepository(Tx_Cicbase_Domain_Repository_FileRepository $fileRepository) {
+	public function injectFileRepository(\CIC\Cicbase\Domain\Repository\FileRepository $fileRepository) {
 		$this->fileRepository = $fileRepository;
 	}
 
@@ -96,7 +99,7 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 	 * @return string
 	 */
 	protected function getNamespace() {
-		$framework = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
+		$framework = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
 		$extension = $framework['extensionName'];
 		$plugin = $framework['pluginName'];
 		$namespace = 'tx_' . strtolower($extension) . '_' . strtolower($plugin);
@@ -161,7 +164,7 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 	protected function validateType($uploadedFileData,$allowedTypes) {
 		$pathInfo = pathinfo($uploadedFileData['name']);
 		$extension = $pathInfo['extension'];
-		$allowedMimes = t3lib_div::trimExplode(',',$allowedTypes[$extension]);
+		$allowedMimes = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',',$allowedTypes[$extension]);
 		if(in_array($uploadedFileData['type'],$allowedMimes)) {
 			return NULL;
 		} else {
@@ -170,7 +173,7 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 	}
 
 	protected function addError($msg, $key) {
-		$error = new Tx_Extbase_Error_Error($msg, $key);
+		$error = new \TYPO3\CMS\Extbase\Error\Error($msg, $key);
 		$this->messages->addError($error);
 	}
 
@@ -187,10 +190,10 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 	}
 
 	public function createFile(array $sourceData, $propertyPath, $allowedTypes, $maxSize) {
-		$this->messages = new Tx_Extbase_Error_Result();
+		$this->messages = new \TYPO3\CMS\Extbase\Error\Result();
 		$this->propertyPath = $propertyPath;
 		$key = $propertyPath ? $propertyPath : '';
-		$this->settings = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
+		$this->settings = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
 
 		$uploadedFileData = $this->getUploadedFileData();
 		$this->handleUploadErrors($uploadedFileData);
@@ -216,7 +219,7 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 		} else {
 			// ok to make a file object
 			$pathInfo = pathinfo($uploadedFileData['tmp_name']);
-			$fileObject = $this->objectManager->create('Tx_Cicbase_Domain_Model_File');
+			$fileObject = $this->objectManager->create('CIC\Cicbase\Domain\Model\File');
 			$fileObject->setTitle($sourceData['title']);
 
 			// TODO: Set a default title if it's not provided.
@@ -242,7 +245,7 @@ class Tx_Cicbase_Factory_FileFactory implements t3lib_Singleton {
 	 * @return string The value of that key
 	 */
 	protected static function translate($string) {
-		return htmlspecialchars(Tx_Extbase_Utility_Localization::translate('tx_sjcert_domain_model_municipalityclaim.' . $string, 'sjcert'));
+		return htmlspecialchars(\TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('tx_sjcert_domain_model_municipalityclaim.' . $string, 'sjcert'));
 	}
 
 }

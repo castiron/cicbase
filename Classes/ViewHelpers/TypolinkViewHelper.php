@@ -1,4 +1,7 @@
 <?php
+
+namespace CIC\Cicbase\ViewHelpers;
+
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
  *                                                                        *
@@ -16,7 +19,7 @@
  *	Wraps some of the basic Typolink settings in a viewhelper. Good for rendering links to pages and page titles
  *	when all you have is the page id.
  */
-class Tx_Cicbase_ViewHelpers_TypolinkViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class TypolinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * @param string $parameter
@@ -50,7 +53,7 @@ class Tx_Cicbase_ViewHelpers_TypolinkViewHelper extends Tx_Fluid_Core_ViewHelper
 		}
 
 		if(count($additionalParams)) {
-			$typoLinkConf['additionalParams'] = t3lib_div::implodeArrayForUrl('',$additionalParams);
+			$typoLinkConf['additionalParams'] = \TYPO3\CMS\Core\Utility\GeneralUtility::implodeArrayForUrl('',$additionalParams);
 		}
 
 		if(strlen($ATagParams)) {

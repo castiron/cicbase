@@ -1,15 +1,17 @@
 <?php
 
-class Tx_Cicbase_ViewHelpers_Widget_Controller_FileUploadController extends Tx_Fluid_Core_Widget_AbstractWidgetController {
+namespace CIC\Cicbase\ViewHelpers\Widget\Controller;
+
+class FileUploadController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetController {
 
 	public function initializeIndexAction() {
-		Tx_Extbase_Utility_Debugger::var_dump($this->arguments['file']);
-		Tx_Extbase_Utility_Debugger::var_dump($_POST);
+		\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($this->arguments['file']);
+		\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($_POST);
 		$resolutionMappingConfig = $this->arguments['file']->getPropertyMappingConfiguration();
-		$resolutionMappingConfig->setTypeConverter($this->objectManager->get('\CIC\Cicbase\Property\TypeConverter\FileReferenceConverter'));
-		$resolutionMappingConfig->setTypeConverterOption('\CIC\Cicbase\Property\TypeConverter\FileReferenceConverter', 'propertyPath', 'file');
-		$resolutionMappingConfig->setTypeConverterOption('\CIC\Cicbase\Property\TypeConverter\FileReferenceConverter', 'maxSize', 20971520);
-		$resolutionMappingConfig->setTypeConverterOption('\CIC\Cicbase\Property\TypeConverter\FileReferenceConverter', 'allowedTypes', array(
+		$resolutionMappingConfig->setTypeConverter($this->objectManager->get('CIC\Cicbase\Property\TypeConverter\FileReferenceConverter'));
+		$resolutionMappingConfig->setTypeConverterOption('CIC\Cicbase\Property\TypeConverter\FileReferenceConverter', 'propertyPath', 'file');
+		$resolutionMappingConfig->setTypeConverterOption('CIC\Cicbase\Property\TypeConverter\FileReferenceConverter', 'maxSize', 20971520);
+		$resolutionMappingConfig->setTypeConverterOption('CIC\Cicbase\Property\TypeConverter\FileReferenceConverter', 'allowedTypes', array(
 			'pdf' => 'application/pdf',
 			'gif' => 'image/gif',
 			'jpg' => 'image/jpg',

@@ -29,11 +29,11 @@ In any case, CICBase makes this easier. By just installing the CICBase extension
 config.tx_extbase {
     persistence {
         classes {
-            Tx_Extbase_Domain_Model_FrontendUser {
+            TYPO3\CMS\Extbase\Domain\Model\FrontendUser {
                 storagePid = 979
                 newRecordStoragePid = 979
             }
-            Tx_Jobboard_Domain_Model_JobPost {
+            VEND\Jobboard\Domain\Model\JobPost {
                 storagePid = 181
                 newRecordStoragePid = 181
             }

@@ -1,4 +1,5 @@
 <?php
+namespace CIC\Cicbase\Domain\Repository;
 
 /***************************************************************
 *  Copyright notice
@@ -26,7 +27,7 @@
 /**
 * A repository for Blogs
 */
-class Tx_Cicbase_Domain_Repository_DigitalAssetRepository extends Tx_Extbase_Persistence_Repository {
+class DigitalAssetRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 
 	/**
 	 * Per call cache of the objects taken from the db.
@@ -51,13 +52,13 @@ class Tx_Cicbase_Domain_Repository_DigitalAssetRepository extends Tx_Extbase_Per
 		}
 		
 		// gets the data from DAM
-		$damArray = tx_dam_db::getReferencedFiles($table, $uid, $ident, 'tx_dam_mm_ref', 'tx_dam.*', array(), '', $orderBy, $limit);
+		$damArray = \tx_dam_db::getReferencedFiles($table, $uid, $ident, 'tx_dam_mm_ref', 'tx_dam.*', array(), '', $orderBy, $limit);
 		$rows = $damArray['rows'];
 		
 		if (count($rows) > 0) {
 			// dataMapper is a singleton
-			$dataMapper = t3lib_div::makeInstance('Tx_Extbase_Persistence_Mapper_DataMapper');
-			$objects = $dataMapper->map('Tx_Cicbase_Domain_Model_DigitalAsset', $rows);
+			$dataMapper = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper');
+			$objects = $dataMapper->map('CIC\Cicbase\Domain\Model\DigitalAsset', $rows);
 			
 			// cache the function call
 			self::$objectStorage['ref'][$table][$uid][$ident][$orderBy][$limit] = $objects;
@@ -81,7 +82,7 @@ class Tx_Cicbase_Domain_Repository_DigitalAssetRepository extends Tx_Extbase_Per
 	 * @return Tx_ExtbaseDam_Domain_Model_Dam The (first) Dam object
 	 */
 	public static function getOne($table, $uid, $ident, $orderBy = '') {
-		$objects = Tx_ExtbaseDam_Utility_Dam::get($table, $uid, $ident, 1, $orderBy);
+		$objects = \Tx_ExtbaseDam_Utility_Dam::get($table, $uid, $ident, 1, $orderBy);
 		return count($objects) > 0 ? $objects[0] : null;
 	}
 	
@@ -109,11 +110,11 @@ class Tx_Cicbase_Domain_Repository_DigitalAssetRepository extends Tx_Extbase_Per
 		if(!$path) {
 			return array(); // If the path is destroyed by the preg_replace call, don't return all records globally
 		}
-		$rows = tx_dam_db::getDataWhere('*', 'file_path LIKE \''.$path . '%\''.$additionalWhere, '', $orderBy, $limit);
+		$rows = \tx_dam_db::getDataWhere('*', 'file_path LIKE \''.$path . '%\''.$additionalWhere, '', $orderBy, $limit);
 		if (count($rows) > 0) {
 			// dataMapper is a singleton
-			$dataMapper = t3lib_div::makeInstance('Tx_Extbase_Persistence_Mapper_DataMapper');
-			$objects = $dataMapper->map('Tx_Cicbase_Domain_Model_DigitalAsset', $rows);
+			$dataMapper = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper');
+			$objects = $dataMapper->map('CIC\Cicbase\Domain\Model\DigitalAsset', $rows);
 			
 			// cache the function call
 			self::$objectStorage['path'][$path][$orderBy][$limit] = $objects;
@@ -135,7 +136,7 @@ class Tx_Cicbase_Domain_Repository_DigitalAssetRepository extends Tx_Extbase_Per
 	 * @return Tx_ExtbaseDam_Domain_Model_Dam The (first) Dam object
 	 */
 	public static function getOneByPath($path, $orderBy = '') {
-		$objects = Tx_ExtbaseDam_Utility_Dam::getByPath($path, $orderBy, 1);
+		$objects = \Tx_ExtbaseDam_Utility_Dam::getByPath($path, $orderBy, 1);
 		return count($objects) > 0 ? $objects[0] : null;
 	}
 	

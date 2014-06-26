@@ -1,7 +1,10 @@
 <?php
+
+namespace CIC\Cicbase\Formhandler\Interceptor;
+
 /**
  * <code>
- * saveInterceptors.1.class = Tx_Cicbase_Formhandler_Interceptor_ClearFields
+ * saveInterceptors.1.class = CIC\Cicbase\Formhandler\Interceptor\ClearFields
  * saveInterceptors.1.config.fields {
  *     credit_card_number
  *     credit_card_expiration_month
@@ -11,7 +14,7 @@
  * }
  * </code>
  */
-class Tx_Cicbase_Formhandler_Interceptor_ClearFields extends Tx_Formhandler_AbstractInterceptor {
+class ClearFields extends \Tx_Formhandler_AbstractInterceptor {
 
 	/**
 	 * The main method called by the controller

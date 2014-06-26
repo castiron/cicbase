@@ -1,9 +1,11 @@
 <?php
 
+namespace CIC\Cicbase\ViewHelpers\Fal;
+
 /**
- * Class Tx_Cicbase_ViewHelpers_Fal_ImageViewHelper
+ * Class CIC\Cicbase\ViewHelpers\Fal\ImageViewHelper
  */
-class Tx_Cicbase_ViewHelpers_Fal_ImageReferenceViewHelper extends TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper {
+class ImageReferenceViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper {
 	/**
 	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
 	 */

@@ -9,7 +9,7 @@ class ComplexIfViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractCondi
 	 * @param string $junction
 	 * @param boolean $condition3
 	 * @return string
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function render($condition1, $condition2, $junction, $condition3 = null) {
 		$junction = strtolower($junction);
@@ -31,7 +31,7 @@ class ComplexIfViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractCondi
 				}
 				break;
 			default:
-				throw new Exception("The junction '$junction' is not recognized.");
+				throw new \Exception("The junction '$junction' is not recognized.");
 		}
 
 		if ($true) {

@@ -1,9 +1,9 @@
 <?php
+namespace CIC\Cicbase\Service;
 
 /***************************************************************
  *  Copyright notice
- *  (c) 2012 Peter Soots <peter
- * @castironcoding.com>, Cast Iron Coding
+ *  (c) 2012 Peter Soots <peter@castironcoding.com>, Cast Iron Coding
  *  All rights reserved
  *  This script is part of the TYPO3 project. The TYPO3 project is
  *  free software; you can redistribute it and/or modify
@@ -20,55 +20,55 @@
  ***************************************************************/
 
 
-class Tx_Cicbase_Service_JsonObjectService implements t3lib_Singleton {
+class JsonObjectService implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
-	 * @var Tx_Extbase_Reflection_Service
+	 * @var \TYPO3\CMS\Extbase\Reflection\ReflectionService
 	 */
 	protected $reflectionService;
 
 	/**
-	 * @var Tx_Extbase_Service_TypeHandlingService
+	 * @var \TYPO3\CMS\Extbase\Service\TypeHandlingService
 	 */
 	protected $typeHandlingService;
 
 	/**
 	 * inject the typeHandlingService
 	 *
-	 * @param Tx_Extbase_Service_TypeHandlingService typeHandlingService
+	 * @param \TYPO3\CMS\Extbase\Service\TypeHandlingService typeHandlingService
 	 * @return void
 	 */
-	public function injectTypeHandlingService(Tx_Extbase_Service_TypeHandlingService $typeHandlingService) {
+	public function injectTypeHandlingService(\TYPO3\CMS\Extbase\Service\TypeHandlingService $typeHandlingService) {
 		$this->typeHandlingService = $typeHandlingService;
 	}
 
 	/**
 	 * inject the reflectionService
 	 *
-	 * @param Tx_Extbase_Reflection_Service reflectionService
+	 * @param \TYPO3\CMS\Extbase\Reflection\ReflectionService reflectionService
 	 * @return void
 	 */
-	public function injectReflectionService(Tx_Extbase_Reflection_Service $reflectionService) {
+	public function injectReflectionService(\TYPO3\CMS\Extbase\Reflection\ReflectionService $reflectionService) {
 		$this->reflectionService = $reflectionService;
 	}
 
 
 	/**
 	 * @param $model
-	 * @return stdClass
+	 * @return \stdClass
 	 */
 	public function transform($model) {
 		$tag = microtime();
 		$class = get_class($model);
-		if($class == 'Tx_Extbase_Persistence_ObjectStorage' || $class == 'Tx_Extbase_Persistence_LazyObjectStorage') {
+		if($class == 'TYPO3\CMS\Extbase\Persistence\ObjectStorage' || $class == 'TYPO3\CMS\Extbase\Persistence\Generic\LazyObjectStorage') {
 			$out = array();
 			foreach($model as $subModel) {
 				$out[] = $this->transform($subModel);
 			}
 			return $out;
 		} elseif(strpos($class,'Domain_Model') !== FALSE) {
-			$transformedObject = new stdClass;
-			$properties = Tx_Extbase_Reflection_ObjectAccess::getGettablePropertyNames($model);
+			$transformedObject = new \stdClass;
+			$properties = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getGettablePropertyNames($model);
 			foreach ($properties as $property) {
 				$getMethodName = 'get' . ucfirst($property);
 				$methodTags = $this->reflectionService->getMethodTagsValues($class, $getMethodName);
@@ -77,12 +77,12 @@ class Tx_Cicbase_Service_JsonObjectService implements t3lib_Singleton {
 					$value = $model->$getMethodName();
 
 					// TODO, not sure about this check for lazy loading. Would be good to write a test for it.
-					if ($value instanceof Tx_Extbase_Persistence_LazyLoadingProxy) {
+					if ($value instanceof \TYPO3\CMS\Extbase\Persistence\Generic\LazyLoadingProxy) {
 						$transformedObject->$property = 'lazy';
 					} elseif ($this->typeHandlingService->isSimpleType(gettype($value))) {
 						$transformedObject->$property = $value;
 					} elseif (is_object($value)) {
-						if ($value instanceof Tx_Extbase_Persistence_ObjectStorage) {
+						if ($value instanceof \TYPO3\CMS\Extbase\Persistence\ObjectStorage) {
 							$transformedObject->$property = $this->transform($value);
 						} else {
 							$transformedObject->$property = get_class($value);

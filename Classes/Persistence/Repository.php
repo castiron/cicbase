@@ -1,4 +1,5 @@
 <?php
+namespace CIC\Cicbase\Persistence;
 /***************************************************************
 *  Copyright notice
 *
@@ -23,13 +24,13 @@
 ***************************************************************/
 
 /**
- * Tx_Cicbase_Persistence_PaginationRepository
+ * CIC\Cicbase\Persistence\PaginationRepository
  *
  * @version $Id$
  * @copyright Copyright belongs to the respective authors
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class Tx_Cicbase_Persistence_Repository extends \TYPO3\CMS\Extbase\Persistence\Repository {
+class Repository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 
 	/**
 	 * Set the total count of records
@@ -98,7 +99,7 @@ class Tx_Cicbase_Persistence_Repository extends \TYPO3\CMS\Extbase\Persistence\R
 	 *
 	 * @param array|string $uids
 	 * @return array|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function findByUids($uids) {
 		if(is_string($uids)) {
@@ -123,8 +124,8 @@ class Tx_Cicbase_Persistence_Repository extends \TYPO3\CMS\Extbase\Persistence\R
 	protected function prepareInitialPaginationInfo() {
 		if($this->resultsPerPage > 0) {
 			$totalPages = ceil(intval($this->totalCount) / intval($this->resultsPerPage));
-			$correctedPage = t3lib_div::intInRange($this->requestedPage,1,$totalPages,1);
-			$limitSkip = t3lib_div::intInRange(($correctedPage - 1) * $this->resultsPerPage,0,$this->totalCount - 1);
+			$correctedPage = \TYPO3\CMS\Core\Utility\GeneralUtility::intInRange($this->requestedPage,1,$totalPages,1);
+			$limitSkip = \TYPO3\CMS\Core\Utility\GeneralUtility::intInRange(($correctedPage - 1) * $this->resultsPerPage,0,$this->totalCount - 1);
 		} else {
 			$this->resultsPerPage = $this->totalCount;
 			$totalPages = 1; // Viewing all
@@ -142,7 +143,7 @@ class Tx_Cicbase_Persistence_Repository extends \TYPO3\CMS\Extbase\Persistence\R
 	 * @return void
 	 */
 	public function getPaginationInformation() {
-		$out = new stdClass;
+		$out = new \stdClass;
 		$out->rangeStart = $this->totalCount ? $this->resultsPerPage * ($this->page - 1) + 1 : 0;
 		$out->rangeEnd = ($out->rangeStart + $this->resultsPerPage - 1) > $this->totalCount ? $this->totalCount : ($out->rangeStart + $this->resultsPerPage - 1);
 		$out->resultsPerPage = $this->resultsPerPage;
@@ -177,7 +178,7 @@ class Tx_Cicbase_Persistence_Repository extends \TYPO3\CMS\Extbase\Persistence\R
 	/**
 	 * @param mixed a query result or a collection, something that we can call ->getUid() on each item of
 	 * @param string a comma list of uids
-	 * @return Tx_Extbase_Persistence_ObjectStorage
+	 * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage
 	 */
 	protected function orderResultsByUids($iterable,$uidArray) {
 		/**
@@ -200,12 +201,12 @@ class Tx_Cicbase_Persistence_Repository extends \TYPO3\CMS\Extbase\Persistence\R
 			$qres = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select,$table,$where,$groupBy,$orderBy,$limit);
 			$uids = array();
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($qres)) {
-				$uids[] = $row['versions'] ? array_shift(t3lib_div::trimExplode(',',$row['versions'])) : $row['uid'];
+				$uids[] = $row['versions'] ? array_shift(\TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',',$row['versions'])) : $row['uid'];
 			}
 			$uidArray = $uids;
 		}
 
-		$objectStorage = t3lib_div::makeInstance('Tx_Extbase_Persistence_ObjectStorage');
+		$objectStorage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Persistence\ObjectStorage');
 		foreach($uidArray as $uid) {
 			foreach($iterable as $item) {
 				$foundId = $item->getUid();

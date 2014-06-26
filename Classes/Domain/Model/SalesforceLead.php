@@ -1,6 +1,7 @@
 <?php
+namespace CIC\Cicbase\Domain\Model;
 
-class Tx_Cicbase_Domain_Model_SalesforceLead {
+class SalesforceLead {
 	/**
 	 *
 	 */

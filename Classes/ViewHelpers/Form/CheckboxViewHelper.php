@@ -102,7 +102,7 @@ class CheckboxViewHelper extends AbstractFormFieldViewHelper {
 		}
 
 		$this->registerFieldNameForFormTokenGeneration($name);
-		$tag = new Tx_Fluid_Core_ViewHelper_TagBuilder('input');
+		$tag = new \TYPO3\CMS\Fluid\Core\ViewHelper\TagBuilder('input');
 		$tag->addAttributes(array(
 			'name' => $name,
 			'value' => $value,

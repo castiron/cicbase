@@ -1,4 +1,7 @@
 <?php
+
+namespace CIC\Cicbase\ViewHelpers;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -26,7 +29,7 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-class Tx_Cicbase_ViewHelpers_SwitchViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class SwitchViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * @param array $cases

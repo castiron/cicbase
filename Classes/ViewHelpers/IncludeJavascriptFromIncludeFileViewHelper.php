@@ -49,13 +49,13 @@ class IncludeJavascriptFromIncludeFileViewHelper extends \TYPO3\CMS\Fluid\Core\V
 		$out = '';
 		$filePath = GeneralUtility::getFileAbsFileName($this->arguments['includeFile'], TRUE);
 		if(!$filePath || !file_exists($filePath)) {
-			throw new Exception('Could not get include file for js inclusion');
+			throw new \Exception('Could not get include file for js inclusion');
 		}
 
 		try {
 			$fileContents = file_get_contents($filePath);
-		} catch(Exception $e) {
-			throw new Exception('Could not read include file for js inclusion');
+		} catch(\Exception $e) {
+			throw new \Exception('Could not read include file for js inclusion');
 		}
 
 		$lines = array();

@@ -93,7 +93,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
 
 					// For some reason, this is not injected every time
 					if (!$this->frontendUserRepository) {
-						$this->frontendUserRepository = $this->objectManager->get('\TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository');
+						$this->frontendUserRepository = $this->objectManager->get('TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository');
 					}
 
 					$query = $this->frontendUserRepository->createQuery();

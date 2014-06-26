@@ -1,7 +1,10 @@
 <?php
+
+namespace CIC\Cicbase\Formhandler\Interceptor;
+
 /**
  * <code>
- * saveInterceptors.1.class = Tx_Cicbase_Formhandler_Interceptor_ConditionalFieldChanges
+ * saveInterceptors.1.class = CIC\Cicbase\Formhandler\Interceptor\ConditionalFieldChanges
  * saveInterceptors.1.config.fields {
  *			1 {
  *				field = LeadSource
@@ -23,7 +26,7 @@
  * }
  * </code>
  */
-class Tx_Cicbase_Formhandler_Interceptor_ConditionalFieldChanges extends Tx_Formhandler_AbstractInterceptor {
+class ConditionalFieldChanges extends \Tx_Formhandler_AbstractInterceptor {
 
 	/**
 	 * The main method called by the controller

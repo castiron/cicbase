@@ -638,7 +638,7 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @return string The value of that key
 	 */
 	protected static function translate($string) {
-		return htmlspecialchars(Tx_Extbase_Utility_Localization::translate('tx_sjcert_domain_model_municipalityclaim.' . $string, 'sjcert'));
+		return htmlspecialchars(\TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate('tx_sjcert_domain_model_municipalityclaim.' . $string, 'sjcert'));
 	}
 
 }

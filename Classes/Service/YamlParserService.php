@@ -1,4 +1,5 @@
 <?php
+namespace CIC\Cicbase\Service;
 
 		/***************************************************************
 		 *  Copyright notice
@@ -29,17 +30,17 @@
 		 */
 use \Symfony\Component\Yaml\Parser;
 
-include_once(t3lib_extMgm::extPath('cicbase') . '/Vendor/symfony-yaml/Dumper.php');
-include_once(t3lib_extMgm::extPath('cicbase') . '/Vendor/symfony-yaml/Escaper.php');
-include_once(t3lib_extMgm::extPath('cicbase') . '/Vendor/symfony-yaml/Unescaper.php');
-include_once(t3lib_extMgm::extPath('cicbase') . '/Vendor/symfony-yaml/Inline.php');
-include_once(t3lib_extMgm::extPath('cicbase') . '/Vendor/symfony-yaml/Parser.php');
-include_once(t3lib_extMgm::extPath('cicbase') . '/Vendor/symfony-yaml/Yaml.php');
-include_once(t3lib_extMgm::extPath('cicbase') . '/Vendor/symfony-yaml/Exception/ExceptionInterface.php');
-include_once(t3lib_extMgm::extPath('cicbase') . '/Vendor/symfony-yaml/Exception/DumpException.php');
-include_once(t3lib_extMgm::extPath('cicbase') . '/Vendor/symfony-yaml/Exception/ParseException.php');
+include_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('cicbase') . '/Vendor/symfony-yaml/Dumper.php');
+include_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('cicbase') . '/Vendor/symfony-yaml/Escaper.php');
+include_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('cicbase') . '/Vendor/symfony-yaml/Unescaper.php');
+include_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('cicbase') . '/Vendor/symfony-yaml/Inline.php');
+include_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('cicbase') . '/Vendor/symfony-yaml/Parser.php');
+include_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('cicbase') . '/Vendor/symfony-yaml/Yaml.php');
+include_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('cicbase') . '/Vendor/symfony-yaml/Exception/ExceptionInterface.php');
+include_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('cicbase') . '/Vendor/symfony-yaml/Exception/DumpException.php');
+include_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('cicbase') . '/Vendor/symfony-yaml/Exception/ParseException.php');
 
-class Tx_Cicbase_Service_YamlParserService {
+class YamlParserService {
 
 	/**
 	 * @param $string

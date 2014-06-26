@@ -57,10 +57,10 @@ class ErrorsViewHelper extends AbstractFormFieldViewHelper {
 	 * Nothing to do here; we're not rendering a
 	 * form element.
 	 *
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function render() {
-		throw new Exception("Render method not implemented for ErrorsViewHelper.");
+		throw new \Exception("Render method not implemented for ErrorsViewHelper.");
 	}
 }
 ?>

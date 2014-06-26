@@ -1,5 +1,7 @@
 <?php
 
+namespace CIC\Cicbase\ViewHelpers;
+
 /**
 	* Strip linebreaks
 	*
@@ -8,7 +10,7 @@
 	* @version
 	*/
 
-class Tx_Cicbase_ViewHelpers_StripLinebreaksViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class StripLinebreaksViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 		* Removes linebreaks

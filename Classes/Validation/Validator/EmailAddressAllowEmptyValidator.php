@@ -1,4 +1,7 @@
 <?php
+
+namespace CIC\Cicbase\Validation\Validator;
+
 /***************************************************************
  *  Copyright notice
  *  (c) 2009 Jochen Rau <jochen.rau@typoplanet.de>
@@ -22,11 +25,11 @@
 /**
  * Validator for email addresses
  *
- * @package Extbase
+ * @package CIC\Cicbase
  * @subpackage Validation\Validator
  * @version $Id$
  */
-class Tx_Cicbase_Validation_Validator_EmailAddressAllowEmptyValidator extends Tx_Extbase_Validation_Validator_EmailAddressValidator {
+class EmailAddressAllowEmptyValidator extends \TYPO3\CMS\Extbase\Validation\Validator\EmailAddressValidator {
 
 	/**
 	 * Checks if the given value is a valid email address.

@@ -1,19 +1,20 @@
 <?php
+namespace CIC\Cicbase\Controller;
 
-class Tx_Cicbase_Controller_Controller extends Tx_Extbase_MVC_Controller_ActionController {
+class Controller extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController {
 
 	/**
-	 * @var Tx_Cicbase_Service_ControllerSecurityService
+	 * @var \CIC\Cicbase\Service\ControllerSecurityService
 	 */
 	protected $controllerSecurityService;
 
 	/**
 	 * Inject the controllerSecurityService
 	 *
-	 * @param Tx_Cicbase_Service_ControllerSecurityService controllerSecurityService
+	 * @param \CIC\Cicbase\Service\ControllerSecurityService controllerSecurityService
 	 * @return void
 	 */
-	public function injectControllerSecurityService(Tx_Cicbase_Service_ControllerSecurityService $controllerSecurityService) {
+	public function injectControllerSecurityService(\CIC\Cicbase\Service\ControllerSecurityService $controllerSecurityService) {
 		$this->controllerSecurityService = $controllerSecurityService;
 	}
 
@@ -21,6 +22,8 @@ class Tx_Cicbase_Controller_Controller extends Tx_Extbase_MVC_Controller_ActionC
 	 * Initialize the action method
 	 */
 	public function initializeAction() {
+		// TODO Remove the cicblog stuff from cicbase
+		// see https://www.pivotaltracker.com/story/show/73982204
 		$this->controllerSecurityService->secureActionArguments($this->arguments, $this->request, 'Tx_Cicblog_Controller_PostsController');
 	}
 

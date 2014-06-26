@@ -1,9 +1,12 @@
 <?php
+
+namespace CIC\Cicbase\Formhandler\Interceptor;
+
 /**
  * Example configuration:
  *
  * <code>
- * 2.class = Tx_Cicbase_Formhandler_Interceptor_MaxMindLocator
+ * 2.class = CIC\Cicbase\Formhandler\Interceptor\MaxMindLocator
  * 2.config {
  * 		maxMindId = oDgEqB1ewIVa
  *		type = city
@@ -20,7 +23,7 @@
  * }
  * </code>
  */
-class Tx_Cicbase_Formhandler_Interceptor_MaxMindLocator extends Tx_Formhandler_AbstractInterceptor {
+class MaxMindLocator extends \Tx_Formhandler_AbstractInterceptor {
 
 	/**
 	 * The main method called by the controller
@@ -34,7 +37,7 @@ class Tx_Cicbase_Formhandler_Interceptor_MaxMindLocator extends Tx_Formhandler_A
 			$queryStringCode = 'a';
 		}
 		$maxmindAccountId = $this->settings['maxMindId'];
-		$ip = t3lib_div::getIndpEnv('REMOTE_ADDR');
+		$ip = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('REMOTE_ADDR');
 
 		if($this->settings['debugForceIp']) {
 			$ip = $this->settings['debugForceIp'];

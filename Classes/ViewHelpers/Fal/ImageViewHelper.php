@@ -1,9 +1,11 @@
 <?php
 
+namespace CIC\Cicbase\ViewHelpers\Fal;
+
 /**
- * Class Tx_Cicbase_ViewHelpers_Fal_ImageViewHelper
+ * Class CIC\Cicbase\ViewHelpers\Fal\ImageViewHelper
  */
-class Tx_Cicbase_ViewHelpers_Fal_ImageViewHelper extends TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper {
+class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper {
 	/**
 	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
 	 */
@@ -49,7 +51,7 @@ class Tx_Cicbase_ViewHelpers_Fal_ImageViewHelper extends TYPO3\CMS\Fluid\ViewHel
 			if ($urlOnly && preg_match('/src="([^"]*)"/', $out, $matches)) {
 				$out = $matches[1];
 			}
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$out = null;
 		}
 		return $out;

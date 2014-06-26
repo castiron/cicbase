@@ -1,4 +1,5 @@
 <?php
+namespace CIC\Cicbase\Service;
 
 /***************************************************************
  *  Copyright notice
@@ -27,20 +28,20 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 
-class Tx_Cicbase_Service_ControllerSecurityService {
+class ControllerSecurityService {
 
 	/**
-	 * @var Tx_Extbase_Reflection_Service
+	 * @var \TYPO3\CMS\Extbase\Reflection\ReflectionService
 	 */
 	protected $reflectionService;
 
 	/**
 	 * inject the reflectionService
 	 *
-	 * @param Tx_Extbase_Reflection_Service reflectionService
+	 * @param \TYPO3\CMS\Extbase\Reflection\ReflectionService reflectionService
 	 * @return void
 	 */
-	public function injectReflectionService(Tx_Extbase_Reflection_Service $reflectionService) {
+	public function injectReflectionService(\TYPO3\CMS\Extbase\Reflection\ReflectionService $reflectionService) {
 		$this->reflectionService = $reflectionService;
 	}
 
@@ -67,14 +68,14 @@ class Tx_Cicbase_Service_ControllerSecurityService {
 			$conf = $arguments[$argumentName]->getPropertyMappingConfiguration();
 			$options = array();
 
-			$key = Tx_Extbase_Property_TypeConverter_PersistentObjectConverter::CONFIGURATION_MODIFICATION_ALLOWED;
+			$key = \TYPO3\CMS\Extbase\Property\TypeConverter\PersistentObjectConverter::CONFIGURATION_MODIFICATION_ALLOWED;
 			if(!in_array($argumentName, $modificationAllowed)) {
 				$options[$key] = false;
 			} else {
 				$options[$key] = true;
 			}
 
-			$key = Tx_Extbase_Property_TypeConverter_PersistentObjectConverter::CONFIGURATION_MODIFICATION_ALLOWED;
+			$key = \TYPO3\CMS\Extbase\Property\TypeConverter\PersistentObjectConverter::CONFIGURATION_MODIFICATION_ALLOWED;
 			if (!in_array($argumentName, $creationAllowed)) {
 				$options[$key] = false;
 			} else {
@@ -82,7 +83,7 @@ class Tx_Cicbase_Service_ControllerSecurityService {
 			}
 
 			// set sane defaults
-			#$conf->setTypeConverterOptions('Tx_Extbase_Property_TypeConverter_PersistentObjectConverter', $options);
+			#$conf->setTypeConverterOptions('TYPO3\CMS\Extbase\Property\TypeConverter\PersistentObjectConverter', $options);
 		}
 	}
 }

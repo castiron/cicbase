@@ -1,4 +1,5 @@
 <?php
+namespace CIC\Cicbase\Scheduler;
 /***************************************************************
 *  Copyright notice
 *
@@ -28,46 +29,46 @@
  * @package Cicbase
  * @subpackage Scheduler
  */
-class Tx_Cicbase_Scheduler_FieldProvider implements Tx_Scheduler_AdditionalFieldProvider {
+class FieldProvider implements \TYPO3\CMS\Scheduler\AdditionalFieldProviderInterface {
 
 	/**
-	 * @var Tx_Extbase_MVC_CLI_CommandManager
+	 * @var \TYPO3\CMS\Extbase\Mvc\Cli\CommandManager
 	 */
 	protected $commandManager;
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManager
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
 	 */
 	protected $objectManager;
 
 	/**
-	 * @var Tx_Extbase_Reflection_Service
+	 * @var \TYPO3\CMS\Extbase\Reflection\ReflectionService
 	 */
 	protected $reflectionService;
 
 	/**
-	 * @var Tx_Cicbase_Scheduler_Task
+	 * @var \CIC\Cicbase\Scheduler\Task
 	 */
 	protected $task;
 
 	/**
-	 * @param Tx_Extbase_MVC_CLI_CommandManager $commandManager
+	 * @param \TYPO3\CMS\Extbase\Mvc\Cli\CommandManager $commandManager
 	 */
-	public function injectCommandManager(Tx_Extbase_MVC_CLI_CommandManager $commandManager) {
+	public function injectCommandManager(\TYPO3\CMS\Extbase\Mvc\Cli\CommandManager $commandManager) {
 		$this->commandManager = $commandManager;
 	}
 
 	/**
-	 * @param Tx_Extbase_Object_ObjectManager $objectManager
+	 * @param \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager
 	 */
-	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager) {
+	public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManager $objectManager) {
 		$this->objectManager = $objectManager;
 	}
 
 	/**
-	 * @param Tx_Extbase_Reflection_Service $reflectionService
+	 * @param \TYPO3\CMS\Extbase\Reflection\ReflectionService $reflectionService
 	 */
-	public function injectReflectionService(Tx_Extbase_Reflection_Service $reflectionService) {
+	public function injectReflectionService(\TYPO3\CMS\Extbase\Reflection\ReflectionService $reflectionService) {
 		$this->reflectionService = $reflectionService;
 	}
 
@@ -75,11 +76,11 @@ class Tx_Cicbase_Scheduler_FieldProvider implements Tx_Scheduler_AdditionalField
 	 * CONSTRUCTOR
 	 */
 	public function __construct() {
-		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
 		$this->injectObjectManager($objectManager);
-		$commandManager = $this->objectManager->get('Tx_Extbase_MVC_CLI_CommandManager');
+		$commandManager = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Cli\CommandManager');
 		$this->injectCommandManager($commandManager);
-		$reflectionService = $this->objectManager->get('Tx_Extbase_Reflection_Service');
+		$reflectionService = $this->objectManager->get('TYPO3\CMS\Extbase\Reflection\ReflectionService');
 		$this->injectReflectionService($reflectionService);
 	}
 
@@ -87,12 +88,12 @@ class Tx_Cicbase_Scheduler_FieldProvider implements Tx_Scheduler_AdditionalField
 	 * Render additional information fields within the scheduler backend.
 	 *
 	 * @param array $taskInfo Array information of task to return
-	 * @param mixed $task Tx_Cicbase_Scheduler_Task or tx_scheduler_Execution instance
-	 * @param Tx_Scheduler_Module $schedulerModule Reference to the calling object (BE module of the Scheduler)
+	 * @param mixed $task \CIC\Cicbase\Scheduler\Task or tx_scheduler_Execution instance
+	 * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule Reference to the calling object (BE module of the Scheduler)
 	 * @return array Additional fields
 	 * @see interfaces/tx_scheduler_AdditionalFieldProvider#getAdditionalFields($taskInfo, $task, $schedulerModule)
 	 */
-	public function getAdditionalFields(array &$taskInfo, $task, Tx_Scheduler_Module $schedulerModule) {
+	public function getAdditionalFields(array &$taskInfo, $task, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule) {
 		$this->task = $task;
 		if ($this->task) {
 			$this->task->setScheduler();
@@ -113,10 +114,10 @@ class Tx_Cicbase_Scheduler_FieldProvider implements Tx_Scheduler_AdditionalField
 	 * Validates additional selected fields
 	 *
 	 * @param array $submittedData
-	 * @param Tx_Scheduler_Module $schedulerModule
+	 * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule
 	 * @return boolean
 	 */
-	public function validateAdditionalFields(array &$submittedData, Tx_Scheduler_Module $schedulerModule) {
+	public function validateAdditionalFields(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule) {
 		return TRUE;
 	}
 
@@ -124,10 +125,10 @@ class Tx_Cicbase_Scheduler_FieldProvider implements Tx_Scheduler_AdditionalField
 	 * Saves additional field values
 	 *
 	 * @param array $submittedData
-	 * @param Tx_Scheduler_Task $task
+	 * @param \TYPO3\CMS\Scheduler\Task\AbstractTask $task
 	 * @return boolean
 	 */
-	public function saveAdditionalFields(array $submittedData, Tx_Scheduler_Task $task) {
+	public function saveAdditionalFields(array $submittedData, \TYPO3\CMS\Scheduler\Task\AbstractTask $task) {
 		$task->setCommandIdentifier($submittedData['task_cicbase']['action']);
 		$task->setArguments($submittedData['task_cicbase']['arguments']);
 		return TRUE;
@@ -205,16 +206,16 @@ class Tx_Cicbase_Scheduler_FieldProvider implements Tx_Scheduler_AdditionalField
 		if (!$extensionName) {
 			list ($extensionName, $commandControllerName, $commandName) = explode(':', $this->task->getCommandIdentifier());
 		}
-		$label = Tx_Extbase_Utility_Localization::translate($localLanguageKey, $extensionName);
+		$label = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate($localLanguageKey, $extensionName);
 		return $label;
 	}
 
 	/**
 	 * Gets the data type required for the argument value
 	 *
-	 * @param Tx_Extbase_MVC_CLI_CommandArgumentDefinition $argument
+	 * @param \TYPO3\CMS\Extbase\Mvc\Cli\CommandArgumentDefinition $argument
 	 */
-	protected function getArgumentType(Tx_Extbase_MVC_CLI_CommandArgumentDefinition $argument) {
+	protected function getArgumentType(\TYPO3\CMS\Extbase\Mvc\Cli\CommandArgumentDefinition $argument) {
 		$command = $this->commandManager->getCommandByIdentifier($this->task->getCommandIdentifier());
 		$controllerClassName = $command->getControllerClassName();
 		$methodName = $command->getControllerCommandName() . 'Command';
@@ -231,10 +232,10 @@ class Tx_Cicbase_Scheduler_FieldProvider implements Tx_Scheduler_AdditionalField
 	/**
 	 * Get a human-readable label for a command argument
 	 *
-	 * @param Tx_Extbase_MVC_CLI_CommandArgumentDefinition $argument
+	 * @param \TYPO3\CMS\Extbase\Mvc\Cli\CommandArgumentDefinition $argument
 	 * @return string
 	 */
-	protected function getArgumentLabel(Tx_Extbase_MVC_CLI_CommandArgumentDefinition $argument) {
+	protected function getArgumentLabel(\TYPO3\CMS\Extbase\Mvc\Cli\CommandArgumentDefinition $argument) {
 		$argumentName = $argument->getName();
 		list ($extensionName, $commandControllerName, $commandName) = explode(':', $this->task->getCommandIdentifier());
 		$path = array('command', $commandControllerName, $commandName, 'arguments', $argumentName);
@@ -257,10 +258,10 @@ class Tx_Cicbase_Scheduler_FieldProvider implements Tx_Scheduler_AdditionalField
 	/**
 	 * Gets the default value of argument
 	 *
-	 * @param Tx_Extbase_MVC_CLI_CommandArgumentDefinition $argument
+	 * @param \TYPO3\CMS\Extbase\Mvc\Cli\CommandArgumentDefinition $argument
 	 * @return mixed
 	 */
-	protected function getDefaultArgumentValue(Tx_Extbase_MVC_CLI_CommandArgumentDefinition $argument) {
+	protected function getDefaultArgumentValue(\TYPO3\CMS\Extbase\Mvc\Cli\CommandArgumentDefinition $argument) {
 		$type = $this->getArgumentType($argument);
 		$argumentName = $argument->getName();
 		$command = $this->commandManager->getCommandByIdentifier($this->task->getCommandIdentifier());
@@ -314,7 +315,7 @@ class Tx_Cicbase_Scheduler_FieldProvider implements Tx_Scheduler_AdditionalField
 	 * @param string $currentValue
 	 * @return string
 	 */
-	protected function renderField(Tx_Extbase_MVC_CLI_CommandArgumentDefinition $argument, $currentValue) {
+	protected function renderField(\TYPO3\CMS\Extbase\Mvc\Cli\CommandArgumentDefinition $argument, $currentValue) {
 		$type = $this->getArgumentType($argument);
 		$name = $argument->getName();
 		$fieldName = 'tx_scheduler[task_cicbase][arguments][' . htmlspecialchars($name) . ']';

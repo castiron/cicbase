@@ -1,4 +1,6 @@
 <?php
+namespace CIC\Cicbase\Domain\Repository;
+
 /***************************************************************
 *  Copyright notice
 *
@@ -29,7 +31,7 @@
  * @copyright Copyright belongs to the respective authors
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class Tx_Cicbase_Domain_Repository_ZipRepository extends Tx_Extbase_Persistence_Repository {
+class ZipRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 	
 	
 	public function findByZip($zip) {

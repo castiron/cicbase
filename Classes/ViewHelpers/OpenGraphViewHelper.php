@@ -1,4 +1,7 @@
 <?php
+
+namespace CIC\Cicbase\ViewHelpers;
+
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
@@ -25,7 +28,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * @scope prototype
  */
 
-class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	const MERGE_TS_KEY = '_openGraphMerge';
 	const DEFAULT_HEADER_DATA_KEY = '100';
@@ -87,7 +90,7 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	 * @param $headerDataKey
 	 */
 	protected function stashHeaderDataKey($headerDataKey) {
-		$GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['usedKeys'] = array_merge($this->getStashedHeaderDataKeys(), array(
+		$GLOBALS['TSFE']->register[self::REGISTER_KEY]['usedKeys'] = array_merge($this->getStashedHeaderDataKeys(), array(
 			$headerDataKey => $headerDataKey,
 		));
 	}
@@ -96,14 +99,14 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	 * @return array
 	 */
 	protected function getStashedHeaderDataKeys() {
-		return $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['usedKeys'] ? $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['usedKeys'] : array();
+		return $GLOBALS['TSFE']->register[self::REGISTER_KEY]['usedKeys'] ? $GLOBALS['TSFE']->register[self::REGISTER_KEY]['usedKeys'] : array();
 	}
 
 	/**
 	 * @param $headerDataKey
 	 */
 	protected function markHeaderDataKeyAsMergeable($headerDataKey) {
-		$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.'][Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::MERGE_TS_KEY] = $headerDataKey;
+		$GLOBALS['TSFE']->pSetup['headerData.'][$headerDataKey . '.'][self::MERGE_TS_KEY] = $headerDataKey;
 	}
 
 	/**
@@ -167,9 +170,9 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	 * @param $tag
 	 */
 	protected function trackTag($tag) {
-		$tracked = $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tagHashes'] ? $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tagHashes'] : array();
+		$tracked = $GLOBALS['TSFE']->register[self::REGISTER_KEY]['tagHashes'] ? $GLOBALS['TSFE']->register[self::REGISTER_KEY]['tagHashes'] : array();
 		$tracked[] = GeneralUtility::shortMD5($tag);
-		$GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tagHashes'] = $tracked;
+		$GLOBALS['TSFE']->register[self::REGISTER_KEY]['tagHashes'] = $tracked;
 	}
 
 	/**
@@ -177,10 +180,10 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	 * @return bool
 	 */
 	protected function alreadyUsingTag($tag) {
-		if (!$GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tagHashes']) {
-			$GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tagHashes'] = array();
+		if (!$GLOBALS['TSFE']->register[self::REGISTER_KEY]['tagHashes']) {
+			$GLOBALS['TSFE']->register[self::REGISTER_KEY]['tagHashes'] = array();
 		}
-		$out = array_search(\TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5($tag), $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tagHashes']) !== false;
+		$out = array_search(\TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5($tag), $GLOBALS['TSFE']->register[self::REGISTER_KEY]['tagHashes']) !== false;
 		return $out;
 	}
 
@@ -188,21 +191,21 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	 * @param $n
 	 */
 	protected function setImageCount($n) {
-		$GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['imageCount'] = $n;
+		$GLOBALS['TSFE']->register[self::REGISTER_KEY]['imageCount'] = $n;
 	}
 
 	/**
 	 * @return int
 	 */
 	protected function getImageCount() {
-		return $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['imageCount'] ? $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['imageCount'] : 0;
+		return $GLOBALS['TSFE']->register[self::REGISTER_KEY]['imageCount'] ? $GLOBALS['TSFE']->register[self::REGISTER_KEY]['imageCount'] : 0;
 	}
 
 	/**
 	 *
 	 */
 	protected function canAddImages() {
-		return $this->getImageCount() < Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::MAX_IMAGE_COUNT;
+		return $this->getImageCount() < self::MAX_IMAGE_COUNT;
 	}
 
 	/**
@@ -247,14 +250,14 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	 * @param $data
 	 */
 	protected function stashMergeableTags($data) {
-		$GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tags'] = array_merge($this->getStashedMergeableTags(),$data);
+		$GLOBALS['TSFE']->register[self::REGISTER_KEY]['tags'] = array_merge($this->getStashedMergeableTags(),$data);
 	}
 
 	/**
 	 *
 	 */
 	protected function getStashedMergeableTags() {
-		return $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tags'] ? $GLOBALS['TSFE']->register[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::REGISTER_KEY]['tags'] : array();
+		return $GLOBALS['TSFE']->register[self::REGISTER_KEY]['tags'] ? $GLOBALS['TSFE']->register[self::REGISTER_KEY]['tags'] : array();
 	}
 
 	/**
@@ -265,8 +268,8 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 	protected function getHeaderDataKey() {
 		if($this->arguments['merge']) {
 			$key = array_reduce($GLOBALS['TSFE']->pSetup['headerData.'], function ($res, $v) {
-				if(is_array($v) && $v[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::MERGE_TS_KEY]) {
-					return $v[Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::MERGE_TS_KEY];
+				if(is_array($v) && $v[self::MERGE_TS_KEY]) {
+					return $v[self::MERGE_TS_KEY];
 				}
 				return $res;
 			}, false);
@@ -317,6 +320,6 @@ class Tx_Cicbase_ViewHelpers_OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\V
 		$highestKey = array_reduce(array_keys($GLOBALS['TSFE']->pSetup['headerData.']), function ($res, $v) {
 			return max($res, intval($v));
 		});
-		return $highestKey ? (string)($highestKey * 2) : Tx_Cicbase_ViewHelpers_OpenGraphViewHelper::DEFAULT_HEADER_DATA_KEY;
+		return $highestKey ? (string)($highestKey * 2) : self::DEFAULT_HEADER_DATA_KEY;
 	}
 }

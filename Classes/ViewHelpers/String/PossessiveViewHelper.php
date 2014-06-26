@@ -1,4 +1,7 @@
 <?php
+
+namespace CIC\Cicbase\ViewHelper\String;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +32,7 @@
  *
  */
 
-class Tx_Cicbase_ViewHelpers_String_PossessiveViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class PossessiveViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * @param bool $upperCase

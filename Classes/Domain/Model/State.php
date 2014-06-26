@@ -1,5 +1,5 @@
 <?php
-
+namespace CIC\Cicbase\Domain\Model;
 /***************************************************************
 *  Copyright notice
 *
@@ -25,7 +25,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-class Tx_Cicbase_Domain_Model_State extends Tx_Extbase_DomainObject_AbstractEntity {
+class State extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
 	/**
 	* name

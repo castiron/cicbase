@@ -101,9 +101,9 @@ class HashStorageTest extends \TYPO3\CMS\Extbase\Tests\Unit\BaseTestCase {
 	/**
 	 * Adds our models to the storage
 	 *
-	 * @param \Tx_Extbase_Persistence_ObjectStorage $storage
+	 * @param \TYPO3\CMS\Extbase\Persistence\ObjectStorage $storage
 	 */
-	protected function fillStorage(\Tx_Extbase_Persistence_ObjectStorage $storage) {
+	protected function fillStorage(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $storage) {
 		foreach ($this->models as $model) {
 			$storage->attach($model);
 		}

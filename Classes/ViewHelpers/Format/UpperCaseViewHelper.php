@@ -1,7 +1,8 @@
 <?php
 
+namespace CIC\Cicbase\ViewHelpers\Format;
 
-class Tx_Cicbase_ViewHelpers_Format_UpperCaseViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class UpperCaseViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
     /**
      * @return string

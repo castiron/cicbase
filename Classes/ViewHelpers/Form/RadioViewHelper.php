@@ -77,7 +77,7 @@ class RadioViewHelper extends AbstractFormFieldViewHelper {
 		if ($this->isObjectAccessorMode()) {
 			try {
 				$propertyValue = $this->getPropertyValue();
-			} catch (Tx_Fluid_Core_ViewHelper_Exception_InvalidVariableException $exception) {
+			} catch (\TYPO3\CMS\Fluid\Core\ViewHelper\Exception\InvalidVariableException $exception) {
 				// https://review.typo3.org/#/c/4413/4/Classes/ViewHelpers/Form/CheckboxViewHelper.php
 				// http://forge.typo3.org/issues/5636
 			}
@@ -87,7 +87,7 @@ class RadioViewHelper extends AbstractFormFieldViewHelper {
 			$checked = TRUE;
 		}
 
-		$tag = new Tx_Fluid_Core_ViewHelper_TagBuilder('input');
+		$tag = new \TYPO3\CMS\Fluid\Core\ViewHelper\TagBuilder('input');
 		$tag->addAttributes(array(
 			'value' => $value,
 			'type' => 'radio',

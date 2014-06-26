@@ -1,4 +1,5 @@
 <?php
+namespace CIC\Cicbase\Domain\Model;
 /***************************************************************
  *  Copyright notice
  *
@@ -23,7 +24,7 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntity {
+class File extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
 	/**
 	 * @var string
@@ -214,7 +215,7 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 	 * @return string
 	 */
 	public function getAbsPathAndFileName() {
-		return t3lib_div::getFileAbsFileName($this->getPath().'/'.$this->getFilename());
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($this->getPath().'/'.$this->getFilename());
 	}
 
 	public function getPathAndFileName() {

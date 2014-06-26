@@ -1,5 +1,7 @@
 <?php
 
+namespace CIC\Cicbase\ViewHelpers;
+
 /**
 	* Length viewhelper
 	*
@@ -7,7 +9,7 @@
 	* @subpackage Fluid
 	* @version
 	*/
-class Tx_Cicbase_ViewHelpers_LengthViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class LengthViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * Returns the length of the subject

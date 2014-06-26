@@ -1,6 +1,8 @@
 <?php
 
-class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeConverter_PersistentObjectConverter {
+namespace CIC\Cicbase\Property\TypeConverter;
+
+class File extends \TYPO3\CMS\Extbase\Property\TypeConverter\PersistentObjectConverter {
 
 	/**
 	 * The source types this converter can convert.
@@ -16,7 +18,7 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 	 * @var string
 	 * @api
 	 */
-	protected $targetType = 'Tx_Cicbase_Domain_Model_File';
+	protected $targetType = 'CIC\Cicbase\Domain\Model\File';
 
 	/**
 	 * The priority for this converter.
@@ -27,46 +29,46 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 	protected $priority = 2;
 
 	/**
-	 * @var Tx_Cicbase_Factory_FileFactory
+	 * @var \CIC\Cicbase\Factory\FileFactory
 	 */
 	protected $fileFactory;
 
 	/**
-	 * @var Tx_Cicbase_Domain_Repository_FileRepository
+	 * @var \CIC\Cicbase\Domain\Repository\FileRepository
 	 */
 	protected $fileRepository;
 
 	/**
-	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
+	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
 
 	/**
-	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager
+	 * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager
 	 * @return void
 	 */
-	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
+	public function injectConfigurationManager(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
-		$this->settings = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
+		$this->settings = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
 	}
 
 	/**
 	 * inject the fileRepository
 	 *
-	 * @param Tx_Cicbase_Domain_Repository_FileRepository fileRepository
+	 * @param \CIC\Cicbase\Domain\Repository\FileRepository fileRepository
 	 * @return void
 	 */
-	public function injectFileRepository(Tx_Cicbase_Domain_Repository_FileRepository $fileRepository) {
+	public function injectFileRepository(\CIC\Cicbase\Domain\Repository\FileRepository $fileRepository) {
 		$this->fileRepository = $fileRepository;
 	}
 
 	/**
 	 * inject the documentFactory
 	 *
-	 * @param Tx_Cicbase_Factory_FileFactory documentFactory
+	 * @param \CIC\Cicbase\Factory\FileFactory documentFactory
 	 * @return void
 	 */
-	public function injectFileFactory(Tx_Cicbase_Factory_FileFactory $documentFactory) {
+	public function injectFileFactory(\CIC\Cicbase\Factory\FileFactory $documentFactory) {
 		$this->fileFactory = $documentFactory;
 	}
 
@@ -106,11 +108,11 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 	 * @param string $targetType
 	 * @param array $convertedChildProperties
 	 * @param null|\TYPO3\CMS\Extbase\Property\PropertyMappingConfigurationInterface $configuration
-	 * @return null|object|Tx_Cicbase_Domain_Model_File|Tx_Extbase_Error_Error|\TYPO3\CMS\Extbase\Error\Error
-	 * @throws Tx_Extbase_Configuration_Exception
+	 * @return null|object|\CIC\Cicbase\Domain\Model\File|\TYPO3\CMS\Extbase\Error\Error|\TYPO3\CMS\Extbase\Error\Error
+	 * @throws \TYPO3\CMS\Extbase\Configuration\Exception
 	 */
 	public function convertFrom($source, $targetType, array $convertedChildProperties = array(), \TYPO3\CMS\Extbase\Property\PropertyMappingConfigurationInterface $configuration = NULL) {
-		$propertyPath = $configuration->getConfigurationValue('Tx_Cicbase_Property_TypeConverter_File', 'propertyPath');
+		$propertyPath = $configuration->getConfigurationValue('CIC\Cicbase\Property\TypeConverter\File', 'propertyPath');
 		if(!$propertyPath) {
 			$propertyPath = 'file';
 			$key = '';
@@ -119,7 +121,7 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 		}
 		if(!$this->fileFactory->wasUploadAttempted($propertyPath)) {
 			$fileObject = $this->fileRepository->getHeld($key);
-			if($fileObject instanceof Tx_Cicbase_Domain_Model_File) {
+			if($fileObject instanceof \CIC\Cicbase\Domain\Model\File) {
 				return $fileObject;
 			} else {
 				// this is where we end up if no file upload was attempted (eg, form was submitted without a value
@@ -128,14 +130,14 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 				return NULL;
 				// I thought this should return an error, at first, but instead we're going to treat this as though
 				// nothing was posted at all... this allows for option file upload fields, I think.
-				return new Tx_Extbase_Error_Error('No file was uploaded.', 1336597083);
+				return new \TYPO3\CMS\Extbase\Error\Error('No file was uploaded.', 1336597083);
 			}
 		} else {
 			// Otherwise, we create a new file object. Note that we use the fileFactory to turn $_FILE data into
 			// a proper file object. Elsewhere, we use the fileRepository to retrieve file objects, even those that
 			// haven't yet been persisted to the database;
-			$allowedTypes = $configuration->getConfigurationValue('Tx_Cicbase_Property_TypeConverter_File', 'allowedTypes');
-			$maxSize = $configuration->getConfigurationValue('Tx_Cicbase_Property_TypeConverter_File', 'maxSize');
+			$allowedTypes = $configuration->getConfigurationValue('CIC\Cicbase\Property\TypeConverter\File', 'allowedTypes');
+			$maxSize = $configuration->getConfigurationValue('CIC\Cicbase\Property\TypeConverter\File', 'maxSize');
 			if(!$allowedTypes) {
 				$allowedTypes = $this->settings['fileAllowedMime'];
 			}
@@ -145,12 +147,12 @@ class Tx_Cicbase_Property_TypeConverter_File extends Tx_Extbase_Property_TypeCon
 
 			// Too risky to use this type converter without some settings in place.
 			if(!$maxSize) {
-				throw new Tx_Extbase_Configuration_Exception('Before you can use the file type converter, you must set a
+				throw new \TYPO3\CMS\Extbase\Configuration\Exception('Before you can use the file type converter, you must set a
 				 fileMaxSize value in the settings section of your extension typoscript, or in the file type converter
 				 configuration.', 1337043345);
 			}
 			if (!is_array($allowedTypes) && count($allowedTypes) == 0) {
-				throw new Tx_Extbase_Configuration_Exception('Before you can use the file type converter, you must configure
+				throw new \TYPO3\CMS\Extbase\Configuration\Exception('Before you can use the file type converter, you must configure
 				 fileAllowedMime settings section of your extension typoscript, or in the file type converter
 				 configuration.', 1337043346);
 			}

@@ -1,4 +1,7 @@
 <?php
+
+namespace CIC\Cicbase\ViewHelpers;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -29,7 +32,7 @@
  *
  */
 
-class Tx_Cicbase_ViewHelpers_JsonBootstrapViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class JsonBootstrapViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 
 	public function initializeArguments() {

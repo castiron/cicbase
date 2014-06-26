@@ -1,4 +1,7 @@
 <?php
+
+namespace CIC\Cicbase\ViewHelpers\File;
+
 /***************************************************************
  *  Copyright notice
  *  (c) 2012 Peter Soots <peter
@@ -18,11 +21,11 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-class Tx_Cicbase_ViewHelpers_File_LinkViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 
 	/**
-	 * @param Tx_Cicbase_Domain_Model_File||Tx_Extbase_Persistence_LazyLoadingProxy $file
+	 * @param \CIC\Cicbase\Domain\Model\File|\TYPO3\CMS\Extbase\Persistence\Generic\LazyLoadingProxy $file
 	 * @param string $class
 	 * @param string $linkText
 	 * @return string

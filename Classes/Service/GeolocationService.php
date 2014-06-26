@@ -1,4 +1,5 @@
 <?php
+namespace CIC\Cicbase\Service;
 
 /***************************************************************
 *  Copyright notice
@@ -33,7 +34,7 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 
-class Tx_Cicbase_Service_GeolocationService {
+class GeolocationService {
 
 	protected $apiKey = false;
 	protected $cache = false;
@@ -55,8 +56,8 @@ class Tx_Cicbase_Service_GeolocationService {
 	/**
 	 * Returns Latitude and Longitude for an Address Object
 	 *
-	 * @param Tx_Cicbase_Domain_Model_Address $address The address to geocode
-	 * @return Tx_Cicbase_Domain_Model_LatLng
+	 * @param \CIC\Cicbase\Domain\Model\Address $address The address to geocode
+	 * @return \CIC\Cicbase\Domain\Model\LatLng
 	 */
 	public function getLatLng($address) {
 
@@ -64,7 +65,7 @@ class Tx_Cicbase_Service_GeolocationService {
 		$addressString = $address->getFullAddressOneLine();
 
 		// construct the latLng object to return
-		$latLng = t3lib_div::makeInstance('Tx_Cicbase_Domain_Model_LatLng');
+		$latLng = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('CIC\Cicbase\Domain\Model\LatLng');
 
 		// do the query
 		$res = $this->geocode($addressString);
@@ -78,7 +79,7 @@ class Tx_Cicbase_Service_GeolocationService {
 	protected function getCache() {
 		try {
 			$cache = $GLOBALS['typo3CacheManager']->getCache('cicbase_cache');
-		} catch (t3lib_cache_exception_NoSuchCache $e) {
+		} catch (\TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException $e) {
 			// Unable to load
 		}
 		return $cache;

@@ -1,7 +1,10 @@
 <?php
+
+namespace CIC\Cicbase\Formhandler\Interceptor;
+
 /**
  * <code>
- * saveInterceptors.1.class = Tx_Cicbase_Formhandler_Interceptor_FieldChanger
+ * saveInterceptors.1.class = CIC\Cicbase\Formhandler\Interceptor\FieldChanger
  * saveInterceptors.1.config.fields {
  * 			1.field {
  * 				name = fieldname
@@ -12,7 +15,7 @@
  * }
  * </code>
  */
-class Tx_Cicbase_Formhandler_Interceptor_FieldChanger extends Tx_Formhandler_AbstractInterceptor {
+class FieldChanger extends \Tx_Formhandler_AbstractInterceptor {
 
 	/**
 	 * The main method called by the controller
