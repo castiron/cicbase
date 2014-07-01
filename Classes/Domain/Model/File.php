@@ -384,6 +384,7 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 			case 'flv':
 			case 'mp4':
 				$out = 'video';
+				break;
 			case 'pdf':
 				$out = 'pdf';
 				break;
@@ -396,6 +397,7 @@ class Tx_Cicbase_Domain_Model_File extends Tx_Extbase_DomainObject_AbstractEntit
 			case 'doc':
 			case 'docx':
 				$out = 'word';
+				break;
 			case 'xls':
 			case 'xld':
 			case 'xlsx':
