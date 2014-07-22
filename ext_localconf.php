@@ -4,6 +4,7 @@ if (!defined('TYPO3_MODE')) {
 }
 
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers'][] = 'CIC\Cicbase\Command\ExampleCommandController';
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers'][] = 'CIC\Cicbase\Command\MigrationCommandController';
 
 #$signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Extbase_Object_Manager')->get('TYPO3\CMS\Extbase\SignalSlot\Dispatcher');
 #$signalSlotDispatcher->connect('Controller', 'ProcessUpload', 'CIC\Cicbase\Factory\FileFactory', 'HandleProcessUploadSignal', TRUE);
