@@ -49,11 +49,13 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 
 
 	/**
+	 * Constructs a new Repository
 	 *
+	 * @param \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager
 	 */
-	public function __construct() {
+	public function __construct(\TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager) {
 		$this->cicbaseConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['cicbase']);
-		parent::__construct();
+		parent::__construct($objectManager);
 	}
 
 	/**
