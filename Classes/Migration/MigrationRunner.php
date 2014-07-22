@@ -61,7 +61,7 @@ class MigrationRunner {
 
 	protected function getLastRunMigrationFor() {
 		$statement = $GLOBALS['TYPO3_DB']->prepare_SELECTquery('*', 'tx_cicbase_migrations', 'ext_key = :ext_key', '', 'version DESC', 1);
-		$statement->execute(array(':ext_key' => $this->currentRunExtKey, ':version' => $this->getTimestampFromMigration($migration)));
+		$statement->execute(array(':ext_key' => $this->currentRunExtKey));
 		$rows = $statement->fetchAll();
 		if(count($rows) == 1) {
 			$version = $rows[0]['version'];
@@ -195,12 +195,7 @@ class MigrationRunner {
 
 	protected function getMigrationFromVersion($version) {
 		$migrations = $this->getAvailableMigrations();
-		foreach($migrations as $migration) {
-			if(strpos($migration, $version) !== false) {
-				return $migration;
-			}
-		}
-		return NULL;
+		return isset($migrations[$version]) ? $migrations[$version] : NULL;
 	}
 
 	protected function getTimestampFromMigration($migration) {
