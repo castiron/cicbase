@@ -88,10 +88,10 @@ class FieldProvider implements \TYPO3\CMS\Scheduler\AdditionalFieldProviderInter
 	 * Render additional information fields within the scheduler backend.
 	 *
 	 * @param array $taskInfo Array information of task to return
-	 * @param mixed $task \CIC\Cicbase\Scheduler\Task or tx_scheduler_Execution instance
+	 * @param mixed $task \CIC\Cicbase\Scheduler\Task or \TYPO3\CMS\Scheduler\Execution instance
 	 * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule Reference to the calling object (BE module of the Scheduler)
 	 * @return array Additional fields
-	 * @see interfaces/tx_scheduler_AdditionalFieldProvider#getAdditionalFields($taskInfo, $task, $schedulerModule)
+	 * @see interfaces/\TYPO3\CMS\Scheduler\AdditionalFieldProviderInterface#getAdditionalFields($taskInfo, $task, $schedulerModule)
 	 */
 	public function getAdditionalFields(array &$taskInfo, $task, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $schedulerModule) {
 		$this->task = $task;

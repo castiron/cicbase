@@ -32,7 +32,7 @@
  * Same as fluid's link.page VH, but adds a 'frontendPath' argument for generating
  * links to the frontend from a backend module (like a scheduled task).
  */
-class Tx_Cicbase_ViewHelpers_Link_PageViewHelper extends Tx_Fluid_ViewHelpers_Link_PageViewHelper {
+class Tx_Cicbase_ViewHelpers_Link_PageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\PageViewHelper {
 
 	/**
 	 * @param integer $pageUid target page. See TypoLink destination

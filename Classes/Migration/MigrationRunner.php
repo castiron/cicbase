@@ -10,7 +10,7 @@ class MigrationRunner {
 	protected $messages = array();
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManager
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
 	 */
 	protected $objectManager;
 

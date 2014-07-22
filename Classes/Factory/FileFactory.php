@@ -241,7 +241,7 @@ class FileFactory implements \TYPO3\CMS\Core\SingletonInterface {
 	 * A function for rendering the file link in the TYPO3 backend.
 	 *
 	 * @param array $PA
-	 * @param t3lib_TCEforms $t3lib_tceforms
+	 * @param \TYPO3\CMS\Backend\Form\FormEngine $t3lib_tceforms
 	 * @return string
 	 */
 	public function generateLink($PA, $t3lib_tceforms) {

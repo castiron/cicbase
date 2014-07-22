@@ -3,7 +3,7 @@ namespace CIC\Cicbase\Command;
 class MigrationCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandController {
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManager
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
 	 */
 	protected $objectManager;
 
