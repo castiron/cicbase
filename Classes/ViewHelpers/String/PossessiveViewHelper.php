@@ -1,6 +1,6 @@
 <?php
 
-namespace CIC\Cicbase\ViewHelper\String;
+namespace CIC\Cicbase\ViewHelpers\String;
 
 /***************************************************************
  *  Copyright notice
