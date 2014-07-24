@@ -385,6 +385,7 @@ class File extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 			case 'flv':
 			case 'mp4':
 				$out = 'video';
+				break;
 			case 'pdf':
 				$out = 'pdf';
 				break;
@@ -397,6 +398,7 @@ class File extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 			case 'doc':
 			case 'docx':
 				$out = 'word';
+				break;
 			case 'xls':
 			case 'xld':
 			case 'xlsx':
