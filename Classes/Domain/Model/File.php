@@ -345,7 +345,7 @@ class File extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	 * @return int
 	 */
 	public function getTstampObj() {
-		$out = new DateTime();
+		$out = new \DateTime();
 		$out->setTimestamp($this->tstamp);
 		return $out;
 	}
@@ -361,7 +361,7 @@ class File extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	 * @return DateTime
 	 */
 	public function getCrdateObj() {
-		$out = new DateTime();
+		$out = new \DateTime();
 		$out->setTimestamp($this->crdate);
 		return $out;
 	}
