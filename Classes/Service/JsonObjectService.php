@@ -58,17 +58,16 @@ class JsonObjectService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @return \stdClass
 	 */
 	public function transform($model) {
-		$tag = microtime();
-		$class = get_class($model);
-		if($class == 'TYPO3\CMS\Extbase\Persistence\ObjectStorage' || $class == 'TYPO3\CMS\Extbase\Persistence\Generic\LazyObjectStorage') {
+		if($model instanceof \Traversable) {
 			$out = array();
 			foreach($model as $subModel) {
 				$out[] = $this->transform($subModel);
 			}
 			return $out;
-		} elseif(strpos($class,'Domain_Model') !== FALSE) {
+		} else if($model instanceof \TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface) {
 			$transformedObject = new \stdClass;
 			$properties = \TYPO3\CMS\Extbase\Reflection\ObjectAccess::getGettablePropertyNames($model);
+			$class = get_class($model);
 			foreach ($properties as $property) {
 				$getMethodName = 'get' . ucfirst($property);
 				$methodTags = $this->reflectionService->getMethodTagsValues($class, $getMethodName);
