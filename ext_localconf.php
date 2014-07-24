@@ -17,6 +17,7 @@ if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations
 
 if (\TYPO3\CMS\Core\Utility\GeneralUtility::compat_version('6')) {
 	\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerTypeConverter('CIC\Cicbase\Property\TypeConverter\FileReferenceConverter');
+	\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerTypeConverter('CIC\Cicbase\Property\TypeConverter\File');
 }
 
 ?>
