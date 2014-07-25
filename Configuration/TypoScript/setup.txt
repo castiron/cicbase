@@ -15,6 +15,9 @@ config.tx_extbase{
 		TYPO3\CMS\Extbase\Persistence\Generic\QueryFactoryInterface {
 			className = CIC\Cicbase\Persistence\QueryFactory
 		}
+		TYPO3\CMS\Extbase\Validation\Validator\EmailAddressValidator {
+			className = CIC\Cicbase\Validation\Validator\EmailAddressValidator
+		}
 	}
 }
 
