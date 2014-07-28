@@ -114,7 +114,7 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 				'readOnly' => 1,
 				'type' => 'user',
 				'size' => '30',
-				'userFunc' => 'EXT:cicbase/Classes/Factory/FileFactory.php:Tx_Cicbase_Factory_FileFactory->generateLink',
+				'userFunc' => 'EXT:cicbase/Classes/Factory/FileFactory.php:CIC\Cicbase\Factory\FileFactory->generateLink',
 			),
 		),
 		'mime_type' => array(

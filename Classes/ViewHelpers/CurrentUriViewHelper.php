@@ -1,11 +1,13 @@
 <?php
 
+namespace CIC\Cicbase\ViewHelpers;
+
 /**
  * Class CurrentUriViewHelper
  *
  * @package CIC\Cicbase\ViewHelpers
  */
-class Tx_Cicbase_ViewHelpers_CurrentUriViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class CurrentUriViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * @return mixed
