@@ -157,6 +157,7 @@ class MigrationRunner {
 				$this->handleMigrationSuccess($migration, $migrationObject);
 			}
 		} catch (\Exception $e) {
+			echo $e->getMessage() ."\n";
 			$this->handleMigrationFailure($migration, $migrationObject);
 		}
 	}
