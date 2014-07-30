@@ -30,13 +30,31 @@ abstract class AbstractMigration implements MigrationInterface {
 	 *
 	 * @param string $source
 	 * @param string $destination
+	 * @param array $renameColumns [sourceColName => destColName, ...] Needed if you're copying from one table to another where the column names differ
 	 * @return boolean
 	 */
-	protected function copyTable($source, $destination) {
+	protected function copyTable($source, $destination, $renameColumns = []) {
 		$this->expectTables([$source, $destination], "Can't copy table");
-		$rows = $this->db->exec_SELECTgetRows('*', $source, '');
-		$sourceCols = array_keys($rows[0]);
+		$sourceCols = $this->fields($source);
 		$destCols = $this->fields($destination);
+		if (count($renameColumns)) {
+			$selects = [];
+			$newSourceCols = [];
+			foreach ($sourceCols as $sourceCol) {
+				if (isset($renameColumns[$sourceCol])) {
+					$selects[] = "$sourceCol AS {$renameColumns[$sourceCol]}";
+					$newSourceCols[] = $renameColumns[$sourceCol];
+				} else {
+					$selects[] = $sourceCol;
+				}
+			}
+			$this->expectColumns($destination, $newSourceCols, "Can't copy table after renaming columns.");
+			$select = implode(', ', $selects);
+		} else {
+			$select = '*';
+		}
+
+		$rows = $this->db->exec_SELECTgetRows($select, $source, '');
 
 		if (count($sourceCols) > count($destCols)) {
 			$extraFields = array_diff($sourceCols, $destCols);
@@ -49,6 +67,7 @@ abstract class AbstractMigration implements MigrationInterface {
 			$rows = $newRows;
 		}
 		$this->db->exec_INSERTmultipleRows($destination, $destCols, $rows);
+		$this->success("Copied table from $source to $destination.");
 		return TRUE;
 	}
 
@@ -64,6 +83,7 @@ abstract class AbstractMigration implements MigrationInterface {
 	protected function copyField($table, $sourceField, $destinationField) {
 		$this->expectColumns($table, [$sourceField, $destinationField], "Can't copy $sourceField to $destinationField in $table");
 		$this->db->exec_UPDATEquery($table, '', [$destinationField => $sourceField], [$destinationField]);
+		$this->success("Copied field in table $table from $sourceField to $destinationField");
 		return;
 	}
 
@@ -180,6 +200,10 @@ abstract class AbstractMigration implements MigrationInterface {
 	 */
 	protected function log($msg) {
 		echo "  LOG: $msg\n";
+	}
+
+	protected function success($msg) {
+		echo "  SUCCESS: $msg\n";
 	}
 
 	/**
