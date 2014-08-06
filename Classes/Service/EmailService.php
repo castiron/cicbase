@@ -358,7 +358,7 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 		if($this->templateExists($templateName)) {
 			$extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
 			$templateRootPath = GeneralUtility::getFileAbsFileName($extbaseFrameworkConfiguration['view']['templateRootPath']);
-			return $templateRootPath . $this->templates[$templateName]['templateFile'];
+			return rtrim($templateRootPath, '/') . '/' . ltrim($this->templates[$templateName]['templateFile'], '/');
 		}
 		return '';
 	}
