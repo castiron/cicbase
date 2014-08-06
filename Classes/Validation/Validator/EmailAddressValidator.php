@@ -14,10 +14,6 @@ class EmailAddressValidator extends \TYPO3\CMS\Extbase\Validation\Validator\Emai
 	 * @return bool
 	 */
 	protected function validEmail($emailAddress) {
-		$res = parent::validEmail(trim($emailAddress));
-		if (!$res) {
-			$a = 1;
-		}
-		return $res;
+		return parent::validEmail(trim($emailAddress));
 	}
 }
