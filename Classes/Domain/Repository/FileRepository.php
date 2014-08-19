@@ -1,5 +1,7 @@
 <?php
 namespace CIC\Cicbase\Domain\Repository;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Utility\ArrayUtility;
 
 /***************************************************************
  *  Copyright notice
@@ -45,6 +47,13 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 	 */
 	public function injectConfigurationManager(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
+		$settings = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
+		if (isset($settings['document']['awsConfs'])) {
+			$this->cicbaseConfiguration = ArrayUtility::arrayMergeRecursiveOverrule(
+				$this->cicbaseConfiguration,
+				$settings['document']['awsConfs']
+			);
+		}
 	}
 
 
