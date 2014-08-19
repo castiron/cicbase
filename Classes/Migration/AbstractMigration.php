@@ -33,13 +33,13 @@ abstract class AbstractMigration implements MigrationInterface {
 	 * @param array $renameColumns [sourceColName => destColName, ...] Needed if you're copying from one table to another where the column names differ
 	 * @return boolean
 	 */
-	protected function copyTable($source, $destination, $renameColumns = []) {
+	protected function copyTable($source, $destination, $renameColumns = array()) {
 		$this->expectTables([$source, $destination], "Can't copy table");
 		$sourceCols = $this->fields($source);
 		$destCols = $this->fields($destination);
 		if (count($renameColumns)) {
-			$selects = [];
-			$newSourceCols = [];
+			$selects = array();
+			$newSourceCols = array();
 			foreach ($sourceCols as $sourceCol) {
 				if (isset($renameColumns[$sourceCol])) {
 					$selects[] = "$sourceCol AS {$renameColumns[$sourceCol]}";
@@ -60,7 +60,7 @@ abstract class AbstractMigration implements MigrationInterface {
 			$extraFields = array_diff($sourceCols, $destCols);
 			$extraFieldsString = '['.implode(',', $extraFields).']';
 			$this->log("Copying table with mismatching fields. $source -> $destination. Extra fields in source: $extraFieldsString.");
-			$newRows = [];
+			$newRows = array();
 			foreach ($rows as $row) {
 				$newRows[] = array_intersect_key($row, array_flip((array) $destCols));
 			}
@@ -81,8 +81,8 @@ abstract class AbstractMigration implements MigrationInterface {
 	 * @throws \Exception
 	 */
 	protected function copyField($table, $sourceField, $destinationField) {
-		$this->expectColumns($table, [$sourceField, $destinationField], "Can't copy $sourceField to $destinationField in $table");
-		$this->db->exec_UPDATEquery($table, '', [$destinationField => $sourceField], [$destinationField]);
+		$this->expectColumns($table, array($sourceField, $destinationField), "Can't copy $sourceField to $destinationField in $table");
+		$this->db->exec_UPDATEquery($table, '', array($destinationField => $sourceField), array($destinationField));
 		$this->success("Copied field in table $table from $sourceField to $destinationField");
 		return;
 	}
