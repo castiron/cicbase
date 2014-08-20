@@ -34,7 +34,7 @@ abstract class AbstractMigration implements MigrationInterface {
 	 * @return boolean
 	 */
 	protected function copyTable($source, $destination, $renameColumns = array()) {
-		$this->expectTables([$source, $destination], "Can't copy table");
+		$this->expectTables(array($source, $destination), "Can't copy table");
 		$sourceCols = $this->fields($source);
 		$destCols = $this->fields($destination);
 		if (count($renameColumns)) {
