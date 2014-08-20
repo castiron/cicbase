@@ -37,36 +37,40 @@ abstract class AbstractMigration implements MigrationInterface {
 		$this->expectTables(array($source, $destination), "Can't copy table");
 		$sourceCols = $this->fields($source);
 		$destCols = $this->fields($destination);
+
+
+
+		// Only copy columns that exist in both tables
+		$columnsInSourceNotInDest = array_diff($sourceCols, $destCols);
+		foreach ($columnsInSourceNotInDest as $unsetColumn) {
+			if (!isset($renameColumns[$unsetColumn])) {
+				$key = array_search($unsetColumn, $sourceCols);
+				unset($sourceCols[$key]);
+			}
+		}
+
+		// As long as we select the fields from the $source table that are in the $dest table,
+		// we shouldn't run into any errors.
+		$sourceSelects = array_combine($sourceCols, $sourceCols);
+
+		// Rename any columns
 		if (count($renameColumns)) {
-			$selects = array();
-			$newSourceCols = array();
-			foreach ($sourceCols as $sourceCol) {
-				if (isset($renameColumns[$sourceCol])) {
-					$selects[] = "$sourceCol AS {$renameColumns[$sourceCol]}";
-					$newSourceCols[] = $renameColumns[$sourceCol];
-				} else {
-					$selects[] = $sourceCol;
+			foreach ($renameColumns as $sourceCol => $destCol) {
+				$this->expectColumn($source, $sourceCol, "When copying table $source to $destination, can't rename column $sourceCol to $destCol because $sourceCol does not exist.");
+				$this->expectColumn($destination, $destCol, "When copying table $source to $destination, can't rename column $sourceCol to $destCol because $destCol does not exist.");
+				if (!isset($sourceSelects[$sourceCol])) {
+					$this->log("Tried to rename a column that won't be used when copying table $source to $destination.");
+					continue;
 				}
+				$sourceSelects[$sourceCol] = "$sourceCol AS $destCol";
 			}
-			$this->expectColumns($destination, $newSourceCols, "Can't copy table after renaming columns.");
-			$select = implode(', ', $selects);
-		} else {
-			$select = '*';
 		}
 
-		$rows = $this->db->exec_SELECTgetRows($select, $source, '');
+		$select = implode(', ', $sourceSelects);
 
-		if (count($sourceCols) > count($destCols)) {
-			$extraFields = array_diff($sourceCols, $destCols);
-			$extraFieldsString = '['.implode(',', $extraFields).']';
-			$this->log("Copying table with mismatching fields. $source -> $destination. Extra fields in source: $extraFieldsString.");
-			$newRows = array();
-			foreach ($rows as $row) {
-				$newRows[] = array_intersect_key($row, array_flip((array) $destCols));
-			}
-			$rows = $newRows;
-		}
-		$this->db->exec_INSERTmultipleRows($destination, array_keys($rows[0]), $rows);
+		$sourceRows = $this->db->exec_SELECTgetRows($select, $source, '');
+
+		$this->db->exec_INSERTmultipleRows($destination, array_keys($sourceRows[0]), $sourceRows);
 		$this->success("Copied table from $source to $destination.");
 		return TRUE;
 	}
