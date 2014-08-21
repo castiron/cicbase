@@ -38,12 +38,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  * plugin.tx_ext.settings.email {
  *
  *   # Whitelist useful for debugging.
- *   whitelist {
- *     0 {
- *       name = Peter Peter
- *       email = peter@castironcoding.com
- *     }
- *   }
+ *   whitelist = teaching.bites@springfield.edu : Edna Krabappel , school.rocks@springfield.edu : Lisa Simpson
  *
  *   # If there's a whitelist, then you can
  *   # specify that it always be used as the
@@ -119,12 +114,8 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * A list of the only addresses this service will
 	 * send emails to. Can be set up in typoscript:
 	 *
-	 * plugin.tx_ext.settings.email.whitelist {
-	 *   0 {
-	 *     name = Edna Krabappel
-	 *     email = teaching.bites@springfield.edu
-	 *   }
-	 * }
+	 * plugin.tx_ext.settings.email.whitelist = teaching.bites@springfield.edu : Edna Krabappel , school.rocks@springfield.edu : Lisa Simpson
+	 *
 	 *
 	 * @var array
 	 */
@@ -209,8 +200,11 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	public function initializeObject() {
 		// Build whitelist
 		if(isset($this->settings['whitelist'])) {
-			foreach($this->settings['whitelist'] as $email) {
-				$this->addToWhitelist($email['name'], $email['email']);
+			$whitelist = GeneralUtility::trimExplode(',', $this->settings['whitelist']);
+			foreach($whitelist as $whitelistConf) {
+				$parts = GeneralUtility::trimExplode(':', $whitelistConf);
+				if (count($parts) != 2) continue;
+				$this->addToWhitelist($parts[1], $parts[0]);
 			}
 		}
 		if(isset($this->settings['alwaysOverrideWithWhitelist'])) {
