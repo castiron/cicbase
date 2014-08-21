@@ -51,7 +51,9 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 		if (isset($settings['document']['awsConfs'])) {
 			$this->cicbaseConfiguration = ArrayUtility::arrayMergeRecursiveOverrule(
 				$this->cicbaseConfiguration,
-				$settings['document']['awsConfs']
+				$settings['document']['awsConfs'],
+				FALSE,
+				FALSE
 			);
 		}
 	}
