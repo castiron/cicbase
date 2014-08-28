@@ -171,6 +171,13 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 */
 	protected $templates = array();
 
+	/**
+	 * Our own storage of fleshed out template paths
+	 *
+	 * @var array
+	 */
+	protected $foundTemplatePaths = array();
+
 
 		/**
 		 * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager
@@ -326,9 +333,7 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @return string
 	 */
 	protected function buildMessageBody($templateName, array $templateVariables = NULL) {
-		if(!$this->templateExists($templateName)) {
-			return '';
-		}
+		if(!$this->templateExists($templateName)) return '';
 
 		/** @var \TYPO3\CMS\Fluid\View\StandaloneView $emailView */
 		$emailView = $this->objectManager->get('TYPO3\CMS\Fluid\View\StandaloneView');
@@ -349,12 +354,7 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @return string
 	 */
 	protected function getTemplatePath($templateName) {
-		if($this->templateExists($templateName)) {
-			$extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
-			$templateRootPath = GeneralUtility::getFileAbsFileName($extbaseFrameworkConfiguration['view']['templateRootPath']);
-			return rtrim($templateRootPath, '/') . '/' . ltrim($this->templates[$templateName]['templateFile'], '/');
-		}
-		return '';
+		return isset($this->foundTemplatePaths[$templateName]) ? $this->foundTemplatePaths[$templateName] : '';
 	}
 
 	/**
@@ -377,7 +377,52 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @return bool
 	 */
 	protected function templateExists($templateName) {
-		return isset($this->templates[$templateName]);
+		if (!isset($this->templates[$templateName])) return FALSE;
+		if (!isset($this->templates[$templateName]['templateFile'])) return FALSE;
+		if (isset($this->foundTemplatePaths[$templateName])) return TRUE;
+
+		$rootPaths = $this->getTemplateRootPaths();
+
+		if (!count($rootPaths)) return FALSE;
+
+		foreach ($rootPaths as $possiblePath) {
+			$rootPath = GeneralUtility::getFileAbsFileName($possiblePath);
+			$file = rtrim($rootPath, '/') . '/' . ltrim($this->templates[$templateName]['templateFile'], '/');
+			if (is_file($file)) {
+				$this->foundTemplatePaths[$templateName] = $file;
+				return TRUE;
+			}
+		}
+		return FALSE;
+	}
+
+	/**
+	 * This function mimics the way extbase controllers find view templates.
+	 *
+	 * @return array
+	 */
+	protected function getTemplateRootPaths() {
+		$rootPaths = array();
+		$extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(
+			ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK
+		);
+
+		if (
+			!empty($extbaseFrameworkConfiguration['view']['templateRootPaths'])
+			&& is_array($extbaseFrameworkConfiguration['view']['templateRootPaths'])
+		) {
+			$rootPaths = \TYPO3\CMS\Extbase\Utility\ArrayUtility::sortArrayWithIntegerKeys($extbaseFrameworkConfiguration['view']['templateRootPaths']);
+			$rootPaths = array_reverse($rootPaths, TRUE);
+		}
+
+		// @todo remove handling of deprecatedSetting two versions after 6.2
+		if (
+			isset($extbaseFrameworkConfiguration['view']['templateRootPath'])
+			&& strlen($extbaseFrameworkConfiguration['view']['templateRootPath']) > 0
+		) {
+			$rootPaths[] = $extbaseFrameworkConfiguration['view']['templateRootPath'];
+		}
+		return $rootPaths;
 	}
 
 
