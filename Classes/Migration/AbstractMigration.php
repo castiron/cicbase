@@ -69,6 +69,10 @@ abstract class AbstractMigration implements MigrationInterface {
 		$select = implode(', ', $sourceSelects);
 
 		$sourceRows = $this->db->exec_SELECTgetRows($select, $source, '');
+		if (!count($sourceRows)) {
+			$this->success("Nothing to copy from $source to $destination");
+			return TRUE;
+		}
 
 		$this->db->exec_INSERTmultipleRows($destination, array_keys($sourceRows[0]), $sourceRows);
 		$this->success("Copied table from $source to $destination.");
