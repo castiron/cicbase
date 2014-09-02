@@ -100,7 +100,7 @@ abstract class AbstractMigration implements MigrationInterface {
 	 * @param string $message
 	 * @throws \Exception
 	 */
-	protected function expectTable($table, $message) {
+	protected function expectTable($table, $message = '') {
 		if (!$this->tableExists($table)) {
 			$this->errorMsg = $message . "\n  Table doesn't exist: $table.";
 			throw new \Exception();
@@ -112,7 +112,7 @@ abstract class AbstractMigration implements MigrationInterface {
 	 * @param string $message
 	 * @throws \Exception
 	 */
-	protected function expectTables(array $tables, $message) {
+	protected function expectTables(array $tables, $message = '') {
 		if (!$this->tablesExist($tables, $message)) {
 			$this->errorMsg = $message . "\n  At least one of these tables doesn't exist: ".implode(', ', $tables).'.';
 			throw new \Exception();
@@ -125,9 +125,21 @@ abstract class AbstractMigration implements MigrationInterface {
 	 * @param string $message
 	 * @throws \Exception
 	 */
-	protected function expectColumn($table, $column, $message) {
+	protected function expectColumn($table, $column, $message = '') {
 		if (!$this->columnExists($table, $column)) {
 			$this->errorMsg = $message . "\n  Column $column does not exist in table $table.";
+			throw new \Exception();
+		}
+	}
+
+	/**
+	 * @param $table
+	 * @param $fieldsString
+	 * @throws \Exception
+	 */
+	protected function expectEmptyTable($table, $fieldsString = 'uid', $message = '') {
+		if ($this->db->exec_SELECTcountRows($fieldsString, $table)) {
+			$this->errorMsg = "$message\n  $table table already has data. Aborting migration.";
 			throw new \Exception();
 		}
 	}
@@ -138,7 +150,7 @@ abstract class AbstractMigration implements MigrationInterface {
 	 * @param string $message
 	 * @throws \Exception
 	 */
-	protected function expectColumns($table, array $columns, $message) {
+	protected function expectColumns($table, array $columns, $message = '') {
 		if (!$this->columnsExist($table, $columns)) {
 			$this->errorMsg = $message . "\n  Table $table is missing at least one of these columns: ".implode(', ', $columns).'.';
 			throw new \Exception();
