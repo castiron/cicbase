@@ -27,15 +27,15 @@ class Arr {
 		$results = array();
 		$found = 0;
 		foreach ($array as $key => $val) {
+			if ($limit >= 0 && $found == $limit) {
+				break;
+			}
 			$res = $where($val, $key);
 			if ($res === -1) break;
 			if ($res) {
 				$results[$key] = $val;
 				++$found;
 				unset($array[$key]);
-				if ($limit > 0 && $found == $limit) {
-					break;
-				}
 			}
 		}
 		return $results;
@@ -72,6 +72,42 @@ class Arr {
 			return $array[$keys];
 		}
 		return array_intersect_key($array, array_flip($keys));
+	}
+
+	/**
+	 * @param array $array
+	 * @return int
+	 */
+	public static function sum(array $array) {
+		return array_reduce($array, function ($c, $v) { return $c += $v; }, 0);
+	}
+
+	/**
+	 * Returns the key with the highest value. If there are multiple keys
+	 * with the highest value, then the last one is returned.
+	 * 
+	 * @param array $array
+	 * @return null|mixed
+	 */
+	public static function maxKey(array $array) {
+		if (empty($array)) return NULL;
+		$max = max($array);
+		$flipped = array_flip($array);
+		return $flipped[$max];
+	}
+
+	/**
+	 * Returns the key with the lowest value. If there are multiple keys
+	 * with the lowest value, then the last one is returned.
+	 * 
+	 * @param array $array
+	 * @return null|mixed
+	 */
+	public static function minKey(array $array) {
+		if (empty($array)) return NULL;
+		$min = min($array);
+		$flipped = array_flip($array);
+		return $flipped[$min];
 	}
 
 
