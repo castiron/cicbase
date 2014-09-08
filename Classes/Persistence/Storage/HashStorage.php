@@ -208,11 +208,11 @@ class HashStorage extends \TYPO3\CMS\Extbase\Persistence\ObjectStorage {
 	/**
 	 * Adds all objects-data pairs from a different storage in the current storage.
 	 *
-	 * @param ObjectStorage $objectStorage
+	 * @param \Iterator|array $objects
 	 * @return void
 	 */
-	public function addAll(ObjectStorage $objectStorage) {
-		foreach ($objectStorage as $object) {
+	public function addAll($objects) {
+		foreach ($objects as $object) {
 			$this->attach($object);
 		}
 	}
