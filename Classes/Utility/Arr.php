@@ -1,6 +1,7 @@
 <?php
 
 namespace CIC\Cicbase\Utility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  *
@@ -50,11 +51,7 @@ class Arr {
 	public static function shuffleAssoc(array $array) {
 		$keys = array_keys($array);
 		shuffle($keys);
-		$new = array();
-		foreach ($keys as $key) {
-			$new[$key] = $array[$key];
-		}
-		return $new;
+		return self::filterByKeys($array, $keys);
 	}
 
 
@@ -110,5 +107,27 @@ class Arr {
 		return $flipped[$min];
 	}
 
+	/**
+	 * Returns a new array with only the elements with the given keys.
+	 * Associations are preserved.
+	 *
+	 * @param array $array
+	 * @param array $keys
+	 * @return array
+	 */
+	public static function filterByKeys(array $array, array $keys) {
+		return array_intersect_key($array, array_fill_keys($keys, NULL));
+	}
+
+	/**
+	 * Converts array keys from underscore to lower camel case.
+	 *
+	 * @param array $array
+	 */
+	public static function keysUnderscoreToLowerCamelCase(array &$array) {
+		$keys = array_keys($array);
+		array_walk($keys, function (&$x) { $x = GeneralUtility::underscoredToLowerCamelCase($x); });
+		$array = array_combine($keys, array_values($array));
+	}
 
 }
