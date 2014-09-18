@@ -130,4 +130,21 @@ class Arr {
 		$array = array_combine($keys, array_values($array));
 	}
 
+
+	/**
+	 * Returns TRUE if the $target has a truey value for the given $keys.
+	 *
+	 * NOTE: Values with 0 are considered FALSE here.
+	 *
+	 * @param array $target
+	 * @param array $keys
+	 * @return bool
+	 */
+	public static function hasValuesForKeys(array $target, array $keys) {
+		$onlyBykeys = self::filterByKeys($target, $keys);
+		$onlyByKeysCount = count($onlyBykeys);
+		if ($onlyByKeysCount !== count($keys)) return FALSE;
+		array_walk($onlyBykeys, function(&$k) {$k = trim($k); });
+		return $onlyByKeysCount == count(array_filter($onlyBykeys));
+	}
 }

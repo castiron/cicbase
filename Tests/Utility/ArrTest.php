@@ -92,6 +92,23 @@ class ArrTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 		$this->assertCount(3, $results);
 	}
 
+	/** @test */
+	public function itChecksKeysHaveValues() {
+		$arr = array('one' => '', 'two' => 3);
+		$this->assertFalse(Arr::hasValuesForKeys($arr, array_keys($arr)));
+	}
+
+	/** @test */
+	public function itChecksKeysHaveValuesMissingKeys() {
+		$arr = array('one' => '', 'two' => 3);
+		$this->assertFalse(Arr::hasValuesForKeys($arr, array('one', 'two', 'three')));
+	}
+
+	/** @test */
+	public function itChecksKeysHaveValuesIncludingSpaces() {
+		$arr = array('one' => '    ', 'two' => 3);
+		$this->assertFalse(Arr::hasValuesForKeys($arr, array_keys($arr)));
+	}
 
 
 
