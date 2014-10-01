@@ -110,6 +110,39 @@ class ArrTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 		$this->assertFalse(Arr::hasValuesForKeys($arr, array_keys($arr)));
 	}
 
+	/** @test */
+	public function itConvertsAssocArraysToStdClass() {
+		$arr = array('a' => 1, 'b' => 3);
+		$obj = Arr::toStdClass($arr);
+		$this->assertEquals(3, $obj->b);
+	}
+
+	/** @test */
+	public function itConvertsMultiAssocArraysToStdClass() {
+		$arr = array('a' => 1, 'b' => array('c' => 4));
+		$obj = Arr::toStdClass($arr);
+		$this->assertEquals(4, $obj->b->c);
+	}
+
+	/** @test */
+	public function itConvertsStdClassToArray() {
+		$obj = new \stdClass();
+		$obj->a = 1;
+		$obj->b = 3;
+		$arr = Arr::fromStdClass($obj);
+		$this->assertEquals(3, $arr['b']);
+	}
+
+	/** @test */
+	public function itConvertsDeepStdClassToArray() {
+		$obj = new \stdClass();
+		$obj->a = 1;
+		$obj->b = new \stdClass();
+		$obj->b->c = 4;
+		$arr = Arr::fromStdClass($obj);
+		$this->assertEquals(4, $arr['b']['c']);
+	}
+
 
 
 	protected function checkForNewResultsEachTime(callable $callable) {

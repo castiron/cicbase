@@ -147,4 +147,47 @@ class Arr {
 		array_walk($onlyBykeys, function(&$k) {$k = trim($k); });
 		return $onlyByKeysCount == count(array_filter($onlyBykeys));
 	}
+
+	/**
+	 * @param array $arr
+	 * @return object
+	 */
+	public static function toStdClass(array $arr) {
+		return self::recursiveToStdClass($arr);
+	}
+
+	/**
+	 * @param \stdClass $obj
+	 * @return array
+	 */
+	public static function fromStdClass(\stdClass $obj) {
+		return self::recursiveFromStdClass($obj);
+	}
+
+	/**
+	 * @param mixed $val
+	 * @return object
+	 */
+	protected static function recursiveToStdClass($val) {
+		if (is_array($val)) {
+			return (object) array_map(array('\CIC\Cicbase\Utility\Arr', 'recursiveToStdClass'), $val);
+		} else {
+			return $val;
+		}
+	}
+
+	/**
+	 * @param mixed $val
+	 * @return array
+	 */
+	protected static function recursiveFromStdClass($val) {
+		if (is_object($val)) {
+			$val = get_object_vars($val);
+		}
+		if (is_array($val)) {
+			return array_map(array('\CIC\Cicbase\Utility\Arr', 'recursiveFromStdClass'), $val);
+		}
+
+		return $val;
+	}
 }
