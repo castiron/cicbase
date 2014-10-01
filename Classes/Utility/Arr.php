@@ -51,7 +51,11 @@ class Arr {
 	public static function shuffleAssoc(array $array) {
 		$keys = array_keys($array);
 		shuffle($keys);
-		return self::filterByKeys($array, $keys);
+		$new = array();
+		foreach ($keys as $key) {
+			$new[$key] = $array[$key];
+		}
+		return $new;
 	}
 
 
@@ -148,12 +152,92 @@ class Arr {
 		return $onlyByKeysCount == count(array_filter($onlyBykeys));
 	}
 
+
 	/**
-	 * @param array $arr
-	 * @return object
+	 * Returns the first value where the callable returns true.
+	 *
+	 * Callable takes $key, $val as args.
+	 * Only works if no values are -1.
+	 *
+	 * @param array $array
+	 * @param callable $where
+	 * @return int|bool FALSE if $where is not callable, -1 if not found
 	 */
-	public static function toStdClass(array $arr) {
-		return self::recursiveToStdClass($arr);
+	public static function find(array $array, callable $where) {
+		if (!is_callable($where)) return FALSE;
+		foreach ($array as $key => $val) {
+			if ($where($key, $val)) {
+				return $val;
+			}
+		}
+		return -1;
+	}
+
+
+	/**
+	 * Returns the first value where the callable returns true.
+	 *
+	 * Callable only takes $key as argument.
+	 * Only works if no values are -1.
+	 *
+	 * @param array $array
+	 * @param callable $where
+	 * @return int|bool FALSE if $where is not callable, -1 if not found
+	 */
+	public static function findWithKey(array $array, callable $where) {
+		if (!is_callable($where)) return FALSE;
+		foreach ($array as $key => $val) {
+			if ($where($key)) {
+				return $val;
+			}
+		}
+		return -1;
+	}
+
+
+	/**
+	 * Indexed if all keys are numeric (1 or "1")
+	 *
+	 * @param array $array
+	 * @return bool
+	 */
+	public static function isIndexed(array $array) {
+		foreach ($array as $key => $val) {
+			if (!is_numeric($key)) {
+				return FALSE;
+			}
+		}
+		return TRUE;
+	}
+
+	/**
+	 * Associative if no keys are numeric.
+	 *
+	 * @param array $array
+	 * @return bool
+	 */
+	public static function isAssoc(array $array) {
+		foreach ($array as $key => $val) {
+			if (is_numeric($key)) {
+				return FALSE;
+			}
+		}
+		return TRUE;
+	}
+
+	/**
+	 * Converts multidimensional associative arrays into a
+	 * stdClass object. This works recursively, but whenever
+	 * it comes across an indexed array (as opposed to
+	 * associative) it will leave that as an array though
+	 * it will convert any associative array values of that
+	 * indexed array into stdClass objects.
+	 *
+	 * @param array $array
+	 * @return \stdClass
+	 */
+	public static function toStdClass(array $array) {
+		return self::recursiveToStdClass($array);
 	}
 
 	/**
@@ -170,6 +254,7 @@ class Arr {
 	 */
 	protected static function recursiveToStdClass($val) {
 		if (is_array($val)) {
+			if (!Arr::isAssoc($val)) return $val;
 			return (object) array_map(array('\CIC\Cicbase\Utility\Arr', 'recursiveToStdClass'), $val);
 		} else {
 			return $val;

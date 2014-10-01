@@ -125,6 +125,13 @@ class ArrTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 	}
 
 	/** @test */
+	public function itConvertsMultiAssocArraysToStdClassLeavingIndexedArraysAsArrays() {
+		$arr = array('a' => 1, 'b' => array('c' => 4), 'd' => array(1 => 'e', '2' => 'f'));
+		$obj = Arr::toStdClass($arr);
+		$this->assertTrue(is_array($obj->d));
+	}
+
+	/** @test */
 	public function itConvertsStdClassToArray() {
 		$obj = new \stdClass();
 		$obj->a = 1;
@@ -141,6 +148,58 @@ class ArrTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 		$obj->b->c = 4;
 		$arr = Arr::fromStdClass($obj);
 		$this->assertEquals(4, $arr['b']['c']);
+	}
+
+	/** @test */
+	public function itFindsFirstValue() {
+		$arr = array('a' => 3, 'b' => 4, 'c' => 5, 'd' => 6);
+		$func = function ($key, $val) { return $val % 2 == 0; };
+		$this->assertEquals(4, Arr::find($arr, $func));
+	}
+
+	/** @test */
+	public function itFailsWhenFindingAndNothingFound() {
+		$arr = array('a' => 3, 'b' => 4, 'c' => 5, 'd' => 6);
+		$func = function ($key, $val) { return $val % 7 == 0; };
+		$this->assertEquals(-1, Arr::find($arr, $func));
+	}
+
+	/** @test */
+	public function itFindsFirstValueUsingKey() {
+		$arr = array('a' => 3, 'b' => 4, 'c' => 5, 'd' => 6);
+		$func = function ($key) { return in_array($key, array('b','d')); };
+		$this->assertEquals(4, Arr::find($arr, $func));
+	}
+
+	/** @test */
+	public function itFailsWhenFindingAndNothingFoundUsingKey() {
+		$arr = array('a' => 3, 'b' => 4, 'c' => 5, 'd' => 6);
+		$func = function ($key) { return in_array($key, array('e','f')); };
+		$this->assertEquals(-1, Arr::find($arr, $func));
+	}
+
+	/** @test */
+	public function itDeterminesIsIndexed() {
+		$arr = array(1 => 'one', "2" => 'two');
+		$this->assertTrue(Arr::isIndexed($arr));
+	}
+
+	/** @test */
+	public function itDeterminesNotIndexed() {
+		$arr = array(1 => 'one', "two" => 2);
+		$this->assertFalse(Arr::isIndexed($arr));
+	}
+
+	/** @test */
+	public function itDeterminesIsAssociative() {
+		$arr = array('one' => 1, "two" => 2);
+		$this->assertTrue(Arr::isAssoc($arr));
+	}
+
+	/** @test */
+	public function itDeterminesNotAssociative() {
+		$arr = array(1 => 'one', "two" => 2);
+		$this->assertFalse(Arr::isAssoc($arr));
 	}
 
 
