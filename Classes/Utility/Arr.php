@@ -275,4 +275,17 @@ class Arr {
 
 		return $val;
 	}
+
+	/**
+	 * Access an array element by index regardless of whether that
+	 * index has been defined.
+	 *
+	 * @param array|\ArrayAccess $array
+	 * @param mixed $index
+	 * @param null $default
+	 * @return null
+	 */
+	public static function safe($array, $index, $default = NULL) {
+		return isset($array[$index]) ? $array[$index] : $default;
+	}
 }
