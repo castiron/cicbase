@@ -163,7 +163,7 @@ class FileFactory implements \TYPO3\CMS\Core\SingletonInterface {
 
 	protected function validateType($uploadedFileData,$allowedTypes) {
 		$pathInfo = pathinfo($uploadedFileData['name']);
-		$extension = $pathInfo['extension'];
+		$extension = strtolower($pathInfo['extension']);
 		$allowedMimes = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',',$allowedTypes[$extension]);
 		if(in_array($uploadedFileData['type'],$allowedMimes)) {
 			return NULL;
