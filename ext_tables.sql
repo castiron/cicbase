@@ -45,6 +45,7 @@ CREATE TABLE tx_cicbase_domain_model_file (
   owner int(11) unsigned DEFAULT '0' NOT NULL,
   size int(11) unsigned DEFAULT '0' NOT NULL,
   title varchar(255) DEFAULT '' NOT NULL,
+  root_directory varchar(255) DEFAULT '' NOT NULL,
   description text NOT NULL,
   awsbucket varchar(255) DEFAULT '' NOT NULL,
 
