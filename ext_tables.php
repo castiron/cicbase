@@ -14,6 +14,21 @@ if (TYPO3_MODE == 'BE') {
 			'additionalFields' => 'CIC\Cicbase\Scheduler\FieldProvider'
 		);
 	}
+
+	\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
+		'CIC.'.$_EXTKEY,
+		'tools',	// Make module a submodule of 'tools'
+		'cicbase',	// Submodule key
+		'',			// Position
+		array(
+			'Migration' => 'index,run'
+		),
+		array(
+			'access' => 'user,group',
+			'icon'   => 'EXT:' . $_EXTKEY . '/ext_icon.gif',
+			'labels' => 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_cicbase.xml',
+		)
+	);
 }
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_cicbase_domain_model_file', 'EXT:cicbase/Resources/Private/Language/locallang_csh_tx_cicbase_domain_model_file.xml');

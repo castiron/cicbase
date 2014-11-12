@@ -1,33 +1,62 @@
 <?php
 namespace CIC\Cicbase\Migration;
-use \TYPO3\CMS\Core\Utility;
+
+use CIC\Cicbase\Migration\Exception\MigrationFailureException;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class MigrationRunner {
 
 	/**
-	 * @var array
-	 */
-	protected $messages = array();
-
-	/**
 	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+	 * @inject
 	 */
 	protected $objectManager;
 
-	/**
-	 * inject the objectManager
-	 *
-	 * @param \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager
-	 * @return void
-	 */
-	public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManager $objectManager) {
-		$this->objectManager = $objectManager;
-	}
+	/** @var array */
+	protected $messages = array();
+
+	/** @var array */
+	protected $stmts = array();
+
+	/** @var string */
+	protected $currentRunExtKey = null;
 
 	/**
-	 * @var string
+	 * Some initializing here
+	 *
+	 * NOTE: Re-using prepared statements requires the parameters to be in a certain order:
+	 *       currently, 'version' must come before 'ext_key'.
 	 */
-	protected $currentRunExtKey = null;
+	public function initializeObject() {
+		/** @var \TYPO3\CMS\Core\Database\DatabaseConnection $db */
+		$db = $GLOBALS['TYPO3_DB'];
+		$table = 'tx_cicbase_migrations';
+
+		// Inserts and deletes don't really have prepared statements :(
+		$deleteStmt = function(array $args) use ($table, $db) {
+			$query = 'version = :version AND ext_key = :ext_key';
+			foreach ($args as $key => $val) {
+				$query = str_replace($key, $val, $query);
+			}
+			$db->exec_DELETEquery($table, $query);
+		};
+		$insertStmt = function(array $args) use ($table, $db) {
+			$vals = array();
+			foreach ($args as $key => $val) {
+				$vals[str_replace(':', '', $key)] = $val;
+			}
+			$db->exec_INSERTquery($table, $vals);
+		};
+
+
+		$this->stmts = array(
+			'lastRunMigration' => $db->prepare_SELECTquery('*', $table, 'ext_key = :ext_key', '', 'version DESC', 1),
+			'insertMigration' => $insertStmt,
+			'deleteMigration' => $deleteStmt,
+			'findMigration' => $db->prepare_SELECTquery('*', $table, 'version = :version AND ext_key = :ext_key'),
+		);
+	}
 
 	/**
 	 * @param string $extKey
@@ -36,12 +65,12 @@ class MigrationRunner {
 	public function run($extKey) {
 		$this->reset($extKey);
 		$this->messages[] = 'Running migrations...';
-		$availableMigrations = $this->getAvailableMigrations();
+		$availableMigrations = self::getAvailableMigrations($extKey);
 		try {
 			foreach($availableMigrations as $migration) {
 				$this->tryMigration($migration);
 			}
-		} catch (\CIC\Cicbase\Migration\Exception\MigrationFailureException $migrationException) {
+		} catch (MigrationFailureException $migrationException) {
 			$this->messages[] = 'Migration failure. Stopping all subsequent migrations';
 		}
 
@@ -64,18 +93,41 @@ class MigrationRunner {
 	}
 
 	/**
+	 * Gets a list of extensions that have migrations
+	 *
+	 * @return array
+	 */
+	public function migratableExtensions() {
+		$allExts = array_keys($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']);
+		$exts = array();
+		foreach ($allExts as $ext) {
+			if (count(self::getAvailableMigrations($ext))) {
+				$exts[] = $ext;
+			}
+		}
+		return $exts;
+	}
+
+	/**
 	 * @return null
 	 */
 	protected function getLastRunMigrationFor() {
-		$statement = $GLOBALS['TYPO3_DB']->prepare_SELECTquery('*', 'tx_cicbase_migrations', 'ext_key = :ext_key', '', 'version DESC', 1);
-		$statement->execute(array(':ext_key' => $this->currentRunExtKey));
-		$rows = $statement->fetchAll();
+		$rows = $this->dbQuery('lastRunMigration', array(':ext_key' => $this->currentRunExtKey));
 		if(count($rows) == 1) {
 			$version = $rows[0]['version'];
 			return $this->getMigrationFromVersion($version);
-		} else {
-			return null;
 		}
+		return NULL;
+	}
+
+
+
+	/**
+	 * @param string $extKey
+	 */
+	protected function reset($extKey) {
+		$this->messages = array();
+		$this->currentRunExtKey = $extKey;
 	}
 
 	/**
@@ -90,14 +142,6 @@ class MigrationRunner {
 	 */
 	protected function messageFailure($migration) {
 		$this->messages[] = 'Failed to run migration: '.$migration;
-	}
-
-	/**
-	 * @param string $extKey
-	 */
-	protected function reset($extKey) {
-		$this->messages = array();
-		$this->currentRunExtKey = $extKey;
 	}
 
 	/**
@@ -126,9 +170,7 @@ class MigrationRunner {
 	 * @throws Exception\MigrationFailureException
 	 */
 	protected function tryRollback($migration) {
-		$class = $this->getNamespacedClassnameFromMigrationName($migration);
-		/** @var AbstractMigration $migrationObject */
-		$migrationObject = $this->objectManager->get($class);
+		$migrationObject = $this->getMigrationObject($migration);
 		if($migrationObject->canRollback()) {
 			try {
 				$migrationObject->rollBack();
@@ -146,9 +188,7 @@ class MigrationRunner {
 	 * @throws Exception\MigrationFailureException
 	 */
 	protected function runMigration($migration) {
-		$class = $this->getNamespacedClassnameFromMigrationName($migration);
-		/** @var AbstractMigration $migrationObject */
-		$migrationObject = $this->objectManager->get($class);
+		$migrationObject = $this->getMigrationObject($migration);
 		try {
 			$migrationObject->run();
 			if($GLOBALS['TYPO3_DB']->sql_error()) {
@@ -173,7 +213,7 @@ class MigrationRunner {
 		if ($err) {
 			$this->messages[] = "  ERROR: $err";
 		}
-		throw new \CIC\Cicbase\Migration\Exception\MigrationFailureException;
+		throw new MigrationFailureException;
 	}
 
 	/**
@@ -187,7 +227,7 @@ class MigrationRunner {
 		if ($err) {
 			$this->messages[] = "  ERROR: $err";
 		}
-		throw new \CIC\Cicbase\Migration\Exception\MigrationFailureException;
+		throw new MigrationFailureException;
 	}
 
 	/**
@@ -216,9 +256,9 @@ class MigrationRunner {
 	 * @param string $migration
 	 */
 	protected function saveVersion($migration) {
-		$GLOBALS['TYPO3_DB']->exec_insertQuery('tx_cicbase_migrations', array(
-			'version' => $this->getTimestampFromMigration($migration),
-			'ext_key' => $this->currentRunExtKey
+		$this->dbExec('insertMigration', array(
+			':version' => self::getTimestampFromMigration($migration),
+			':ext_key' => $this->currentRunExtKey
 		));
 	}
 
@@ -226,85 +266,97 @@ class MigrationRunner {
 	 * @param string $migration
 	 */
 	protected function removeVersion($migration) {
-		$GLOBALS['TYPO3_DB']->exec_deleteQuery('tx_cicbase_migrations', 'ext_key = '.$GLOBALS['TYPO3_DB']->fullQuoteStr($this->currentRunExtKey, '').' AND version = '.$this->getTimestampFromMigration($migration));
+		$this->dbExec('deleteMigration', array(
+			':version' => self::getTimestampFromMigration($migration),
+			':ext_key' => $GLOBALS['TYPO3_DB']->fullQuoteStr($this->currentRunExtKey, ''),
+		));
+
 	}
 
 	/**
-	 * @param string $migration
-	 * @return string
+	 * @param string $migrationName
+	 * @return AbstractMigration $migration
 	 */
-	protected function getNamespacedClassnameFromMigrationName($migration) {
-		return 'CIC\\'.ucfirst($this->currentRunExtKey).'\\Migration\\'.$migration;
+	protected function getMigrationObject($migrationName) {
+		$ext = ucfirst($this->currentRunExtKey);
+		return $this->objectManager->get("CIC\\$ext\\Migration\\$migrationName");
 	}
 
 	/**
 	 * @param string $migration
-	 * @return bool
+	 * @return bool True if can run
 	 */
 	protected function checkMigrationState($migration) {
-		$statement = $GLOBALS['TYPO3_DB']->prepare_SELECTquery('*', 'tx_cicbase_migrations', 'ext_key = :ext_key AND version = :version');
-		$statement->execute(array(':ext_key' => $this->currentRunExtKey, ':version' => $this->getTimestampFromMigration($migration)));
-		$rows = $statement->fetchAll();
-		$count = count($rows);
-		if($count > 0) {
-			return false;
-		} else {
-			return true;
-		}
+		$rows = $this->dbQuery('findMigration', array(
+			':version' => self::getTimestampFromMigration($migration),
+			':ext_key' => $this->currentRunExtKey,
+		));
+		return !(count($rows) > 0);
 	}
 
 	/**
-	 * @param string $file
+	 * @param $stmtKey
+	 * @param $args
 	 * @return mixed
 	 */
-	protected function getClassNameFromFileName($file) {
-		$className = str_replace('.php','',$file);
-		return $className;
+	protected function dbQuery($stmtKey, $args) {
+		return $this->dbExec($stmtKey, $args)->fetchAll();
 	}
 
 	/**
-	 * @return array
+	 * @param $stmtKey
+	 * @param $args
+	 * @return mixed
 	 */
-	protected function getAvailableMigrations() {
-		$basePath = Utility\extensionManagementUtility::extPath($this->currentRunExtKey).'/Classes/Migration';
-		$files = Utility\GeneralUtility::getFilesInDir($basePath);
-		$classes = array();
-		foreach($files as $file) {
-			$classes[] = $this->getClassNameFromFileName($file);
+	protected function dbExec($stmtKey, $args) {
+		$stmt = $this->stmts[$stmtKey];
+		if ($stmt instanceof \Closure) {
+			$stmt($args);
+			return $stmt;
 		}
-		$classes = $this->sortMigrations($classes);
-		return $classes;
+		$stmt->execute($args);
+		return $stmt;
 	}
+
+
 
 	/**
 	 * @param string $version
 	 * @return null
 	 */
 	protected function getMigrationFromVersion($version) {
-		$migrations = $this->getAvailableMigrations();
+		$migrations = self::getAvailableMigrations($this->currentRunExtKey);
 		return isset($migrations[$version]) ? $migrations[$version] : NULL;
+	}
+
+	/**
+	 * @return array
+	 */
+	protected static function getAvailableMigrations($extKey) {
+		$basePath = ExtensionManagementUtility::extPath($extKey).'/Classes/Migration';
+		$files = GeneralUtility::getFilesInDir($basePath);
+		$classes = array();
+		foreach($files as $file) {
+			$classes[self::getTimestampFromMigration($file)] = self::getMigrationNameFromFileName($file);
+		}
+		ksort($classes);
+		return $classes;
+	}
+
+	/**
+	 * @param string $file
+	 * @return mixed
+	 */
+	protected static function getMigrationNameFromFileName($file) {
+		return str_replace('.php','',$file);
 	}
 
 	/**
 	 * @param string $migration
 	 * @return mixed
 	 */
-	protected function getTimestampFromMigration($migration) {
-		$migration = filter_var($migration,FILTER_SANITIZE_NUMBER_INT);
-		return $migration;
-	}
-
-	/**
-	 * @param string $migrations
-	 * @return array
-	 */
-	protected function sortMigrations($migrations) {
-		$sorted = array();
-		foreach($migrations as $migration) {
-			$sorted[$this->getTimestampFromMigration($migration)] = $migration;
-		}
-		ksort($sorted);
-		return $sorted;
+	protected static function getTimestampFromMigration($migration) {
+		return filter_var($migration, FILTER_SANITIZE_NUMBER_INT);
 	}
 }
 

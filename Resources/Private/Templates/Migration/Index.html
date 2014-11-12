@@ -1,0 +1,26 @@
+<f:layout name="Backend" />
+
+<f:section name="main">
+	<h3 class="uppercase">Migrations</h3>
+
+	<h4>Choose an extension</h4>
+
+	<div style="width: 200px;">
+
+		<f:form action="run" method="post" >
+			<f:form.select style="width: 100%;" name="extension" options="{extensions}" />
+			<br /><br />
+			<f:form.submit name="process" value="run" />
+			<f:form.submit name="process" value="rollback" />
+		</f:form>
+
+	</div>
+
+	<f:flashMessages renderMode="ul"/>
+
+
+
+
+</f:section>
+
+
