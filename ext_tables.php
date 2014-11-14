@@ -58,5 +58,8 @@ $GLOBALS['TCA']['tx_cicbase_domain_model_file'] = array(
 	),
 );
 
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/class.db_list_extra.inc']['getTable'][] =
+	\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($_EXTKEY) . 'Classes/Hooks/DatabaseRecordList.php:CIC\Cicbase\Hooks\DatabaseRecordList';
+
 
 ?>
