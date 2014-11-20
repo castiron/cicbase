@@ -194,6 +194,57 @@ class Arr {
 		return -1;
 	}
 
+	/**
+	 * Creates a new array from a set of "rows" with the
+	 * provided arguments extracted out:
+	 *
+	 * $rows = [
+	 *   ['one' => 1, 'two' => 2, 'three' => 3],
+	 *   ['one' => 'a', 'two' => 'b', 'three' => 'c']
+	 * ];
+	 *
+	 * // You must pass a key or value field to use
+	 * Arr::column($rows); // throws error, must provide a key or a value column to use
+	 *
+	 * // Passing value and key fields returns associative array
+	 * Arr::column($rows, 'one', 'three') returns:  [3 => 1, 'c' => 'a']
+	 *
+	 * // Passing just value field returns indexed array
+	 * Arr::column($rows, 'one')          returns:  [1, 'a']
+	 *
+	 * // Passing just key field returns same array of "rows" with the key field as the index
+	 * Arr::column($rows, NULL, 'one')    returns:  [1 => ['one' => 1, ...], 'a' => [...]]
+	 *
+	 * @param array $rows
+	 * @param mixed $valueColumn
+	 * @param null $keyColumn
+	 * @throws \Exception
+	 * @return array
+	 */
+	public static function column(array $rows, $valueColumn = NULL, $keyColumn = NULL) {
+		if ($valueColumn === NULL && $keyColumn === NULL) {
+			throw new \Exception("You must pass a key or value column to use on the given rows.");
+		}
+		$newRows = array();
+
+		if ($keyColumn !== NULL && $valueColumn !== NULL) {
+			foreach ($rows as $row) $newRows[$row[$keyColumn]] = $row[$valueColumn];
+			return $newRows;
+		}
+
+		if ($valueColumn) {
+			foreach ($rows as $row) $newRows[] = $row[$valueColumn];
+			return $newRows;
+		}
+
+		if ($keyColumn) {
+			foreach ($rows as $row) $newRows[$row[$keyColumn]] = $row;
+			return $newRows;
+		}
+
+
+	}
+
 
 	/**
 	 * Indexed if all keys are numeric (1 or "1")
