@@ -1,5 +1,5 @@
 <?php
-namespace CIC\Cicbase\Persistence;
+namespace CIC\Cicbase\Domain\Repository;
 	/***************************************************************
 	 *  Copyright notice
 	 *
@@ -32,7 +32,7 @@ use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
  * @copyright Copyright belongs to the respective authors
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-abstract class BaseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
+abstract class AbstractRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 
 	const LOGIC_AND = 'and';
 	const LOGIC_OR = 'or';
