@@ -339,4 +339,20 @@ class Arr {
 	public static function safe($array, $index, $default = NULL) {
 		return isset($array[$index]) ? $array[$index] : $default;
 	}
+
+	/**
+	 * Sometimes you want to add elements to the end of an array,
+	 * but in nested arrays you don't know if the array you're
+	 * adding to has been initialized yet. This helps.
+	 *
+	 * @param array $array
+	 * @param mixed $index
+	 * @param null|mixed $value
+	 */
+	public static function safeAppend(array &$array, $index, $value = NULL) {
+		if (!is_array($array[$index])) {
+			$array[$index] = array();
+		}
+		$array[$index][] = $value;
+	}
 }
