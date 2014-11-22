@@ -61,9 +61,9 @@ class Date {
 	/**
 	 * @param \DateTime $start
 	 * @param \DateTime $end
-	 * @return bool
+	 * @return integer The number of days it spans
 	 */
 	public static function spansMultipleDays(\DateTime $start, \DateTime $end) {
-		return $end->diff($start)->format('%a') > 0;
+		return $end->diff($start)->format('%a');
 	}
 }
