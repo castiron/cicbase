@@ -70,7 +70,9 @@ class PaginateController extends \TYPO3\CMS\Fluid\ViewHelpers\Widget\Controller\
 				$objectArray = $this->objects->toArray();
 				$this->numberOfPages = ceil(count($objectArray) / (integer) $this->configuration['itemsPerPage']);
 			} else {
-				$query->setLimit($itemsPerPage);
+				if ($itemsPerPage) {
+					$query->setLimit($itemsPerPage);
+				}
 				if ($offset) {
 					$query->setOffset($offset);
 				}
