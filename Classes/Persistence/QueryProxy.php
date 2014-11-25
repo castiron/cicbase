@@ -4,7 +4,7 @@ namespace CIC\Cicbase\Persistence;
 
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 
-class QueryProxy {
+class QueryProxy implements QueryProxyInterface{
 
 	/** @var \TYPO3\CMS\Extbase\Persistence\QueryInterface */
 	protected $query;
