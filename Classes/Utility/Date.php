@@ -66,4 +66,24 @@ class Date {
 	public static function spansMultipleDays(\DateTime $start, \DateTime $end) {
 		return $end->diff($start)->format('%a');
 	}
+
+	/**
+	 * Copies just the date portion from one DateTime to another
+	 *
+	 * @param \DateTime $target
+	 * @param \DateTime $source
+	 */
+	public static function copyDate(\DateTime &$target, \DateTime $source) {
+		call_user_func_array(array($target, 'setDate'),  explode('-', $source->format('Y-m-d')));
+	}
+
+	/**
+	 * Copies just the time portion from one DateTime to another
+	 *
+	 * @param \DateTime $target
+	 * @param \DateTime $source
+	 */
+	public static function copyTime(\DateTime &$target, \DateTime $source) {
+		call_user_func_array(array($target, 'setTime'),  explode('-', $source->format('H-i-s')));
+	}
 }
