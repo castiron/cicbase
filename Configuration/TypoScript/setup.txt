@@ -18,6 +18,9 @@ config.tx_extbase{
 		TYPO3\CMS\Extbase\Validation\Validator\EmailAddressValidator {
 			className = CIC\Cicbase\Validation\Validator\EmailAddressValidator
 		}
+		TYPO3\CMS\Fluid\Core\Parser\TemplateParser {
+			className = CIC\Cicbase\View\TemplateParser
+		}
 	}
 }
 
