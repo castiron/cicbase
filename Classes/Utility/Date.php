@@ -68,6 +68,15 @@ class Date {
 	}
 
 	/**
+	 * @param \DateTime $one
+	 * @param \DateTime $two
+	 * @return bool
+	 */
+	public static function hasSameDay(\DateTime $one, \DateTime $two) {
+		return $one->format('Y m d') == $two->format('Y m d');
+	}
+
+	/**
 	 * Copies just the date portion from one DateTime to another
 	 *
 	 * @param \DateTime $target
