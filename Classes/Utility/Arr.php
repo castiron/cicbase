@@ -124,6 +124,19 @@ class Arr {
 	}
 
 	/**
+	 * @param array $defaults
+	 * @param array $overrides
+	 * @param bool $strict If strict, then only the keys in $defaults will be merged from overrides
+	 */
+	public static function defaults(array &$defaults, array $overrides = array(), $strict = FALSE) {
+		if (!count($overrides)) return;
+		if ($strict) {
+			$overrides = self::filterByKeys($overrides, array_keys($defaults));
+		}
+		$defaults = array_merge($defaults, $overrides);
+	}
+
+	/**
 	 * Converts array keys from underscore to lower camel case.
 	 *
 	 * @param array $array
