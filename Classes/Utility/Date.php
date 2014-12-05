@@ -95,4 +95,14 @@ class Date {
 	public static function copyTime(\DateTime &$target, \DateTime $source) {
 		call_user_func_array(array($target, 'setTime'),  explode('-', $source->format('H-i-s')));
 	}
+
+	/**
+	 * @param string $str
+	 * @param string $inFormat
+	 * @param string $outFormat
+	 * @return bool|string
+	 */
+	public static function reformat($str, $inFormat, $outFormat) {
+		return \DateTime::createFromFormat($inFormat, $str)->format($outFormat);
+	}
 }
