@@ -1,0 +1,24 @@
+<f:layout name="Backend" />
+
+{namespace c = CIC\Cicbase\ViewHelpers}
+
+<f:section name="main">
+
+			<f:form action="update" name="emailTemplate" object="{emailTemplate}">
+
+				<div class="field">
+					<label><f:form.checkbox property="isDraft" value="yes" /> Is draft version?</label>
+				</div>
+
+				<div class=field">
+					<label>Email Body</label>
+					<f:form.textarea property="body" />
+				</div>
+
+				<div class="field">
+					<f:form.submit value="Save Email Template" />
+				</div>
+			</f:form>
+
+
+</f:section>

@@ -24,6 +24,15 @@ config.tx_extbase{
 	}
 }
 
+module.tx_cicbase.settings {
+
+	emailTemplateOverrides {
+		extensions {
+			sjcert = default
+		}
+	}
+}
+
 config.tx_extbase.persistence.classes {
 	CIC\Cicbase\Domain\Model\FileReference {
 		mapping {
