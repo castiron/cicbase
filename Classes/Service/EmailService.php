@@ -1,5 +1,6 @@
 <?php
 namespace CIC\Cicbase\Service;
+use CIC\Cicbase\Utility\Arr;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MailUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
@@ -178,8 +179,22 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 */
 	protected $foundTemplatePaths = array();
 
+	/**
+	 * Our own storage of templates that correspond to a
+	 * database record to use instead of the template file.
+	 *
+	 * @var array
+	 */
+	protected $foundTemplateOverrides = array();
 
-		/**
+	/**
+	 * @var \CIC\Cicbase\Domain\Repository\EmailTemplateRepository
+	 * @inject
+	 */
+	protected $emailTemplateRepository;
+
+
+	/**
 		 * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager
 		 * @return void
 		 */
@@ -285,6 +300,76 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	}
 
 	/**
+	 * This is a helper method for other classes, not necessarily part of the EmailService API.
+	 *
+	 * Gets the raw file string for a template key "{ext}.{templateKey}"
+	 *
+	 * @see getAvailableTemplateKeys()
+	 *
+	 * @param string $templateKey
+	 * @return string
+	 */
+	public function getTemplateBodyFromKey($templateKey) {
+		$parts = explode('.', $templateKey);
+		$ext = $parts[0];
+		$key = $parts[1];
+
+		$extbaseFrameworkConfiguration = $this->getTyposcriptForExtension($ext);
+		$rootPaths = self::grabRootPathsFromExtConf($extbaseFrameworkConfiguration);
+
+		if (!count($rootPaths)) return FALSE;
+
+		$extSettings = $extbaseFrameworkConfiguration['settings'];
+		if (!isset($extSettings['email']['templates'][$key])) return FALSE;
+
+		$templateDefinition = $extSettings['email']['templates'][$key];
+
+		$file = self::findRealTemplateFile($rootPaths, $templateDefinition);
+		if (!$file) return FALSE;
+
+		return file_get_contents($file);
+	}
+
+	/**
+	 * This is a helper method for other classes, not necessarily part of the EmailService API.
+	 *
+	 * @return array
+	 */
+	public function getAvailableTemplateKeys() {
+		$exts = array();
+		$keys = array();
+
+		$cicbaseSettings = $this->configurationManager->getConfiguration(
+			ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, 'cicbase', 'default'
+		);
+
+		if (isset($cicbaseSettings['emailTemplateOverrides']['extensions'])) {
+			$exts = $cicbaseSettings['emailTemplateOverrides']['extensions'];
+			if (!is_array($exts) || !count($exts)) {
+				return array();
+			}
+		}
+
+		$keyTrimmer = function ($key) { return rtrim($key, '.'); };
+		foreach ($exts as $extKey) {
+			$extConf = $this->getTyposcriptForExtension($extKey);
+			if (!is_array($extConf)) continue;
+
+			$extSettings = $extConf["settings"];
+			if (!is_array($extSettings)) continue;
+			Arr::walkKeysRecursive($extSettings, $keyTrimmer);
+
+			if (!isset($extSettings['email']['templates'])) continue;
+			$templates = $extSettings['email']['templates'];
+			$keys[$extKey] = array_keys($templates);
+		}
+
+		$this->emailTemplateRepository->filterOutExistingTemplateKeys($keys);
+		return $keys;
+
+	}
+
+	/**
 	 * Checks whitelist settings to determine appropriate recipients
 	 *
 	 * @param array $recipients
@@ -338,8 +423,14 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 		/** @var \TYPO3\CMS\Fluid\View\StandaloneView $emailView */
 		$emailView = $this->objectManager->get('TYPO3\CMS\Fluid\View\StandaloneView');
 		$emailView->setFormat('html');
-		$templatePathAndFilename = $this->getTemplatePath($templateName);
-		$emailView->setTemplatePathAndFilename($templatePathAndFilename);
+
+
+		if (isset($this->foundTemplateOverrides[$templateName])) {
+			$emailView->setTemplateSource($this->foundTemplateOverrides[$templateName]);
+		} else {
+			$templatePathAndFilename = $this->getTemplatePath($templateName);
+			$emailView->setTemplatePathAndFilename($templatePathAndFilename);
+		}
 		if($templateVariables) {
 			$emailView->assignMultiple($templateVariables);
 		}
@@ -379,19 +470,27 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	protected function templateExists($templateName) {
 		if (!isset($this->templates[$templateName])) return FALSE;
 		if (!isset($this->templates[$templateName]['templateFile'])) return FALSE;
+		if (isset($this->foundTemplateOverrides[$templateName])) return TRUE;
 		if (isset($this->foundTemplatePaths[$templateName])) return TRUE;
+
+		$framework = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
+		$ext = strtolower($framework['extensionName']);
+		/** @var \CIC\Cicbase\Domain\Model\EmailTemplate $record */
+		$record = $this->emailTemplateRepository->findOneByTemplateKey("$ext.$templateName");
+
+		if ($record) {
+			$this->foundTemplateOverrides[$templateName] = $record->getBody();
+			return TRUE;
+		}
 
 		$rootPaths = $this->getTemplateRootPaths();
 
 		if (!count($rootPaths)) return FALSE;
 
-		foreach ($rootPaths as $possiblePath) {
-			$rootPath = GeneralUtility::getFileAbsFileName($possiblePath);
-			$file = rtrim($rootPath, '/') . '/' . ltrim($this->templates[$templateName]['templateFile'], '/');
-			if (is_file($file)) {
-				$this->foundTemplatePaths[$templateName] = $file;
-				return TRUE;
-			}
+		$file = self::findRealTemplateFile($rootPaths, $this->templates[$templateName]);
+		if ($file) {
+			$this->foundTemplatePaths[$templateName] = $file;
+			return TRUE;
 		}
 		return FALSE;
 	}
@@ -402,11 +501,34 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @return array
 	 */
 	protected function getTemplateRootPaths() {
-		$rootPaths = array();
-		$extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(
+		return self::grabRootPathsFromExtConf($this->configurationManager->getConfiguration(
 			ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK
-		);
+		));
+	}
 
+	/**
+	 * @param array $rootPaths
+	 * @param array $templateDefinition
+	 * @return bool|string
+	 */
+	protected static function findRealTemplateFile(array $rootPaths, array $templateDefinition) {
+		$templateFile = $templateDefinition['templateFile'];
+		foreach ($rootPaths as $possiblePath) {
+			$rootPath = GeneralUtility::getFileAbsFileName($possiblePath);
+			$file = rtrim($rootPath, '/') . '/' . ltrim($templateFile, '/');
+			if (is_file($file)) {
+				return $file;
+			}
+		}
+		return FALSE;
+	}
+
+	/**
+	 * @param array $extbaseFrameworkConfiguration
+	 * @return array
+	 */
+	protected static function grabRootPathsFromExtConf(array $extbaseFrameworkConfiguration) {
+		$rootPaths = array();
 		if (
 			!empty($extbaseFrameworkConfiguration['view']['templateRootPaths'])
 			&& is_array($extbaseFrameworkConfiguration['view']['templateRootPaths'])
@@ -423,6 +545,22 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 			$rootPaths[] = $extbaseFrameworkConfiguration['view']['templateRootPath'];
 		}
 		return $rootPaths;
+	}
+
+	/**
+	 * @param $ext
+	 * @return array
+	 */
+	protected function getTyposcriptForExtension($ext) {
+		$allTyposcript = $this->configurationManager->getConfiguration(
+			ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
+		);
+
+		if (!isset($allTyposcript['plugin.']["tx_$ext."])) return FALSE;
+		$keyTrimmer = function ($key) { return rtrim($key, '.'); };
+		$extConf = $allTyposcript['plugin.']["tx_$ext."];
+		Arr::walkKeysRecursive($extConf, $keyTrimmer);
+		return $extConf;
 	}
 
 

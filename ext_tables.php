@@ -36,7 +36,7 @@ if (TYPO3_MODE == 'BE') {
 		'emailtemplate',	// Submodule key
 		'',			// Position
 		array(
-			'EmailTemplate' => 'list,new,create,edit,update'
+			'EmailTemplate' => 'list,selectTemplate,new,create,edit,update'
 		),
 		array(
 			'access' => 'user,group',
@@ -95,6 +95,7 @@ $GLOBALS['TCA']['tx_cicbase_domain_model_emailtemplate'] = array(
 			'starttime' => 'starttime',
 			'endtime' => 'endtime',
 		),
+		'hideTable' => TRUE,
 		'dynamicConfigFile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($_EXTKEY) . 'Configuration/TCA/EmailTemplate.php',
 		'iconfile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath($_EXTKEY) . 'Resources/Public/Icons/tx_cicbase_domain_model_emailtemplate.gif'
 	),

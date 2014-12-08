@@ -24,20 +24,24 @@ config.tx_extbase{
 	}
 }
 
-module.tx_cicbase.settings {
-
+plugin.tx_cicbase.settings {
 	emailTemplateOverrides {
 		extensions {
-			sjcert = default
+			# 0 = extensionName
 		}
 	}
 }
+module.tx_cicbase.settings < plugin.tx_cicbase.settings
 
 config.tx_extbase.persistence.classes {
 	CIC\Cicbase\Domain\Model\FileReference {
 		mapping {
 			tableName = sys_file_reference
 		}
+	}
+	CIC\Cicbase\Domain\Model\EmailTemplate {
+		storagePid = 1
+		newRecordStoragePid = 1
 	}
 #	TYPO3\CMS\Extbase\Domain\Model\FileReference {
 #		subclasses {

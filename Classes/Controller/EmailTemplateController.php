@@ -3,7 +3,6 @@ namespace CIC\Cicbase\Controller;
 
 
 use CIC\Cicbase\Domain\Model\EmailTemplate;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 class EmailTemplateController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController {
 
@@ -25,14 +24,25 @@ class EmailTemplateController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCo
 		));
 	}
 
-	/**
-	 * @param EmailTemplate $emailTemplate
-	 */
-	public function newAction(EmailTemplate $emailTemplate = NULL) {
-		$keys = $this->getAvailableTemplateKeys();
+
+	public function selectTemplateAction() {
+		$keys = $this->emailService->getAvailableTemplateKeys();
 		$this->view->assignMultiple(array(
 			'templateKeys' => $keys,
 			'noKeys' => ! count($keys)
+		));
+	}
+
+	/**
+	 * @param string $selectedTemplateKey
+	 * @param EmailTemplate $emailTemplate
+	 */
+	public function newAction($selectedTemplateKey, EmailTemplate $emailTemplate = NULL) {
+		$defaultBody = $this->emailService->getTemplateBodyFromKey($selectedTemplateKey);
+		$this->view->assignMultiple(array(
+			'selectedTemplateKey' => $selectedTemplateKey,
+			'emailTemplate' => $emailTemplate,
+			'defaultBody' => $defaultBody,
 		));
 	}
 
@@ -61,27 +71,7 @@ class EmailTemplateController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCo
 		$this->redirect('list');
 	}
 
-	protected function getAvailableTemplateKeys() {
-		$exts = array();
-		$keys = array();
-		if (isset($this->settings['emailTemplateOverrides']['extensions'])) {
-			$exts = $this->settings['emailTemplateOverrides']['extensions'];
-			if (!is_array($exts) || !count($exts)) {
-				return array();
-			}
-		}
 
-		foreach ($exts as $extKey => $extPlugin) {
-			$extSettings = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, $extKey, $extPlugin);
-			if (!is_array($extSettings) || !isset($extSettings['email']['templates'])) continue;
-			$templates = $extSettings['email']['templates'];
-			$keys[$extKey] = array_keys($templates);
-		}
-
-		$this->emailTemplateRepository->filterOutExistingTemplateKeys($keys);
-		return $keys;
-
-	}
 
 }
 

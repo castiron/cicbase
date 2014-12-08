@@ -4,41 +4,33 @@
 
 <f:section name="main">
 
-	<f:if condition="{noKeys}">
-		<f:then>
-			<h4>There are no templates available at this time.</h4>
-		</f:then>
-		<f:else>
-			<f:form action="create" name="emailTemplate" object="{emailTemplate}">
+	<h3>New Template for "{selectedTemplateKey}"</h3>
 
-				<div class="field">
-					<label>Available Templates</label>
-					<c:form.selectWithBody property="templateKey" >
-						<f:for each="{templateKeys}" as="keys" key="ext">
-							<optgroup label="{ext}">
-								<f:for each="{keys}" as="key">
-									<option value="{ext}.{key}">{key}</option>
-								</f:for>
-							</optgroup>
-						</f:for>
-					</c:form.selectWithBody>
-				</div>
+	<f:form action="create" name="emailTemplate" object="{emailTemplate}">
+		<f:form.hidden name="selectedTemplateKey" value="{selectedTemplateKey}" />
+		<f:form.hidden property="templateKey" value="{selectedTemplateKey}" />
 
-				<div class="field">
-					<label><f:form.checkbox property="isDraft" value="yes" /> Is draft version?</label>
-				</div>
+		<div class="field">
+			<label><f:form.checkbox property="isDraft" value="yes" /> Is draft version?</label>
+		</div>
 
-				<div class=field">
-					<label>Email Body</label>
+		<div class=field">
+			<label>Email Body</label>
+			<f:if condition="{emailTemplate.body}">
+				<f:then>
 					<f:form.textarea property="body" />
-				</div>
+				</f:then>
+				<f:else>
+					<f:form.textarea property="body" value="{defaultBody}" />
+				</f:else>
+			</f:if>
 
-				<div class="field">
-					<f:form.submit value="Create Email Template" />
-				</div>
-			</f:form>
-		</f:else>
-	</f:if>
+		</div>
+
+		<div class="field">
+			<f:form.submit value="Create Email Template" />
+		</div>
+	</f:form>
 
 </f:section>
 
