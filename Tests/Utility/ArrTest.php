@@ -202,6 +202,15 @@ class ArrTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 		$this->assertFalse(Arr::isAssoc($arr));
 	}
 
+	/** @test */
+	public function itWalksKeysRecursively() {
+		$arr      = array('one.' => 1, 'more.' => array('two.' => 2));
+		$expected = array('one'  => 1, 'more'  => array('two'  => 2));
+		$func = function ($key) { return rtrim($key, '.'); };
+		Arr::walkKeysRecursive($arr, $func);
+		$this->assertEquals($expected, $arr);
+	}
+
 
 
 	protected function checkForNewResultsEachTime(callable $callable) {

@@ -186,6 +186,22 @@ class Arr {
 		return -1;
 	}
 
+	/**
+	 * @param array $array
+	 * @param callable $func Returns a new key
+	 */
+	public static function walkKeysRecursive(array &$array, callable $func) {
+		if (!is_callable($func)) return;
+		$out = array();
+		foreach ($array as $key => $val) {
+			$newKey = $func($key);
+			if (is_array($val)) {
+				self::walkKeysRecursive($val, $func);
+			}
+			$out[$newKey] = $val;
+		}
+		$array = $out;
+	}
 
 	/**
 	 * Returns the first value where the callable returns true.
