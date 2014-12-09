@@ -66,6 +66,11 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  *         name = Someone Last
  *         email = email@test.com
  *       }
+ *
+ *       # Prevent BE editors from overriding this template in the BE Email Templates Module (default: FALSE)
+ *       # optional
+ *       noOverride = 1
+ *
  *     }
  *   }
  *
@@ -350,6 +355,9 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 			}
 		}
 
+		$whereAllowed = function ($templateDefinition, $templateKey) {
+			return !isset($templateDefinition['noOverride']) || !$templateDefinition['noOverride'];
+		};
 		$keyTrimmer = function ($key) { return rtrim($key, '.'); };
 		foreach ($exts as $extKey) {
 			$extConf = $this->getTyposcriptForExtension($extKey);
@@ -361,7 +369,10 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 
 			if (!isset($extSettings['email']['templates'])) continue;
 			$templates = $extSettings['email']['templates'];
-			$keys[$extKey] = array_keys($templates);
+
+			$allowedTemplates = Arr::spliceWhere($templates, $whereAllowed);
+
+			$keys[$extKey] = array_keys($allowedTemplates);
 		}
 
 		$this->emailTemplateRepository->filterOutExistingTemplateKeys($keys);
