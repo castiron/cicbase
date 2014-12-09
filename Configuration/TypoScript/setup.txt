@@ -21,6 +21,9 @@ config.tx_extbase{
 		TYPO3\CMS\Fluid\Core\Parser\TemplateParser {
 			className = CIC\Cicbase\View\TemplateParser
 		}
+		TYPO3\CMS\Extbase\Validation\ValidatorResolver {
+			className = CIC\Cicbase\Validation\ValidatorResolver
+		}
 	}
 }
 
