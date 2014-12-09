@@ -1,31 +1,16 @@
-<f:layout name="Backend" />
+<f:layout name="EmailTemplate" />
 
 {namespace c = CIC\Cicbase\ViewHelpers}
 
 <f:section name="main">
 
-	<h3>New Template for "{selectedTemplateKey}"</h3>
+	<h3 class="uppercase">New Template for "{selectedTemplateKey}"</h3>
 
 	<f:form action="create" name="emailTemplate" object="{emailTemplate}">
 		<f:form.hidden name="selectedTemplateKey" value="{selectedTemplateKey}" />
 		<f:form.hidden property="templateKey" value="{selectedTemplateKey}" />
 
-		<div class="field">
-			<label><f:form.checkbox property="isDraft" value="yes" /> Is draft version?</label>
-		</div>
-
-		<div class=field">
-			<label>Email Body</label>
-			<f:if condition="{emailTemplate.body}">
-				<f:then>
-					<f:form.textarea property="body" />
-				</f:then>
-				<f:else>
-					<f:form.textarea property="body" value="{defaultBody}" />
-				</f:else>
-			</f:if>
-
-		</div>
+		<f:render partial="EmailTemplate/Fields" arguments="{_all}" />
 
 		<div class="field">
 			<f:form.submit value="Create Email Template" />

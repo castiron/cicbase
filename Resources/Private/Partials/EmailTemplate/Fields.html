@@ -1,0 +1,15 @@
+<div class="field">
+	<label class="inline"><f:form.checkbox property="isDraft" value="yes" /> Is this just a draft?</label>
+</div>
+
+<div class="field">
+	<label>Email Body</label>
+	<f:if condition="{emailTemplate.body}">
+		<f:then>
+			<f:form.textarea id="template-editor" property="body" />
+		</f:then>
+		<f:else>
+			<f:form.textarea id="template-editor" property="body" value="{defaultBody}" />
+		</f:else>
+	</f:if>
+</div>

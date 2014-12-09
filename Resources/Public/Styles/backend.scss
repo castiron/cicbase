@@ -1,0 +1,17 @@
+.tx-cicbase-module {
+  .field {
+    margin-bottom: 10px;
+    label {
+      display: block;
+      font-weight: bold;
+      &.inline {
+        font-weight: normal;
+      }
+    }
+    textarea {
+      width: 80%;
+      min-height: 400px;
+      resize: true;
+    }
+  }
+}

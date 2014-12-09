@@ -1,0 +1,13 @@
+.tx-cicbase-module .field {
+  margin-bottom: 10px; }
+  .tx-cicbase-module .field label {
+    display: block;
+    font-weight: bold; }
+    .tx-cicbase-module .field label.inline {
+      font-weight: normal; }
+  .tx-cicbase-module .field textarea {
+    width: 80%;
+    min-height: 400px;
+    resize: both; }
+
+/*# sourceMappingURL=backend.css.map */
