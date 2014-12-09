@@ -22,5 +22,15 @@ class EmailTemplateRepository extends AbstractRepository {
 		}
 	}
 
+	/**
+	 * @param string $key
+	 * @return object
+	 */
+	public function findOneByTemplateKey($key) {
+		return $this->query(function ($q) use ($key) {
+			$q->equals('templateKey', $key);
+			$q->equals('isDraft', FALSE);
+		})->getFirst();
+	}
 }
 ?>
