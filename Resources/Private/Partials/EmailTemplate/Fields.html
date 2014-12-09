@@ -4,6 +4,10 @@
 
 <div class="field">
 	<label>Email Body</label>
+	<p>Email templates are written in Fluid html. This allows for access to data values (within curly brackets
+	i.e.<code>{settings.pid.storage}</code>) and certain helper tags (starting with <code>&lt;f:</code>). Be
+	careful with this extra information. A misspelling, missing bracket, or a missing quotation can throw an error and
+	prevent the email from being sent.</p>
 	<f:if condition="{emailTemplate.body}">
 		<f:then>
 			<f:form.textarea id="template-editor" property="body" />

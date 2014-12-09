@@ -6,8 +6,8 @@
     .tx-cicbase-module .field label.inline {
       font-weight: normal; }
   .tx-cicbase-module .field textarea {
-    width: 80%;
-    min-height: 400px;
-    resize: both; }
+    min-height: 400px; }
+.tx-cicbase-module .CodeMirror {
+  border: 1px solid #a9a9a9; }
 
 /*# sourceMappingURL=backend.css.map */

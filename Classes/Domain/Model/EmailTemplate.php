@@ -7,6 +7,10 @@ class EmailTemplate extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	protected $isDraft;
 
 	/** @var string */
+	/**
+	 * @var string
+	 * @validate \CIC\Cicbase\Validation\Validator\FluidStringValidator
+	 */
 	protected $body;
 
 	/** @var string */

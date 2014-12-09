@@ -4,6 +4,8 @@
 
 <f:section name="main">
 
+	<h3 class="uppercase">Available Templates</h3>
+
 	<f:if condition="{noKeys}">
 		<f:then>
 			<h4>There are no templates available at this time.</h4>
@@ -12,7 +14,11 @@
 			<f:form action="new" >
 
 				<div class="field">
-					<label>Available Templates</label>
+					<label>Please select a template</label>
+					<p>This is a list of email templates used on this site. Creating an Email Template record for one
+					of these will ensure that this record is used for email templates instead of the original template
+					found within the code. This does not actually re-write the original template in anyway and deleting
+					this record simply restores the behavior of using the original template.</p>
 					<c:form.selectWithBody name="selectedTemplateKey" >
 						<f:for each="{templateKeys}" as="keys" key="ext">
 							<optgroup label="{ext}">

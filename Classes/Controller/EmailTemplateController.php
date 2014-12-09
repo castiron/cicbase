@@ -25,7 +25,6 @@ class EmailTemplateController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCo
 		));
 	}
 
-
 	public function selectTemplateAction() {
 		$keys = $this->emailService->getAvailableTemplateKeys();
 		$this->view->assignMultiple(array(
@@ -37,6 +36,7 @@ class EmailTemplateController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCo
 	/**
 	 * @param string $selectedTemplateKey
 	 * @param EmailTemplate $emailTemplate
+	 * @ignorevalidation $emailTemplate
 	 */
 	public function newAction($selectedTemplateKey, EmailTemplate $emailTemplate = NULL) {
 		$defaultBody = $this->emailService->getTemplateBodyFromKey($selectedTemplateKey);
@@ -49,6 +49,7 @@ class EmailTemplateController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCo
 
 	/**
 	 * @param EmailTemplate $emailTemplate
+	 * @ignorevalidation $emailTemplate
 	 */
 	public function editAction(EmailTemplate $emailTemplate) {
 		$this->view->assignMultiple(array(
@@ -96,6 +97,21 @@ class EmailTemplateController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCo
 	protected function flash($message, $title = '', $severity = FlashMessage::OK) {
 		$this->controllerContext->getFlashMessageQueue()->enqueue(new FlashMessage($message, $title, $severity, TRUE));
 	}
+
+	/**
+	 * @return string
+	 */
+	protected function getErrorFlashMessage() {
+		$vr = $this->arguments->getValidationResults();
+		$allErrors = array();
+		foreach ($vr->getFlattenedErrors() as $prop => $errors) {
+			foreach ($errors as $error) {
+				$allErrors[] = $error->getMessage();
+			}
+		}
+		return implode(' ', $allErrors);
+	}
+
 
 }
 

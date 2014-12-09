@@ -9,9 +9,10 @@
       }
     }
     textarea {
-      width: 80%;
       min-height: 400px;
-      resize: true;
     }
+  }
+  .CodeMirror {
+    border: 1px solid #a9a9a9;
   }
 }
