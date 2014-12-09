@@ -3,6 +3,7 @@ namespace CIC\Cicbase\Controller;
 
 
 use CIC\Cicbase\Domain\Model\EmailTemplate;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
 
 class EmailTemplateController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController {
 
@@ -58,8 +59,20 @@ class EmailTemplateController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCo
 	/**
 	 * @param EmailTemplate $emailTemplate
 	 */
+	public function deleteAction(EmailTemplate $emailTemplate) {
+		$templateName = $emailTemplate->getTemplateKey();
+		$this->emailTemplateRepository->remove($emailTemplate);
+		$this->flash("Deleted Email Template: $templateName");
+		$this->redirect('list');
+	}
+
+	/**
+	 * @param EmailTemplate $emailTemplate
+	 */
 	public function createAction(EmailTemplate $emailTemplate) {
+		$templateName = $emailTemplate->getTemplateKey();
 		$this->emailTemplateRepository->add($emailTemplate);
+		$this->flash("Created Email Template: $templateName");
 		$this->redirect('list');
 	}
 
@@ -67,11 +80,22 @@ class EmailTemplateController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCo
 	 * @param EmailTemplate $emailTemplate
 	 */
 	public function updateAction(EmailTemplate $emailTemplate) {
+		$templateName = $emailTemplate->getTemplateKey();
 		$this->emailTemplateRepository->update($emailTemplate);
+		$this->flash("Updated Email Template: $templateName");
 		$this->redirect('list');
 	}
 
 
+	/**
+	 * @param string $message
+	 * @param string $title
+	 * @param int $severity
+	 * @throws \TYPO3\CMS\Core\Exception
+	 */
+	protected function flash($message, $title = '', $severity = FlashMessage::OK) {
+		$this->controllerContext->getFlashMessageQueue()->enqueue(new FlashMessage($message, $title, $severity, TRUE));
+	}
 
 }
 

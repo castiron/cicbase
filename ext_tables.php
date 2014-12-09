@@ -36,7 +36,7 @@ if (TYPO3_MODE == 'BE') {
 		'emailtemplate',	// Submodule key
 		'',			// Position
 		array(
-			'EmailTemplate' => 'list,selectTemplate,new,create,edit,update'
+			'EmailTemplate' => 'list,selectTemplate,new,create,edit,update,delete'
 		),
 		array(
 			'access' => 'user,group',

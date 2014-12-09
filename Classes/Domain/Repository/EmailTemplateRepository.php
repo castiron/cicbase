@@ -1,7 +1,13 @@
 <?php
 namespace CIC\Cicbase\Domain\Repository;
 
+use TYPO3\CMS\Extbase\Persistence\Generic\Query;
+
 class EmailTemplateRepository extends AbstractRepository {
+
+	protected $defaultOrderings = array(
+		'templateKey' => Query::ORDER_ASCENDING
+	);
 
 	/**
 	 * @param array $keys
