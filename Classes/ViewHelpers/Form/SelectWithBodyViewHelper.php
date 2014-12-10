@@ -41,7 +41,18 @@ class SelectWithBodyViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Form\Abstrac
 			$name .= '[]';
 		}
 		$this->tag->addAttribute('name', $name);
-		$this->tag->setContent($this->renderChildren());
+		$options = $this->renderChildren();
+		$value = $this->getValue();
+		if ($value) {
+			if (is_array($value)) {
+				foreach ($value as $val) {
+					$options = preg_replace("/(value=\"$val\")/", "$1 selected=\"selected\"", $options);
+				}
+			} else {
+				$options = preg_replace("/(value=\"$value\")/", "$1 selected=\"selected\"", $options);
+			}
+		}
+		$this->tag->setContent($options);
 		$this->setErrorClassAttribute();
 		$content = '';
 		// register field name for token generation.
