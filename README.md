@@ -8,6 +8,8 @@
 * [Class by class storage PIDs](#storagePids)
 * [Migrations](#migrations)
 * [File Abstraction Layer](#fal)
+* [Utilities](#utilities)
+* [BucketList](#bucketlist)
 
 <a name="storagePids"></a>
 ### Class by class storage PIDs
@@ -127,4 +129,81 @@ class FixActionCategoryActionCounts1402602721 extends \CIC\Cicbase\Migration\Abs
 <a name="fal"></a>
 ### File Abstraction Layer
 ...to be written
+
+
+<a name=“utilities”></a>
+### Utilities
+Inspired by such libraries as Laravel “helpers” or even Underscore.js, there are now several utility classes in cicbase that serve simple, but useful, purposes. The classes are in [`CIC\Utility`](https://github.com/castiron/cicbase/tree/master/Classes/Utility). Take a gander at what we’ve got. I’ve found the `CIC\Utility\Arr` methods super helpful. For example:
+
+A lot of times you don’t care whether a variable is set or not, but you need the value if it’s there. To avoid getting any warnings, you better use `isset()`:
+
+```
+if (isset($arr[$maybeIndex]) && $arr[$maybeIndex] == ‘foo’) {
+  $this->runAway();
+}
+```
+
+But a nicer way to do this is just:
+
+```
+if (Arr::safe($arr, $maybeIndex) == ‘foo’) {
+  $this->runAway();
+}
+```
+
+I know it’s not going to send us to the moon, but it certainly cleans up yer codes.
+
+Anyway, there’s a ton of goodies in the utility classes and you should add more because you love us. 
+
+<a name=“bucketlist”></a>
+### Bucket Lists
+
+If this isn’t something you should use before you die, then I have no idea what it is.
+
+Every so often, you need to list things according to a particular order that doesn’t make sense by just looking at it. Let’s say you need to render a list of photos with categories ordered by IDs `7, 3, 2, 5`. So photos in category `7` are listed first, then photos in category `3`, etc. How would you do this? 
+
+Well you’d probably create buckets. Then you’d add sorted photos to each bucket and loop through the buckets in the right order to make one big list. Not too hard to fathom. 
+
+Now let’s say you need to list news articles in the same category order, and events, and people, etc. Are you really going to do the same algorithm over and over? Of course not. 
+
+This is what you’d do: 
+
+```
+$list = new BucketList([7,3,2,5]);
+foreach ($unsortedPhotos as $photo) {
+  $list->insert($photo, $photo->categoryID);
+}
+…
+foreach ($list as $photo) {
+  $currentCategoryID = $list->currentBucket();
+  $this->renderMySortedPhoto($photo);
+}
+```
+
+Whaaaauutt? Mind. Blown.
+
+You can even store info about the buckets:
+
+```
+foreach ($sortedCategories as $category) {
+  $order[$category->id] = $category;
+}
+$list = new BucketList($order, TRUE);
+foreach ($unsortedPhotos as $photo) {
+  $list->insert($photo, $photo->categoryID);
+}
+…
+foreach ($list as $photo) {
+  $currentCategoryID = $list->currentBucket();
+  $currentCategory = $list->currentBucketInfo();
+  $this-> renderMySortedPhoto($photo);
+}
+```
+
+So amaze.
+
+
+
+
+ 
 
