@@ -76,38 +76,8 @@ class AbstractTask extends \TYPO3\CMS\Extbase\Scheduler\Task {
 	 * @param $pluginName
 	 */
 	protected function initialize($extensionName, $pluginName) {
-		// Get ObjectManager
-		$this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-		$this->injectConfigurationManager($this->objectManager->get('TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface'));
-
-		// Configure the object manager
-		$typoScriptSetup = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-		if (is_array($typoScriptSetup['config.']['tx_extbase.']['objects.'])) {
-			$objectContainer = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\Container\Container');
-			foreach ($typoScriptSetup['config.']['tx_extbase.']['objects.'] as $classNameWithDot => $classConfiguration) {
-				if (isset($classConfiguration['className'])) {
-					$originalClassName = rtrim($classNameWithDot, '.');
-					$objectContainer->registerImplementation($originalClassName, $classConfiguration['className']);
-				}
-			}
-		}
-
-		// Inject Depencencies
-		$class = new \ReflectionClass($this);
-		$methods = $class->getMethods();
-		foreach ($methods as $method) {
-			if (substr_compare($method->name, 'inject', 0, 6) == 0) {
-				$comment = $method->getDocComment();
-				preg_match('#@param ([^\s]+)#', $comment, $matches);
-				$type = $matches[1];
-				if(substr($type, 0, 1) == '\\') {
-					$type = substr($type, 1);
-				}
-				$dependency = $this->objectManager->get($type);
-				$method->invokeArgs($this, array($dependency));
-			}
-		}
-
+		$injectionService = GeneralUtility::makeInstance('CIC\Cicbase\Service\InjectionService');
+		$injectionService->doInjection($this);
 
 		// Grab the settings array
 		$this->configurationManager->setConfiguration(array('extensionName' => $extensionName, 'pluginName' => $pluginName));
