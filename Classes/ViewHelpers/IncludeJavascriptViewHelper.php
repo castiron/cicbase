@@ -71,7 +71,7 @@ class IncludeJavascriptViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstr
 			$this->arguments['extensionName'] = $this->controllerContext->getRequest()->getControllerExtensionName();
 		}
 
-		$uri = 'EXT:' . GeneralUtility::camelCaseToLowerCaseUnderscored($this->arguments['extensionName']) . '/Resources/Public/' . $file;
+		$uri = 'EXT:' . GeneralUtility::camelCaseToLowerCaseUnderscored($this->arguments['extensionName']) . $this->getResourcesPathAndFilename($file);
 		$uri = GeneralUtility::getFileAbsFileName($uri);
 		$uri = substr($uri, strlen(PATH_site));
 		switch ($this->arguments['where']) {
@@ -110,5 +110,13 @@ class IncludeJavascriptViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstr
 			break;
 		}
 
+	}
+
+	protected function getResourcesPathAndFilename($file) {
+		if(substr($file,0,1) == '/') {
+			return $file;
+		} else {
+			return '/Resources/Public/'.$file;
+		}
 	}
 }
