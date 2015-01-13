@@ -32,7 +32,7 @@ if (TYPO3_MODE == 'BE') {
 
 	\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
 		'CIC.'.$_EXTKEY,
-		'tools',	// Make module a submodule of 'tools'
+		'web',	// Make module a submodule of 'tools'
 		'emailtemplate',	// Submodule key
 		'',			// Position
 		array(
