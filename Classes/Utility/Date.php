@@ -59,6 +59,29 @@ class Date {
 	}
 
 	/**
+	 * @param integer $year
+	 * @param string|integer $month
+	 * @param integer $day
+	 * @return int
+	 */
+	public static function dayStartTimestamp($year, $month, $day) {
+		$month = self::monthStringToInteger($month);
+		return strtotime("$month/$day/$year 00:00");
+	}
+
+	/**
+	 * @param integer $year
+	 * @param string|integer $month
+	 * @param integer $day
+	 * @param null|\DateTimeZone $tz
+	 * @return integer
+	 */
+	public static function dayEndTimestamp($year, $month, $day, $tz = NULL) {
+		$month = self::monthStringToInteger($month);
+		return strtotime("$month/$day/$year 23:59:59", $tz);
+	}
+
+	/**
 	 * @param \DateTime $start
 	 * @param \DateTime $end
 	 * @return integer The number of days it spans
