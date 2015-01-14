@@ -1,7 +1,6 @@
 <?php
 
 namespace CIC\Cicbase\Utility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  *
@@ -143,7 +142,7 @@ class Arr {
 	 */
 	public static function keysUnderscoreToLowerCamelCase(array &$array) {
 		$keys = array_keys($array);
-		array_walk($keys, function (&$x) { $x = GeneralUtility::underscoredToLowerCamelCase($x); });
+		array_walk($keys, function (&$x) { $x = Str::cCase($x); });
 		$array = array_combine($keys, array_values($array));
 	}
 
