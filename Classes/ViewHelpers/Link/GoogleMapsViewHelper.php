@@ -51,7 +51,6 @@ class GoogleMapsViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\ExternalVie
 	 * @return bool
 	 */
 	public function addressIsInvalid($address = NULL) {
-		return TRUE;
 		if (!$address || !trim($address)) {
 			return TRUE;
 		}
