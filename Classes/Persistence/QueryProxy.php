@@ -80,9 +80,27 @@ class QueryProxy implements QueryProxyInterface{
 	/**
 	 * @param bool $bool
 	 */
-	public function setRespectStoragePage($bool) {
+	public function setRespectStoragePage($bool = TRUE) {
 		$settings = $this->query->getQuerySettings();
 		$settings->setRespectStoragePage($bool);
+		$this->query->setQuerySettings($settings);
+	}
+
+	/**
+	 * @param bool $bool
+	 */
+	public function setIncludeDeleted($bool = TRUE) {
+		$settings = $this->query->getQuerySettings();
+		$settings->setIncludeDeleted($bool);
+		$this->query->setQuerySettings($settings);
+	}
+
+	/**
+	 * @param bool $bool
+	 */
+	public function setIgnoreEnableFields($bool = TRUE) {
+		$settings = $this->query->getQuerySettings();
+		$settings->setIgnoreEnableFields($bool);
 		$this->query->setQuerySettings($settings);
 	}
 
