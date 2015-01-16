@@ -123,6 +123,18 @@ class Arr {
 	}
 
 	/**
+	 * Returns a new array with only the elements with the given keys.
+	 * Associations are preserved.
+	 *
+	 * @param array $array
+	 * @param array $keys
+	 * @return array
+	 */
+	public static function removeByKeys(array $array, array $keys) {
+		return array_diff_key($array, array_fill_keys($keys, NULL));
+	}
+
+	/**
 	 * @param array $defaults
 	 * @param array $overrides
 	 * @param bool $strict If strict, then only the keys in $defaults will be merged from overrides

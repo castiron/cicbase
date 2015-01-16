@@ -211,6 +211,18 @@ class ArrTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 		$this->assertEquals($expected, $arr);
 	}
 
+	/** @test */
+	public function itRemovesByKeys() {
+		$arr = array('one' => 1, 'two' => 2, 'three' => 3);
+		$expected = array('one' => 1, 'three' => 3);
+		$this->assertEquals($expected, Arr::removeByKeys($arr, array('two')));
+	}
+
+	/** @test */
+	public function itRemovesByKeysEvenIfEmpty() {
+		$this->assertEquals(array(), Arr::removeByKeys(array(), array('two')));
+	}
+
 
 
 	protected function checkForNewResultsEachTime(callable $callable) {
