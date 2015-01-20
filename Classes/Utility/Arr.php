@@ -316,6 +316,15 @@ class Arr {
 		return TRUE;
 	}
 
+
+	/**
+	 * @param array|\Traversable $storage
+	 * @return bool
+	 */
+	public static function isTraversable($storage) {
+		return is_array($storage) || $storage instanceof \Traversable;
+	}
+
 	/**
 	 * Converts multidimensional associative arrays into a
 	 * stdClass object. This works recursively, but whenever
