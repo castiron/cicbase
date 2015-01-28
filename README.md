@@ -128,12 +128,18 @@ class FixActionCategoryActionCounts1402602721 extends \CIC\Cicbase\Migration\Abs
 
 <a name="fal"></a>
 ### File Abstraction Layer
-...to be written
+ExtBase does not provide user upload support with their new FAL setup. Instead we've rolled our own:
+* Works with latest FAL
+* Works with extbase property mapper for single or collection properties. Errors are applied to the appropriate property.
+* Does real validation of size and mime type. 
+* Saves uploaded files if there are other errors on the form, so users don't have to re-upload if the form fails.
+
+Refer to the class comments on the  [FileReferenceConverter](Classes/Property/TypeConverter/FileReferenceConverter.php) for specific details.
 
 
-<a name=“utilities”></a>
+<a name="utilities"></a>
 ### Utilities
-Inspired by such libraries as Laravel “helpers” or even Underscore.js, there are now several utility classes in cicbase that serve simple, but useful, purposes. The classes are in [`CIC\Utility`](https://github.com/castiron/cicbase/tree/master/Classes/Utility). Take a gander at what we’ve got. I’ve found the `CIC\Utility\Arr` methods super helpful. For example:
+Inspired by such libraries as Laravel "helpers" or even Underscore.js, there are now several utility classes in cicbase that serve simple, but useful, purposes. The classes are in [`CIC\Utility`](Classes/Utility). Take a gander at what we’ve got. I’ve found the `CIC\Utility\Arr` methods super helpful. For example:
 
 A lot of times you don’t care whether a variable is set or not, but you need the value if it’s there. To avoid getting any warnings, you better use `isset()`:
 
@@ -155,7 +161,7 @@ I know it’s not going to send us to the moon, but it certainly cleans up yer c
 
 Anyway, there’s a ton of goodies in the utility classes and you should add more because you love us. 
 
-<a name=“bucketlist”></a>
+<a name="bucketlist"></a>
 ### Bucket Lists
 
 If this isn’t something you should use before you die, then I have no idea what it is.
