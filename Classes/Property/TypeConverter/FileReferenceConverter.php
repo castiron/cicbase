@@ -103,6 +103,21 @@ use CIC\Cicbase\Domain\Model\FileReference;
  *   $this->fileReferenceFactory->saveAll($partner, 'documents', $documents, 'partner.documents');
  * }
  *
+ *
+ * Model setup (required)
+ * ======================
+ *
+ * Since there's a little more manhandling going on with the files, we need to use our own
+ * model for the FileReference record. Notice how we're using the cicbase version and not the extbase one.
+ *
+ * /** @var \CIC\Cicbase\Domain\Model\FileReference *
+ * protected $image = NULL;
+ *
+ * /** @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\CIC\Cicbase\Domain\Model\FileReference> *
+ * protected $documents = NULL;
+ *
+ *
+ *
  * @package CIC\Cicbase\Property\TypeConverter
  */
 class FileReferenceConverter extends \TYPO3\CMS\Extbase\Property\TypeConverter\PersistentObjectConverter {
