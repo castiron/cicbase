@@ -33,6 +33,8 @@ use TYPO3\CMS\Core\Exception;
  * relative to the .include file itself
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License, version 3 or later
  *
+ * @deprecated Please use IncludeJavascriptFromDistFileViewHelper instead
+ *
  */
 
 class IncludeJavascriptFromIncludeFileViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
