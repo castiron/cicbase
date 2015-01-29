@@ -70,13 +70,26 @@ class IncludeJavascriptFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\View
 		$this->init();
 
 		$lines = array();
-		foreach($this->getRelativeIncludeFilenames() as $file) {
+		$files = $this->getFiles();
+		foreach($files as $file) {
 			if (file_exists($file)) {
 				$lines[] = "<script src=\"$file\"></script>";
 			}
 		}
 
 		return implode('', $lines);
+	}
+
+	protected function getFiles() {
+		return $this->useMinified() ? array($this->squashTo()) : $this->getRelativeIncludeFilenames();
+	}
+
+	protected function squashTo() {
+		return $this->getRelativeFromAbsolutePath($this->targetPath() . '/' . $this->spec->squashTo);
+	}
+
+	protected function useMinified() {
+		return $this->spec->squashTo && $GLOBALS['TYPO3_CONF_VARS']['FE']['t3seedMinifiedAssets'];
 	}
 
 	/**
