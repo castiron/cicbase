@@ -30,7 +30,7 @@ class Limbo implements \CIC\Cicbase\Persistence\LimboInterface {
 
 
 	/**
-	 * @var TYPO3\CMS\Core\Cache\CacheManager
+	 * @var \TYPO3\CMS\Core\Cache\CacheManager
 	 * @inject
 	 */
 	protected $cacheManager;
@@ -40,15 +40,22 @@ class Limbo implements \CIC\Cicbase\Persistence\LimboInterface {
 	 * @return string
 	 */
 	protected function getCacheKey($key = '') {
-		$id = '';
-		if ($GLOBALS['TSFE']->fe_user) {
-			$id = $GLOBALS['TSFE']->fe_user->id . '_';
-		}
 		if ($key) {
 			$key = str_replace('.', '_', $key);
 		}
-		return 'heldFile_'.$id.$key;
 
+		if (is_array($GLOBALS['TSFE']->fe_user->user) && $GLOBALS['TSFE']->fe_user->user['uid'] > 0) {
+			$id = $GLOBALS['TSFE']->fe_user->user['uid'];
+		} else {
+			$id = $GLOBALS['TSFE']->fe_user->getKey('ses', "limbo_key_$key");
+			if (!$id) {
+				$id = md5(uniqid(mt_rand()));
+				$GLOBALS['TSFE']->fe_user->setKey('ses', "limbo_key_$key", $id);
+			}
+		}
+
+
+		return "limbo_{$id}_{$key}";
 	}
 
 
