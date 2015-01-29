@@ -93,4 +93,21 @@ class Path {
 		return implode('/', $parts);
 	}
 
+	/**
+	 * Returns an array like [$commonPath, $path1Additional, $path2Additional]
+	 *
+	 * @param string $path1
+	 * @param string $path2
+	 * @return array
+	 */
+	public static function diff($path1, $path2) {
+		$p1 = explode('/', Path::ext($path1) ? Path::dir($path1) : $path1);
+		$p2 = explode('/', Path::ext($path2) ? Path::dir($path2) : $path2);
+		return array(
+			implode('/', array_intersect_assoc($p1, $p2)),
+			implode('/', array_diff_assoc($p1, $p2)),
+			implode('/', array_diff_assoc($p2, $p1)),
+		);
+	}
+
 }
