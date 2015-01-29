@@ -461,8 +461,7 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @return bool
 	 */
 	protected function temporaryPathExists() {
-		$path = dir($this->buildTemporaryPath(TRUE, FALSE));
-		return is_dir($path);
+		return is_dir(dirname($this->buildTemporaryPath(TRUE, FALSE)));
 	}
 
 
@@ -470,8 +469,7 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @return bool
 	 */
 	protected function permanentPathExists() {
-		$path = dir($this->buildPermanentPath(TRUE, FALSE));
-		return is_dir($path);
+		return is_dir(dirname($this->buildPermanentPath(TRUE, FALSE)));
 	}
 
 
