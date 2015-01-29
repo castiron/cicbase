@@ -135,7 +135,7 @@ class IncludeJavascriptFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\View
 
 	/**
 	 * Copied from core GeneralUtility::getFileAbsFileName with minor mods (no restricting to paths inside
-	 * TYPO3_ROOT and resolve '../' using `realpath()`
+	 * TYPO3_ROOT and resolve '../' using `realpath()`)
 	 *
 	 * @param $filename
 	 * @param bool $onlyRelative
@@ -203,7 +203,7 @@ class IncludeJavascriptFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\View
 	protected function expandPathSpec($filename) {
 		$out = array();
 		$path = $this->basePath() . '/' . $filename;
-//		DANG! this only does libc globbing
+//		DANG! this only does libc globbing, so you can only "*.coffee" and not "**/*.coffee
 		$paths = glob($path);
 		foreach($paths as $srcFile) {
 			$out[] = $this->getRelativeFromAbsolutePath(
@@ -232,7 +232,15 @@ class IncludeJavascriptFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\View
 	 * @return string
 	 */
 	protected function sourcePathToTargetPath($path) {
-		list($common, $targetPath) = Path::diff($this->targetPath(), $path);
-		return "$common/$targetPath/" . $this->toJsFileName(Path::noDir($path));
+		$out = $path;
+		if(!$this->isJsPath($path)) {
+			list($common, $targetPath) = Path::diff($this->targetPath(), $path);
+			$out = "$common/$targetPath/" . $this->toJsFileName(Path::noDir($path));
+		}
+		return $out;
+	}
+
+	protected function isJsPath($path) {
+		return Path::ext($path) == 'js';
 	}
 }
