@@ -2,11 +2,12 @@
 namespace CIC\Cicbase\ViewHelpers;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Exception;
+use CIC\Cicbase\Utility\Path;
 
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2011 Zachary Davis <zach@castironcoding.com>, Cast Iron Coding, Inc
+ *  (c) 2015 Gabe Blair <gabe@castironcoding.com>, Cast Iron Coding, Inc
  *
  *  All rights reserved
  *
@@ -63,10 +64,9 @@ class IncludeJavascriptFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\View
 
 	/**
 	 * @return string
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function render() {
-		$out = '';
 		$this->init();
 
 		$lines = array();
@@ -81,23 +81,23 @@ class IncludeJavascriptFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\View
 
 	/**
 	 * @return mixed
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	protected function getSpec() {
 		$filePath = $this->distFilePath();
 		try {
 			$spec = json_decode(file_get_contents($filePath));
-		} catch(\Exception $e) {
-			throw new \Exception("Could not read include file for js inclusion: $filePath");
+		} catch(Exception $e) {
+			throw new Exception("Could not read include file for js inclusion: $filePath");
 		}
 		return $spec;
 	}
 
 	/**
 	 * @return mixed
-	 * @throws \Exception
+	 * @throws Exception
 	 */
-	protected function sourcePath() {
+	protected function basePath() {
 		$pathInfo = pathinfo($this->distFilePath());
 		return $pathInfo['dirname'];
 	}
@@ -106,18 +106,53 @@ class IncludeJavascriptFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\View
 	 * @return string
 	 */
 	protected function targetPath() {
-		return GeneralUtility::resolveBackPath($this->sourcePath() . '/' . $this->spec->dist);
+		return GeneralUtility::resolveBackPath($this->basePath() . '/' . $this->spec->dist);
 	}
 
 	/**
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	protected function distFilePath() {
-		$filePath = GeneralUtility::getFileAbsFileName($this->arguments['distFile'], TRUE);
+		$filePath = $this->absolutizeFileName($this->arguments['distFile'], false);
 		if(!$filePath || !file_exists($filePath)) {
-			throw new \Exception("Could not get dist file for js inclusion: $filePath");
+			throw new Exception("Could not get dist file for js inclusion: $filePath");
 		}
 		return $filePath;
+	}
+
+	/**
+	 * Copied from core GeneralUtility::getFileAbsFileName with minor mods (no restricting to paths inside
+	 * TYPO3_ROOT and resolve '../' using `realpath()`
+	 *
+	 * @param $filename
+	 * @param bool $onlyRelative
+	 * @return string
+	 */
+	protected function absolutizeFileName($filename, $onlyRelative = TRUE) {
+		if ((string)$filename === '') {
+			return '';
+		}
+		$relPathPrefix = PATH_site;
+
+		// Extension
+		if (strpos($filename, 'EXT:') === 0) {
+			list($extKey, $local) = explode('/', substr($filename, 4), 2);
+			$filename = '';
+			if ((string)$extKey !== '' && \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded($extKey) && (string)$local !== '') {
+				$filename = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($extKey) . $local;
+			}
+		} elseif (!GeneralUtility::isAbsPath($filename)) {
+			// relative. Prepended with $relPathPrefix
+			$filename = $relPathPrefix . $filename;
+		} elseif ($onlyRelative && !GeneralUtility::isFirstPartOfStr($filename, $relPathPrefix)) {
+			// absolute, but set to blank if not allowed
+			$filename = '';
+		}
+		if ((string)$filename !== '') {
+			// checks backpath.
+			return realpath($filename);
+		}
+		return '';
 	}
 
 	/**
@@ -143,8 +178,7 @@ class IncludeJavascriptFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\View
 		$out = array();
 		$toInclude = $this->toInclude();
 		foreach($toInclude as $path) {
-			$expanded = $this->expandPathSpec($path);
-			$out = array_merge($out, $expanded);
+			$out = array_merge($out, $this->expandPathSpec($path));
 		}
 		return array_unique($out);
 	}
@@ -155,14 +189,12 @@ class IncludeJavascriptFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\View
 	 */
 	protected function expandPathSpec($filename) {
 		$out = array();
-		$path = $this->sourcePath() . '/' . $filename;
+		$path = $this->basePath() . '/' . $filename;
 //		DANG! this only does libc globbing
 		$paths = glob($path);
 		foreach($paths as $srcFile) {
 			$out[] = $this->getRelativeFromAbsolutePath(
-				$this->toJsFileName(
-					$this->sourcePathToTargetPath($srcFile)
-				)
+				$this->sourcePathToTargetPath($srcFile)
 			);
 		}
 		return $out;
@@ -175,7 +207,7 @@ class IncludeJavascriptFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\View
 	protected function toJsFileName($path) {
 		$i = pathinfo($path);
 		if(!$i['extension']) {
-			$path .= '.js';
+			$path .= '.coffee';
 		} else {
 			$path = str_replace('.coffee', '.js', $path);
 		}
@@ -187,6 +219,7 @@ class IncludeJavascriptFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\View
 	 * @return string
 	 */
 	protected function sourcePathToTargetPath($path) {
-		return str_replace($this->sourcePath(), $this->targetPath(), $path);
+		list($common, $targetPath) = Path::diff($this->targetPath(), $path);
+		return "$common/$targetPath/" . $this->toJsFileName(Path::noDir($path));
 	}
 }
