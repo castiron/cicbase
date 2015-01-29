@@ -66,6 +66,8 @@ use CIC\Cicbase\Domain\Model\FileReference;
  * Controller setup (required)
  * ========================
  *
+ * // InitializeCreateAction (required)
+ *
  * $this->arguments->getArgument('partner')->getPropertyMappingConfiguration()
  *   ->forProperty('image')
  *   ->setTypeConverterOption($fileConverterName, 'propertyPath', 'partner.image');
@@ -77,6 +79,41 @@ use CIC\Cicbase\Domain\Model\FileReference;
  *     ->forProperty($i)
  *     ->setTypeConverterOption($fileConverterName, 'propertyPath', "partner.documents.$i");
  * }
+ *
+ *
+ * // NewAction (optional)
+ *
+ * if (!$partner) {
+ *   $imageRef = $this->fileReferenceFactory->getHeldFileReference('partner.image');
+ *   $docRef = $this->fileReferenceFactory->getHeldFileReference('partner.documents.0');
+ *   $this->view->assign('uploadedImage', $imageRef);
+ *   $this->view->assign('uploadedDocument', $docRef);
+ * }
+ *
+ *
+ * View setup (optional)
+ * ========================
+ *
+ * <f:form.upload property="image" />
+ *
+ * <f:if condition="{partner.image}">
+ *   <f:then>
+ *     <f:if condition="{partner.image.uid}">
+ *       <f:then>
+ *         <f:image alt="{partner.image.originalResource.title}" src="{partner.image.uid}" treatIdAsReference="1" />
+ *       </f:then>
+ *       <f:else>
+ *         <p>Your image ({partner.image.title}) uploaded successfully. It will be saved when you successfully submit the form.</p>
+ *       </f:else>
+ *     </f:if>
+ *   </f:then>
+ *   <f:else>
+ *     <f:if condition="{uploadedImage}">
+ *       <p>Your image ({uploadedImage.title}) uploaded successfully. It will be saved when you successfully submit the form.</p>
+ *     </f:if>
+ *   </f:else>
+ * </f:if>
+ *
  *
  *
  * Repository setup (required)
