@@ -4,6 +4,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Exception;
 use CIC\Cicbase\Utility\Path;
 
+
 /***************************************************************
  *  Copyright notice
  *
@@ -163,7 +164,7 @@ class IncludeJavascriptFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\View
 		}
 		if ((string)$filename !== '') {
 			// checks backpath.
-			return realpath($filename);
+			return GeneralUtility::resolveBackPath($filename);
 		}
 		return '';
 	}
