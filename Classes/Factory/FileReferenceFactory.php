@@ -295,8 +295,10 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 
 		// This is a new $object, unlikely to have any existing FileReferences for this field.
 		if (!$object->getUid() || !$someSavedAlready) {
+			$i = 0;
 			foreach ($savableReferences as $ref) {
 				$this->save($ref, $key);
+				$this->limbo->clearHeld($key.'.'.$i++);
 			}
 			return;
 		}
