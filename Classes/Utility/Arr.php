@@ -377,6 +377,28 @@ class Arr {
 	}
 
 	/**
+	 * Converts a comma list to an array. No-op for arrays. Throws exception
+	 * if not a string or an array.
+	 *
+	 * @param array|string $items
+	 * @param string $msg
+	 * @return array
+	 * @throws \Exception
+	 */
+	public static function commaListToArray($items, $msg = "Expected comma list or array") {
+		if (is_string($items)) {
+			$items = array_map('trim', explode(',', $items));
+		}
+		if (!is_array($items)) {
+			throw new \Exception($msg);
+		}
+		if (!count($items)) {
+			return array();
+		}
+		return $items;
+	}
+
+	/**
 	 * Access an array element by index regardless of whether that
 	 * index has been defined.
 	 *
