@@ -31,8 +31,12 @@ class CategoryService implements SingletonInterface {
 	public function findByUids($uids, $valueColumn = NULL, $keyColumn = NULL) {
 		$select = '*';
 		$uids = Arr::commaListToArray($uids, "CategoryService expected uids to be a comma list or an array");
+		if (empty($uids)) return array();
 		$where = "uid IN (".implode(',', $uids).') '. BackendUtility::deleteClause(self::$categoryTable);
 		$rows = $this->getDatabase()->exec_SELECTgetRows($select, self::$categoryTable, $where, '', 'sorting ASC');
+		if (!is_array($rows) || empty($rows)) {
+			return array();
+		}
 		if ($valueColumn || $keyColumn) {
 			return Arr::column($rows, $valueColumn, $keyColumn);
 		}
