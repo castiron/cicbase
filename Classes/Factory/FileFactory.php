@@ -231,6 +231,7 @@ class FileFactory implements \TYPO3\CMS\Core\SingletonInterface {
 			$fileObject->setOriginalFilename($uploadedFileData['name']);
 			$fileObject->setPath($uploadedFileData['tmp_name']);
 			$fileObject->setFilename($pathInfo['filename']);
+			$fileObject->setCrdate(time());
 
 			$results = $this->fileRepository->hold($fileObject, $key);
 			return $results;
