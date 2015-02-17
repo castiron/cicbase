@@ -199,10 +199,10 @@ class Tx_Cicbase_Persistence_Storage_HashStorage extends \Tx_Extbase_Persistence
 	/**
 	 * Adds all objects-data pairs from a different storage in the current storage.
 	 *
-	 * @param Tx_Extbase_Persistence_ObjectStorage $storage The storage you want to import.
+	 * @param \Iterator $storage The storage you want to import.
 	 * @return void
 	 */
-	public function addAll(Tx_Extbase_Persistence_ObjectStorage $storage) {
+	public function addAll(\Iterator $storage) {
 		foreach ($storage as $object) {
 			$this->attach($object);
 		}
