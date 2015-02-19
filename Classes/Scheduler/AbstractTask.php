@@ -77,35 +77,8 @@ abstract class Tx_Cicbase_Scheduler_AbstractTask extends tx_scheduler_Task {
 	 * @param $pluginName
 	 */
 	protected function initialize($extensionName, $pluginName) {
-		// Get ObjectManager
-		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$this->injectConfigurationManager($this->objectManager->get('Tx_Extbase_Configuration_ConfigurationManager'));
-
-		// Configure the object manager
-		$typoScriptSetup = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-		if (is_array($typoScriptSetup['config.']['tx_extbase.']['objects.'])) {
-			$objectContainer = t3lib_div::makeInstance('Tx_Extbase_Object_Container_Container');
-			foreach ($typoScriptSetup['config.']['tx_extbase.']['objects.'] as $classNameWithDot => $classConfiguration) {
-				if (isset($classConfiguration['className'])) {
-					$originalClassName = rtrim($classNameWithDot, '.');
-					$objectContainer->registerImplementation($originalClassName, $classConfiguration['className']);
-				}
-			}
-		}
-
-		// Inject Depencencies
-		$class = new ReflectionClass($this);
-		$methods = $class->getMethods();
-		foreach ($methods as $method) {
-			if (substr_compare($method->name, 'inject', 0, 6) == 0) {
-				$comment = $method->getDocComment();
-				preg_match('#@param ([^\s]+)#', $comment, $matches);
-				$type = $matches[1];
-				$dependency = $this->objectManager->get($type);
-				$method->invokeArgs($this, array($dependency));
-			}
-		}
-
+		$injectionService = t3lib_div::makeInstance('Tx_Cicbase_Service_InjectionService');
+		$injectionService->doInjection($this);
 
 //		// Grab the settings array
 		$this->configurationManager->setConfiguration(array('extensionName' => $extensionName, 'pluginName' => $pluginName));
