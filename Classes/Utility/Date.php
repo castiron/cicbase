@@ -82,6 +82,26 @@ class Date {
 	}
 
 	/**
+	 * @param \DateTime $dt
+	 * @return \DateTime
+	 */
+	public static function dayStart(\DateTime $dt) {
+		$updated = clone $dt;
+		$updated->setTime(0, 0, 0);
+		return $updated;
+	}
+
+	/**
+	 * @param \DateTime $dt
+	 * @return \DateTime
+	 */
+	public static function dayEnd(\DateTime $dt) {
+		$updated = clone $dt;
+		$updated->setTime(23, 59, 59);
+		return $updated;
+	}
+
+	/**
 	 * @param \DateTime $start
 	 * @param \DateTime $end
 	 * @return integer The number of days it spans
