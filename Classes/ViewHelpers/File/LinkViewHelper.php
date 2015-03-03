@@ -25,13 +25,18 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 
 
 	/**
-	 * @param \CIC\Cicbase\Domain\Model\File|\TYPO3\CMS\Extbase\Persistence\Generic\LazyLoadingProxy $file
+	 * @param \CIC\Cicbase\Domain\Model\File|\TYPO3\CMS\Extbase\Persistence\Generic\LazyLoadingProxy|\TYPO3\CMS\Extbase\Domain\Model\FileReference $file
 	 * @param string $class
 	 * @param string $linkText
 	 * @return string
 	 */
 	public function render($file,$class = null, $linkText = null) {
-		$uri = $file->getPathAndFileName();
+		if ($file instanceof \TYPO3\CMS\Extbase\Domain\Model\FileReference) {
+			$uri = $file->getOriginalResource()->getPublicUrl();
+		} else {
+			$uri = $file->getPathAndFileName();
+		}
+
 		if($linkText) {
 			$text = $linkText;
 		} elseif($file->getTitle()) {
