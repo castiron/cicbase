@@ -161,6 +161,19 @@ if (Arr::safe($arr, $maybeIndex) == ‘foo’) {
 
 I know it’s not going to send us to the moon, but it certainly cleans up yer codes.
 
+This also works recursively:
+
+```
+$arr = ['I' => ['1' => ['a' => 'this chapter...']]];
+$firstChapter = Arr::safe($arr, ['I','1','a']);
+```
+
+Or simply:
+
+```
+$firstChapter = Arr::safePath($arr, 'I.1.a');
+```
+
 Anyway, there’s a ton of goodies in the utility classes and you should add more because you love us. 
 
 <a name="bucketlist"></a>

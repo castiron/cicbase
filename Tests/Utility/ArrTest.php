@@ -223,7 +223,28 @@ class ArrTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 		$this->assertEquals(array(), Arr::removeByKeys(array(), array('two')));
 	}
 
+	/** @test */
+	public function itSafelyFindsArrayValues() {
+		$this->assertEquals(3, Arr::safe(array('three' => 3), 'three'));
+	}
 
+	/** @test */
+	public function itSafelyFindsArrayValuesRecursively() {
+		$arr = array('three' => array('four' => array('five' => 3)));
+		$this->assertEquals(3, Arr::safe($arr, array('three', 'four', 'five')));
+	}
+
+	/** @test */
+	public function itSafelyFailsToFindArrayValuesRecursively() {
+		$arr = array('three' => array('four' => array('six' => 3)));
+		$this->assertEquals(NULL, Arr::safe($arr, array('three', 'four', 'five')));
+	}
+
+	/** @test */
+	public function itSafelyFailsToFindArrayValuesRecursivelyAgain() {
+		$arr = array('three' => array('four' => array('six' => array('five' => 3))));
+		$this->assertEquals(NULL, Arr::safe($arr, array('three', 'four', 'five')));
+	}
 
 	protected function checkForNewResultsEachTime(callable $callable) {
 		$sameCount = $diffCount = 0;

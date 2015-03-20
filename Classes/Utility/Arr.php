@@ -403,12 +403,51 @@ class Arr {
 	 * index has been defined.
 	 *
 	 * @param array|\ArrayAccess $array
-	 * @param mixed $index
-	 * @param null $default
-	 * @return null
+	 * @param mixed $index If $index is array, then it's assumed we should dig recursively
+	 * @param mixed $default
+	 * @return mixed
 	 */
 	public static function safe($array, $index, $default = NULL) {
-		return isset($array[$index]) ? $array[$index] : $default;
+		if (!is_array($index)) {
+			return isset($array[$index]) ? $array[$index] : $default;
+		}
+
+		// Peel a layer off the onion
+		$key = array_shift($index);
+
+		// Wherever we are, it's not good. so quit
+		if (!isset($array[$key])) {
+			return $default;
+		}
+
+		// It matches, but not enough to keep digging, return now
+		if (!is_array($array[$key])) {
+			return $array[$key];
+		}
+
+		// Hmm, didn't match, but can't dig more so quit
+		if (count($index) == 0) {
+			return $default;
+		}
+
+		// Dig deeper
+		return self::safe($array[$key], $index, $default);
+	}
+
+	/**
+	 * @param array $array
+	 * @param string $path
+	 * @param mixed $default
+	 * @param string $pathDelimiter
+	 * @return mixed
+	 * @throws \Exception
+	 */
+	public static function safePath($array, $path, $default = NULL, $pathDelimiter = '.') {
+		if (!is_string($path)) {
+			throw new \Exception("Arr::safePath path must be a string");
+		}
+		$steps = implode($pathDelimiter, $path);
+		return self::safe($array, $steps, $default);
 	}
 
 	/**
