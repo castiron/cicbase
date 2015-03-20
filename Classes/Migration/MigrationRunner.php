@@ -97,7 +97,7 @@ class MigrationRunner {
 	 *
 	 * @return array
 	 */
-	public function migratableExtensions() {
+	public static function migratableExtensions() {
 		$allExts = array_keys($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']);
 		$exts = array();
 		foreach ($allExts as $ext) {
@@ -106,6 +106,20 @@ class MigrationRunner {
 			}
 		}
 		return $exts;
+	}
+
+	public function migratableExtensionStatuses() {
+		$extensions = self::migratableExtensions();
+		$migrationStatuses = array();
+		foreach ($extensions as $ext) {
+			$migrations = self::getAvailableMigrations($ext);
+			$migrationStatuses[$ext] = array();
+			foreach ($migrations as $ts => $migrationName) {
+				$rows = $this->dbQuery('findMigration', array(':version' => $ts, ':ext_key' => $ext));
+				$migrationStatuses[$ext][$migrationName] = count($rows) ? 'completed' : 'pending';
+			}
+		}
+		return $migrationStatuses;
 	}
 
 	/**

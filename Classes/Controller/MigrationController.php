@@ -15,7 +15,9 @@ class MigrationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionContro
 	 * Show the extensions to migrate
 	 */
 	public function indexAction() {
-		$exts = $this->runner->migratableExtensions();
+		$migrations = $this->runner->migratableExtensionStatuses();
+		$exts = array_keys($migrations);
+		$this->view->assign('migrations', $migrations);
 		$this->view->assign('extensions', array_combine($exts, $exts));
 	}
 

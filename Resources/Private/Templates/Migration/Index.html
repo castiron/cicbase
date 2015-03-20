@@ -3,9 +3,31 @@
 <f:section name="main">
 	<h3 class="uppercase">Migrations</h3>
 
-	<h4>Choose an extension</h4>
 
-	<div style="width: 200px;">
+	<div style="width: 400px; float: left;  margin-right: 50px;">
+
+		<h4>Summary</h4>
+
+		<table>
+			<f:for each="{migrations}" as="migrationStatuses" key="ext">
+				<tr style="background-color: #ebebeb;">
+					<th colspan="2" style="text-align: left; padding: 2px 5px;">{ext}</th>
+				</tr>
+
+				<f:for each="{migrationStatuses}" as="status" key="migration">
+					<tr style="border-top: 1px solid #3a3a3a;">
+						<td style="padding: 2px 5px;"><code>{status}</code></td>
+						<td style="padding: 2px 5px;">{migration}</td>
+					</tr>
+				</f:for>
+			</f:for>
+		</table>
+	</div>
+
+	<div style="width: 200px; float: left;">
+
+		<h4>Choose an extension</h4>
+
 
 		<f:form action="run" method="post" >
 			<f:form.select style="width: 100%;" name="extension" options="{extensions}" />
@@ -16,6 +38,7 @@
 
 	</div>
 
+	<div style="clear: both;"></div>
 	<f:flashMessages renderMode="ul"/>
 
 
