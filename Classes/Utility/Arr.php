@@ -446,7 +446,7 @@ class Arr {
 		if (!is_string($path)) {
 			throw new \Exception("Arr::safePath path must be a string");
 		}
-		$steps = implode($pathDelimiter, $path);
+		$steps = explode($pathDelimiter, $path);
 		return self::safe($array, $steps, $default);
 	}
 
