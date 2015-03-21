@@ -73,7 +73,8 @@ class IncludeJavascriptFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\View
 		$lines = array();
 		$files = $this->getFiles();
 		foreach($files as $file) {
-			if (file_exists($file)) {
+			$f = $this->absolutizeFileName($file);
+			if (file_exists($f)) {
 				$lines[] = "<script src=\"$file\"></script>";
 			}
 		}
@@ -81,14 +82,23 @@ class IncludeJavascriptFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\View
 		return implode('', $lines);
 	}
 
+	/**
+	 * @return array
+	 */
 	protected function getFiles() {
 		return $this->useMinified() ? array($this->squashTo()) : $this->getRelativeIncludeFilenames();
 	}
 
+	/**
+	 * @return string
+	 */
 	protected function squashTo() {
 		return $this->getRelativeFromAbsolutePath($this->targetPath() . '/' . $this->spec->squashTo);
 	}
 
+	/**
+	 * @return bool
+	 */
 	protected function useMinified() {
 		return $this->spec->squashTo && $GLOBALS['TYPO3_CONF_VARS']['FE']['t3seedMinifiedAssets'];
 	}
@@ -139,7 +149,7 @@ class IncludeJavascriptFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\View
 	 * TYPO3_ROOT and resolve '../' using `realpath()`)
 	 *
 	 * @param $filename
-	 * @param bool $onlyRelative
+	 * @param bool $onlyRelative If $onlyRelative is set (which it is by default), then only return values relative to the current PATH_site is accepted.
 	 * @return string
 	 */
 	protected function absolutizeFileName($filename, $onlyRelative = TRUE) {
@@ -241,6 +251,10 @@ class IncludeJavascriptFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\View
 		return $out;
 	}
 
+	/**
+	 * @param $path
+	 * @return bool
+	 */
 	protected function isJsPath($path) {
 		return Path::ext($path) == 'js';
 	}
