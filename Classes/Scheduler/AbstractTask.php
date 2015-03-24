@@ -70,6 +70,16 @@ abstract class Tx_Cicbase_Scheduler_AbstractTask extends tx_scheduler_Task {
 	}
 
 	/**
+	 * inject the configurationManager
+	 *
+	 * @param Tx_Extbase_Object_ObjectManager $objectManager
+	 * @return void
+	 */
+	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager) {
+		$this->objectManager = $objectManager;
+	}
+
+	/**
 	 * A function for injecting dependencies. Should be called first
 	 * thing within the overridden 'execute' method.
 	 *
