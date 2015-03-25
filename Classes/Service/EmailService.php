@@ -58,16 +58,48 @@ class Tx_Cicbase_Service_EmailService implements Tx_Cicbase_Service_EmailService
 		$this->objectManager = $objectManager;
 	}
 
+
 	/**
-	 * @param array $recipient recipient of the email in the format array('recipient@domain.tld' => 'Recipient Name')
-	 * @param array $sender sender of the email in the format array('sender@domain.tld' => 'Sender Name')
+	 * Converts a string like:
+	 *   Lisa Simpson : lisa@school.edu , Bart Simpson : bart@school.edu
+	 *
+	 * Into an array like:
+	 *   [lisa@school.edu => "Lisa Simpson", bart@school.edu => "Bart Simpson"]
+	 *
+	 *
+	 * The string format is useful when specifying multiple emails in typoscript constants.
+	 *
+	 * @param string $emailString
+	 * @return array
+	 */
+	public static function parseCommonEmailFormat($emailString) {
+		$emails = array();
+		$peeps = t3lib_div::trimExplode(',', $emailString);
+		if (count($peeps)) {
+			foreach ($peeps as $peep) {
+				$parts = t3lib_div::trimExplode(':', $peep);
+				if (count($parts) == 2 && t3lib_div::validEmail($parts[1])) {
+					$emails[$parts[1]] = $parts[0];
+				}
+			}
+		}
+		return $emails;
+	}
+
+	/**
+	 * @param array|string $recipient recipient of the email in the format array('recipient@domain.tld' => 'Recipient Name')
+	 * @param array|string $sender sender of the email in the format array('sender@domain.tld' => 'Sender Name')
 	 * @param string $subject subject of the email
 	 * @param string $templateName template name (UpperCamelCase)
 	 * @param array $templateVariables variables to be passed to the Fluid view
 	 * @param array $attachments An array of Swift_Attachment instances
 	 * @return boolean TRUE on success, otherwise false
 	 */
-	public function sendTemplateEmail(array $recipient, array $sender, $subject, $templateName, array $templateVariables = null, array $attachments = null) {
+	public function sendTemplateEmail($recipient, $sender, $subject, $templateName, array $templateVariables = null, array $attachments = null) {
+
+		$recipient = $this->cleanEmails($recipient);
+		$sender = $this->cleanEmails($sender);
+
 		$emailView = $this->objectManager->create('Tx_Fluid_View_StandaloneView');
 		$emailView->setFormat('html');
 		$extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
@@ -101,6 +133,12 @@ class Tx_Cicbase_Service_EmailService implements Tx_Cicbase_Service_EmailService
 			return true;
 		}
 		return false;
+	}
+
+	protected function cleanEmails($emails) {
+		if (is_array($emails)) return $emails;
+		if (is_string($emails)) return self::parseCommonEmailFormat($emails);
+		return array();
 	}
 }
 

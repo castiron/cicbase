@@ -28,15 +28,15 @@
 
 interface Tx_Cicbase_Service_EmailServiceInterface extends t3lib_Singleton{
 	/**
-	 * @param array $recipient recipient of the email in the format array('recipient@domain.tld' => 'Recipient Name')
-	 * @param array $sender sender of the email in the format array('sender@domain.tld' => 'Sender Name')
+	 * @param array|string $recipient recipient of the email in the format array('recipient@domain.tld' => 'Recipient Name')
+	 * @param array|string $sender sender of the email in the format array('sender@domain.tld' => 'Sender Name')
 	 * @param string $subject subject of the email
 	 * @param string $templateName template name (UpperCamelCase)
 	 * @param array $templateVariables variables to be passed to the Fluid view
 	 * @param array $attachments An array of Swift_Attachment instances
 	 * @return boolean TRUE on success, otherwise false
 	 */
-	public function sendTemplateEmail(array $recipient, array $sender, $subject, $templateName, array $templateVariables = null, array $attachments = null);
+	public function sendTemplateEmail($recipient, $sender, $subject, $templateName, array $templateVariables = null, array $attachments = null);
 
 }
 ?>
