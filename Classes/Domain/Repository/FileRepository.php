@@ -1,5 +1,6 @@
 <?php
 namespace CIC\Cicbase\Domain\Repository;
+use CIC\Cicbase\Utility\Arr;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Utility\ArrayUtility;
 
@@ -66,6 +67,13 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 	 */
 	public function __construct(\TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager) {
 		$this->cicbaseConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['cicbase']);
+
+		$overrides = Arr::safePath($GLOBALS, 'TYPO3_CONF_VARS.EXTCONF.cicbase.document.awsConfs');
+		if ($overrides) {
+			$this->cicbaseConfiguration = ArrayUtility::arrayMergeRecursiveOverrule(
+				$this->cicbaseConfiguration, $overrides, FALSE, FALSE
+			);
+		}
 		parent::__construct($objectManager);
 	}
 
