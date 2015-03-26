@@ -237,13 +237,26 @@ class ArrTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 	/** @test */
 	public function itSafelyFailsToFindArrayValuesRecursively() {
 		$arr = array('three' => array('four' => array('six' => 3)));
-		$this->assertEquals(NULL, Arr::safe($arr, array('three', 'four', 'five')));
+		$this->assertEquals('oops', Arr::safe($arr, array('three', 'four', 'five'), 'oops'));
 	}
 
 	/** @test */
 	public function itSafelyFailsToFindArrayValuesRecursivelyAgain() {
 		$arr = array('three' => array('four' => array('six' => array('five' => 3))));
-		$this->assertEquals(NULL, Arr::safe($arr, array('three', 'four', 'five')));
+		$this->assertEquals('oops', Arr::safe($arr, array('three', 'four', 'five'), 'oops'));
+	}
+
+	/** @test */
+	public function itSafelyFailsToFindArrayValuesRecursivelyAgainAgain() {
+		$arr = array('three' => array('four' => 4));
+		$this->assertEquals('oops', Arr::safe($arr, array('three', 'four', 'five'), 'oops'));
+	}
+
+	/** @test */
+	public function itSafelyFindsNestedArrayWithinArray() {
+		$arr = array('me' => array('dad' => array('grampa' => array('great-gramp' => "Joe"))));
+		$grampa = array('grampa' => array('great-gramp' => "Joe"));
+		$this->assertEquals($grampa, Arr::safe($arr, array('me','dad')));
 	}
 
 	protected function checkForNewResultsEachTime(callable $callable) {

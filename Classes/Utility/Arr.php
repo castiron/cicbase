@@ -420,14 +420,9 @@ class Arr {
 			return $default;
 		}
 
-		// It matches, but not enough to keep digging, return now
-		if (!is_array($array[$key])) {
-			return $array[$key];
-		}
-
-		// Hmm, didn't match, but can't dig more so quit
+		// If there's nowhere left to go, we're done.
 		if (count($index) == 0) {
-			return $default;
+			return $array[$key];
 		}
 
 		// Dig deeper
