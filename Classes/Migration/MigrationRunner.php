@@ -351,7 +351,11 @@ class MigrationRunner {
 		$files = GeneralUtility::getFilesInDir($basePath);
 		$classes = array();
 		foreach($files as $file) {
-			$classes[self::getTimestampFromMigration($file)] = self::getMigrationNameFromFileName($file);
+			$ts = self::getTimestampFromMigration($file);
+			if (!$ts) {
+				continue;
+			}
+			$classes[$ts] = self::getMigrationNameFromFileName($file);
 		}
 		ksort($classes);
 		return $classes;
