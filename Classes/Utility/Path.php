@@ -110,4 +110,21 @@ class Path {
 		);
 	}
 
+	/**
+	 * @param $array
+	 * @return null|string
+	 */
+	public static function common($array) {
+		$out = Path::dir(array_shift($array));
+		foreach($array as $path) {
+			$diff = Path::diff($out, Path::dir($path));
+			$out = $diff[0];
+			if(!$out) {
+				return null;
+			}
+		}
+		return $out;
+	}
+
+
 }
