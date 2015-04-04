@@ -93,14 +93,14 @@ class IncludeJavascriptFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\View
 	 * @return string
 	 */
 	protected function squashTo() {
-		return $this->getRelativeFromAbsolutePath($this->targetPath() . '/' . $this->spec->squashTo);
+		return $this->getRelativeFromAbsolutePath($this->targetPath() . '/' . $this->spec->js->squashTo);
 	}
 
 	/**
 	 * @return bool
 	 */
 	protected function useMinified() {
-		return $this->spec->squashTo && $GLOBALS['TYPO3_CONF_VARS']['FE']['t3seedMinifiedAssets'];
+		return $this->spec->js->squashTo && $GLOBALS['TYPO3_CONF_VARS']['FE']['t3seedMinifiedAssets'];
 	}
 
 	/**
@@ -130,7 +130,7 @@ class IncludeJavascriptFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\View
 	 * @return string
 	 */
 	protected function targetPath() {
-		return GeneralUtility::resolveBackPath($this->basePath() . '/' . $this->spec->dist);
+		return GeneralUtility::resolveBackPath($this->basePath() . '/' . $this->spec->js->dist);
 	}
 
 	/**
@@ -183,7 +183,7 @@ class IncludeJavascriptFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\View
 	 * @return array
 	 */
 	protected function toInclude() {
-		return $this->spec->include;
+		return $this->spec->js->include;
 	}
 
 	/**
