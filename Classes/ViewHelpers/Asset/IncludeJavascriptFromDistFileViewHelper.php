@@ -1,5 +1,5 @@
 <?php
-namespace CIC\Cicbase\ViewHelpers;
+namespace CIC\Cicbase\ViewHelpers\Asset;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Exception;
 use CIC\Cicbase\Utility\Path;
