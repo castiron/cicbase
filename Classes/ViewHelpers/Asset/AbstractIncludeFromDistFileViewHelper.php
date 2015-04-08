@@ -30,14 +30,32 @@ class AbstractIncludeFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHe
 	 * @return array
 	 */
 	protected function getFiles() {
-		return $this->useMinified() ? array($this->squashTo()) : $this->getRelativeIncludeFilenames();
+		return $this->useMinified() ? $this->getMinifiedFilePaths() : $this->getRelativeIncludeFilenames();
 	}
 
 	/**
 	 * @return string
 	 */
 	protected function squashTo() {
-		return $this->getRelativeFromAbsolutePath($this->targetPath() . '/' . $this->spec->{$this->scope}->squashTo);
+		return $this->targetPathRelative() . '/' . $this->spec->{$this->scope}->squashTo;
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function getMinifiedFilePaths() {
+		$out = array();
+		foreach ($this->getFilesFromManifest() as $file) {
+			$out[] = $this->targetPathRelative() . '/' . $file;
+		}
+		return $out;
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function getFilesFromManifest() {
+		return $this->manifestResolutionService()->getAllFromManifest();
 	}
 
 	/**
@@ -75,6 +93,13 @@ class AbstractIncludeFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHe
 	 */
 	protected function targetPath() {
 		return GeneralUtility::resolveBackPath($this->basePath() . '/' . $this->spec->{$this->scope}->dist);
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function targetPathRelative() {
+		return $this->getRelativeFromAbsolutePath($this->targetPath());
 	}
 
 	/**
@@ -177,11 +202,11 @@ class AbstractIncludeFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHe
 		$this->init();
 		$files = $this->getFiles();
 
-		switch(true) {
-			case $this->arguments['where'] === 'here':
+		switch($this->arguments['where']) {
+			case 'here':
 				$out = $this->renderHere($files);
 				break;
-			case $this->arguments['where'] === 'tsfe':
+			case 'tsfe':
 				$this->renderViaTsfe($files);
 				break;
 		}
@@ -218,6 +243,27 @@ class AbstractIncludeFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHe
 				$this->addViaTsfe($file);
 			}
 		}
+	}
+
+	/**
+	 * @return \CIC\Cicbase\Service\Asset\ManifestResolutionService
+	 */
+	protected function manifestResolutionService() {
+		return $this->objectManager->get('CIC\\Cicbase\\Service\\Asset\\ManifestResolutionService', array('manifestFile' => $this->targetPath() . '/' . $this->manifestFile()));
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function manifestFile() {
+		return "$this->scope-manifest.json";
+	}
+
+	/**
+	 * @param $file
+	 */
+	protected function getVersionedFileName($file) {
+
 	}
 
 	/**

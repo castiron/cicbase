@@ -66,4 +66,11 @@ class IncludeCssFromDistFileViewHelper extends AbstractIncludeFromDistFileViewHe
 		$fe = $GLOBALS['TSFE'];
 		$fe->getPageRenderer()->addCssFile($file);
 	}
+
+	/**
+	 * @return array
+	 */
+	protected function getFilesFromManifest() {
+		return $this->manifestResolutionService()->getAllFromManifestByFilter('~.*\.css$~');
+	}
 }
