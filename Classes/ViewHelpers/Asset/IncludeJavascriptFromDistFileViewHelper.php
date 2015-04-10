@@ -98,7 +98,7 @@ class IncludeJavascriptFromDistFileViewHelper extends AbstractIncludeFromDistFil
 	 * @return bool
 	 */
 	protected function isJsPath($path) {
-		return Path::ext($path) == 'js';
+		return Path::ext($path) === 'js';
 	}
 
 	/**
