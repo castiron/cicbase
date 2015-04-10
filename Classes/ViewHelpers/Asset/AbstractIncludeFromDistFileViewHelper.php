@@ -92,7 +92,7 @@ class AbstractIncludeFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHe
 	 * @return string
 	 */
 	protected function targetPath() {
-		return GeneralUtility::resolveBackPath($this->basePath() . '/' . $this->spec->{$this->scope}->dist);
+		return GeneralUtility::resolveBackPath($this->basePath() . '/' . $this->spec->dist);
 	}
 
 	/**
