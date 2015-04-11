@@ -87,9 +87,9 @@ class IncludeJavascriptFromDistFileViewHelper extends AbstractIncludeFromDistFil
 	 */
 	protected function sourcePathToTargetPath($path) {
 		$out = $path;
-		if(!$this->isJsPath($path)) {
+//		if(!$this->isJsPath($path)) {
 			$out = $this->getTargetDir() . $this->toJsFileName(Path::noDir($path));
-		}
+//		}
 		return $out;
 	}
 
