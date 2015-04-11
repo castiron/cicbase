@@ -1,5 +1,6 @@
 <?php
 namespace CIC\Cicbase\ViewHelpers\Asset;
+use CIC\Cicbase\Utility\Path;
 
 /***************************************************************
  *  Copyright notice
@@ -72,5 +73,62 @@ class IncludeCssFromDistFileViewHelper extends AbstractIncludeFromDistFileViewHe
 	 */
 	protected function getFilesFromManifest() {
 		return $this->manifestResolutionService()->getAllFromManifestByFilter('~.*\.css$~');
+	}
+
+	/**
+	 * @param $path
+	 * @return string
+	 */
+	protected function toCssFileName($path) {
+		$i = pathinfo($path);
+		if(!$i['extension']) {
+			$path .= '.css';
+		} else {
+			$path = str_replace('.scss', '.css', $path);
+		}
+		return $path;
+	}
+
+	/**
+	 * @param $path string
+	 * @return string
+	 */
+	protected function sourcePathToTargetPath($path) {
+		$out = $path;
+		if(!$this->isCssPath($path)) {
+			$test = $this->commonSourcePath();
+			$diff = Path::diff($test, $path);
+			$out = $this->getTargetDir() . $this->toCssFileName(Path::noDir($path));
+		}
+		return $out;
+	}
+
+	/**
+	 * @return null|string
+	 */
+	protected function commonSourcePath() {
+		return $this->absolutizeFileName(Path::common($this->toInclude()));
+	}
+
+	/**
+	 * @param $path
+	 * @return bool
+	 */
+	protected function isCssPath($path) {
+		return Path::ext($path) === 'css';
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function toRender() {
+		return $this->spec->{$this->scope}->render;
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function toinclude() {
+		return $this->toRender();
 	}
 }

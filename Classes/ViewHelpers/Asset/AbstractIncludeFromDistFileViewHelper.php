@@ -92,7 +92,7 @@ class AbstractIncludeFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHe
 	 * @return string
 	 */
 	protected function targetPath() {
-		return GeneralUtility::resolveBackPath($this->basePath() . '/' . $this->spec->dist);
+		return GeneralUtility::resolveBackPath($this->basePath() . '/' . $this->spec->{$this->scope}->dist);
 	}
 
 	/**
@@ -183,6 +183,7 @@ class AbstractIncludeFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHe
 	protected function expandPathSpec($filename) {
 		$out = array();
 		$path = $this->basePath() . '/' . $filename;
+//		$test = $this->deepGlob($path);
 		// DANG! this only does libc globbing, so you can only "*.coffee" and not "**/*.coffee
 		$paths = glob($path);
 		foreach($paths as $srcFile) {
@@ -192,6 +193,22 @@ class AbstractIncludeFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHe
 		}
 		return $out;
 	}
+
+//	/**
+//	 * @param $path
+//	 * @return array
+//	 */
+//	protected function deepGlob($path) {
+//		$out = array();
+//		switch(true) {
+//			case preg_match('~(.*)/([*]{2})$~', $path, $matches):
+//				$test = exec('/usr/bin/env find ' . $matches[1], $paths);
+//				$test = 1;
+//				break;
+//		}
+//
+//		return $out;
+//	}
 
 	/**
 	 * @return string
@@ -235,9 +252,6 @@ class AbstractIncludeFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHe
 	 */
 	protected function renderViaTsfe($files) {
 		foreach($files as $file) {
-			/**
-			 * TODO: get file name from manifest file
-			 */
 			$f = $this->absolutizeFileName($file);
 			if (file_exists($f)) {
 				$this->addViaTsfe($file);
