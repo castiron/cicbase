@@ -96,9 +96,8 @@ class IncludeCssFromDistFileViewHelper extends AbstractIncludeFromDistFileViewHe
 	protected function sourcePathToTargetPath($path) {
 		$out = $path;
 		if(!$this->isCssPath($path)) {
-			$test = $this->commonSourcePath();
-			$diff = Path::diff($test, $path);
-			$out = $this->getTargetDir() . $this->toCssFileName(Path::noDir($path));
+			$diff = Path::diff($this->commonSourcePath(), $path);
+			$out = $this->getTargetDir() . ($diff[2] ? $diff[2] . '/' : '') . $this->toCssFileName(Path::noDir($path));
 		}
 		return $out;
 	}
@@ -107,7 +106,7 @@ class IncludeCssFromDistFileViewHelper extends AbstractIncludeFromDistFileViewHe
 	 * @return null|string
 	 */
 	protected function commonSourcePath() {
-		return $this->absolutizeFileName(Path::common($this->toInclude()));
+		return Path::dir($this->distFilePath()) . '/' . Path::common($this->spec->{$this->scope}->include);
 	}
 
 	/**

@@ -274,13 +274,6 @@ class AbstractIncludeFromDistFileViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHe
 	}
 
 	/**
-	 * @param $file
-	 */
-	protected function getVersionedFileName($file) {
-
-	}
-
-	/**
 	 * @param string $file
 	 * @throws Exception
 	 */
