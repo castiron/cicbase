@@ -284,7 +284,6 @@ class FileReferenceConverter extends \TYPO3\CMS\Extbase\Property\TypeConverter\P
 
 		$allowedTypes = $configuration->getConfigurationValue($thisClass, 'allowedMimes');
 		$maxSize = $configuration->getConfigurationValue($thisClass, 'maxSize');
-
 		if(!$allowedTypes && isset($conf['allowedMimes'])) {
 			$allowedTypes = $conf['allowedMimes'];
 		}
@@ -306,11 +305,7 @@ class FileReferenceConverter extends \TYPO3\CMS\Extbase\Property\TypeConverter\P
 
 		$additionalReferenceProperties = $configuration->getConfigurationValue($thisClass, 'additionalReferenceProperties');
 
-		$fileReferenceClass = $configuration->getConfigurationValue($thisClass, 'fileReferenceClass');
-		if (!trim($fileReferenceClass)) {
-			$fileReferenceClass = $targetType;
-		}
-		$reference = $this->fileFactory->createFileReference($propertyPath, $additionalReferenceProperties, $allowedTypes, $maxSize, $fileReferenceClass);
+		$reference = $this->fileFactory->createFileReference($propertyPath, $additionalReferenceProperties, $allowedTypes, $maxSize);
 
 		return $reference;
 	}
