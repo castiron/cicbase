@@ -115,9 +115,10 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param array $additionalReferenceProperties
 	 * @param array $allowedTypes
 	 * @param int $maxSize
+	 * @param string $fileReferenceClass
 	 * @return \TYPO3\CMS\Extbase\Error\Error
 	 */
-	public function createFileReference($propertyPath, $additionalReferenceProperties, $allowedTypes, $maxSize) {
+	public function createFileReference($propertyPath, $additionalReferenceProperties, $allowedTypes, $maxSize, $fileReferenceClass = 'CIC\Cicbase\Domain\Model\FileReference') {
 		$this->messages = new \TYPO3\CMS\Extbase\Error\Result();
 		$key = $propertyPath ? $propertyPath : '';
 
@@ -141,7 +142,7 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 			$this->limbo->clearHeld($key);
 			return $this->messages->getFirstError();
 		} else {
-			$fileReference = $this->buildFileReference($propertyPath, $additionalReferenceProperties);
+			$fileReference = $this->buildFileReference($propertyPath, $additionalReferenceProperties, $fileReferenceClass);
 
 			$this->limbo->hold($fileReference, $key);
 
@@ -174,9 +175,10 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 	/**
 	 * @param string $propertyPath
 	 * @param null $additionalReferenceProperties
+	 * @param string $fileReferenceClass
 	 * @return \CIC\Cicbase\Domain\Model\FileReference
 	 */
-	protected function buildFileReference($propertyPath, $additionalReferenceProperties = NULL) {
+	protected function buildFileReference($propertyPath, $additionalReferenceProperties = NULL, $fileReferenceClass) {
 		$pathExists = $this->temporaryPathExists();
 		$relFolderPath = $this->buildTemporaryPath(FALSE);
 
@@ -208,7 +210,7 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 		$ref = $this->fileFactory->createFileReferenceObject($referenceProperties);
 
 		// Convert the Core FileReference we made to an CICBase FileReference
-		$fileReference = $this->objectManager->getEmptyObject('CIC\Cicbase\Domain\Model\FileReference');
+		$fileReference = $this->objectManager->getEmptyObject($fileReferenceClass);
 		$fileReference->setOriginalResource($ref);
 		return $fileReference;
 
