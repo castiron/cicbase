@@ -379,7 +379,7 @@ class File extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	 */
 	public function getTypeKey() {
 		// todo: make this more complete
-		switch($this->getExtension()) {
+		switch(strtolower($this->getExtension())) {
 			case 'avi':
 			case 'mov':
 			case 'flv':
