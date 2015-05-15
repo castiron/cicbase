@@ -259,6 +259,40 @@ class ArrTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 		$this->assertEquals($grampa, Arr::safe($arr, array('me','dad')));
 	}
 
+	/** @test */
+	public function itChecksThatTwoArraysAreTheSameByKeys() {
+		$one = array('a' => 2, 'b' => 3, 'c' => 4);
+		$two = array('c' => 4, 'a' => 2, 'b' => 3);
+		$this->assertTrue(Arr::isSameByKeys($one, $two, array('a', 'b')));
+	}
+
+	/** @test */
+	public function itChecksThatTwoArraysAreDifferentByKeys() {
+		$one = array('a' => 2, 'b' => 3, 'c' => 4);
+		$two = array('c' => 4, 'a' => 1, 'b' => 3);
+		$this->assertFalse(Arr::isSameByKeys($one, $two, array('a', 'b')));
+	}
+
+	/** @test */
+	public function itChecksThatTwoArraysAreDifferentByKeysBecauseKeyIsMissing() {
+		$one = array('a' => 2, 'b' => 3, 'c' => 4);
+		$two = array('c' => 4, 'b' => 3);
+		$this->assertFalse(Arr::isSameByKeys($one, $two, array('a', 'b')));
+	}
+
+	/** @test */
+	public function itChecksThatTwoEmptyArraysAreTheSameByKeys() {
+		$this->assertTrue(Arr::isSameByKeys(array(), array(), array('four', 'five')));
+	}
+
+	/** @test */
+	public function itCanRequireKeysWhenComparingArrays() {
+		$one = array('a' => 2, 'c' => 4);
+		$two = array('c' => 4, 'a' => 2);
+		$this->assertFalse(Arr::isSameByKeys($one, $two, array('a', 'b'), TRUE));
+		$this->assertTrue(Arr::isSameByKeys($one, $two, array('a', 'b')));
+	}
+
 	protected function checkForNewResultsEachTime(callable $callable) {
 		$sameCount = $diffCount = 0;
 		$old = $callable();

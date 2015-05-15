@@ -135,6 +135,20 @@ class Arr {
 	}
 
 	/**
+	 * Checks if two arrays have the same values for the given set of keys
+	 *
+	 * @param array $a
+	 * @param array $b
+	 * @param array $keys
+	 * @param bool $keysRequired If true, this fails if either array (a or b) does not contain a value for the provided keys
+	 * @return bool
+	 */
+	public static function isSameByKeys(array $a, array $b, array $keys, $keysRequired = FALSE) {
+		if ($keysRequired && !(self::hasValuesForKeys($a, $keys) && self::hasValuesForKeys($b, $keys))) return FALSE;
+		return !count(array_diff_assoc(self::filterByKeys($a, $keys), self::filterByKeys($b, $keys)));
+	}
+
+	/**
 	 * @param array $defaults
 	 * @param array $overrides
 	 * @param bool $strict If strict, then only the keys in $defaults will be merged from overrides
