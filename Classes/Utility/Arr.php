@@ -186,6 +186,44 @@ class Tx_Cicbase_Utility_Arr {
 
 
 	/**
+	 * Tells you how two arrays are different according to their keys.
+	 * Returns an array of the original key/values but split like so:
+	 *   'both'  -> Keys are the same in both arrays
+	 *   'alpha' -> Keys are unique to the alpha array
+	 *   'beta'  -> Keys are unique to the beta array
+	 *
+	 * @param array $alpha
+	 * @param array $beta
+	 * @return array
+	 */
+	public static function describeDifferencesByKeys(array $alpha, array $beta) {
+		return array(
+			'both' => array_intersect_key($alpha, $beta),
+			'alpha' => array_diff_key($alpha, $beta),
+			'beta' => array_diff_key($beta, $alpha),
+		);
+	}
+	/**
+	 * Tells you how two arrays are different.
+	 * Returns an array of the original values but split like so:
+	 *   'both'  -> Values are the same in both arrays
+	 *   'alpha' -> Values are unique to the alpha array
+	 *   'beta'  -> Values are unique to the beta array
+	 *
+	 * @param array $alpha
+	 * @param array $beta
+	 * @return array
+	 */
+	public static function describeDifferences(array $alpha, array $beta) {
+		return array(
+			'both' => array_intersect($alpha, $beta),
+			'alpha' => array_diff($alpha, $beta),
+			'beta' => array_diff($beta, $alpha),
+		);
+	}
+
+
+	/**
 	 * Returns the first value where the callable returns true.
 	 *
 	 * Callable takes $key, $val as args.
