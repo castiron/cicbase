@@ -293,6 +293,26 @@ class ArrTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 		$this->assertTrue(Arr::isSameByKeys($one, $two, array('a', 'b')));
 	}
 
+	/** @test */
+	public function itDescribesDifferencesByKeys() {
+		$alpha = array_fill_keys(array(1, 2, 3, 4, 8), 0);
+		$beta = array_fill_keys(array(3, 4, 5, 6, 7), 0);
+		$diff = Arr::describeDifferencesByKeys($alpha, $beta);
+		$this->assertEquals(array_keys($diff['both']), array(3, 4));
+		$this->assertEquals(array_keys($diff['alpha']), array(1, 2, 8));
+		$this->assertEquals(array_keys($diff['beta']), array(5, 6, 7));
+	}
+
+	/** @test */
+	public function itDescribesDifferences() {
+		$alpha = array(1, 2, 3, 4, 8);
+		$beta = array(3, 4, 5, 6, 7);
+		$diff = Arr::describeDifferences($alpha, $beta);
+		$this->assertEquals($diff['both'], array(2 => 3, 3 => 4));
+		$this->assertEquals($diff['alpha'], array(1, 2, 4 => 8));
+		$this->assertEquals($diff['beta'], array(2 => 5, 3 => 6, 4 => 7));
+	}
+
 	protected function checkForNewResultsEachTime(callable $callable) {
 		$sameCount = $diffCount = 0;
 		$old = $callable();
