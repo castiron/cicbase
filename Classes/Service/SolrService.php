@@ -63,7 +63,7 @@ class SolrService implements \TYPO3\CMS\Core\SingletonInterface {
 
 	/**
 	 * Solr search object, set when the query is executed
-	 * @var mixed|object|boolean
+	 * @var mixed|\tx_solr_Search|boolean
 	 */
 	private $search = false;
 
