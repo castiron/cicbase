@@ -400,8 +400,8 @@ class Tx_Cicbase_Utility_Arr {
 	 */
 	protected static function recursiveToStdClass($val) {
 		if (is_array($val)) {
-			if (!Tx_Cicbase_Utility_Arr::isAssoc($val)) return $val;
-			return (object) array_map(array('\CIC\Cicbase\Utility\Arr', 'recursiveToStdClass'), $val);
+			if (!self::isAssoc($val)) return $val;
+			return (object) array_map(array('Tx_Cicbase_Utility_Arr', 'recursiveToStdClass'), $val);
 		} else {
 			return $val;
 		}
@@ -416,7 +416,7 @@ class Tx_Cicbase_Utility_Arr {
 			$val = get_object_vars($val);
 		}
 		if (is_array($val)) {
-			return array_map(array('\CIC\Cicbase\Utility\Arr', 'recursiveFromStdClass'), $val);
+			return array_map(array('Tx_Cicbase_Utility_Arr', 'recursiveFromStdClass'), $val);
 		}
 
 		return $val;
