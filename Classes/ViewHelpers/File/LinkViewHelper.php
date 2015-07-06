@@ -33,8 +33,10 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 	public function render($file,$class = null, $linkText = null) {
 		if ($file instanceof \TYPO3\CMS\Extbase\Domain\Model\FileReference) {
 			$uri = $file->getOriginalResource()->getPublicUrl();
-		} else {
+		} elseif ($file) {
 			$uri = $file->getPathAndFileName();
+		} else {
+			return '';
 		}
 
 		if($linkText) {
