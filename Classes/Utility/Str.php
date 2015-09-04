@@ -66,4 +66,17 @@ class Str {
 
 		return $singleStr . 's';
 	}
+
+	/**
+	 * Convert a string to a normalized path with underscores
+	 * Not reversible to original string
+	 *
+	 * @param $str
+	 * @return mixed
+	 */
+	public static function toWebUsablePath($str) {
+		$str = trim($str, '-_');
+		$out = preg_replace('~\s~', '_', trim($str));
+		return preg_replace('~[^-_.\/a-zA-Z0-9]~', '', $out);
+	}
 }

@@ -32,4 +32,18 @@ class StrTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 		$this->assertEquals('street', Str::uCase('street'));
 	}
 
+	/** @test */
+	public function itMakesAStringToAWebUsablePath() {
+		$tests = array(
+			'street smarts/You-can-COUNT on/believe.png' => 'street_smarts/You-can-COUNT_on/believe.png',
+			'/street_smarts/AND % true grit/  or-not' => '/street_smarts/AND__true_grit/__or-not',
+			'/street_smarts/I was told ~\'" @ #you had grit!/that\'s why I hired you!' => '/street_smarts/I_was_told___you_had_grit/thats_why_I_hired_you',
+			'life on the streets is tough' => 'life_on_the_streets_is_tough',
+			'gimme_a-sandwich.or.i.will.cry' => 'gimme_a-sandwich.or.i.will.cry',
+		);
+		foreach($tests as $in => $out) {
+			$this->assertEquals($out, Str::toWebUsablePath($in));
+		}
+	}
+
 }
