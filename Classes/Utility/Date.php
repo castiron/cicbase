@@ -107,7 +107,7 @@ class Date {
 	 * @return integer The number of days it spans
 	 */
 	public static function spansMultipleDays(\DateTime $start, \DateTime $end) {
-		return $end->diff($start)->format('%a');
+		return !self::hasSameDay($start, $end);
 	}
 
 	/**
