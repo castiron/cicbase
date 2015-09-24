@@ -13,11 +13,11 @@ class Tx_Cicbase_Utility_Arr {
 	 *   given $array and added to the result set.
 	 *
 	 * @param array $array
-	 * @param callable $where
+	 * @param callable|closure $where
 	 * @param int $limit
 	 * @return array
 	 */
-	public static function spliceWhere(array &$array, callable $where, $limit = -1) {
+	public static function spliceWhere(array &$array, $where, $limit = -1) {
 		$results = array();
 		$found = 0;
 		foreach ($array as $key => $val) {
