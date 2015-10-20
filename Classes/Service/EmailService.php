@@ -100,6 +100,19 @@ class Tx_Cicbase_Service_EmailService implements Tx_Cicbase_Service_EmailService
 		$recipient = $this->cleanEmails($recipient);
 		$sender = $this->cleanEmails($sender);
 
+
+		$logInfo = json_encode(array(
+			'sender' => $sender,
+			'subject' => $templateName,
+			'recipient' => $recipient,
+		));
+
+		if (empty($recipient)) {
+			return self::log(__LINE__, "Can't send email. No recipients. $logInfo", FALSE);
+		}
+
+
+
 		$emailView = $this->objectManager->create('Tx_Fluid_View_StandaloneView');
 		$emailView->setFormat('html');
 		$extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(Tx_Extbase_Configuration_ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
@@ -130,8 +143,11 @@ class Tx_Cicbase_Service_EmailService implements Tx_Cicbase_Service_EmailService
 		$message->send();
 
 		if($message->isSent()) {
+			self::log(__LINE__, "Email sent. $logInfo");
 			return true;
 		}
+
+		self::log(__LINE__, "Email failed to send. $logInfo");
 		return false;
 	}
 
@@ -139,6 +155,22 @@ class Tx_Cicbase_Service_EmailService implements Tx_Cicbase_Service_EmailService
 		if (is_array($emails)) return $emails;
 		if (is_string($emails)) return self::parseCommonEmailFormat($emails);
 		return array();
+	}
+
+
+	/**
+	 * @param int $line
+	 * @param string $msg
+	 * @param bool $returnVal
+	 * @return bool
+	 */
+	protected static function log($line, $msg, $returnVal = TRUE) {
+		return Tx_Cicbase_Service_LoggerService::log(
+			'cicbase',
+			$line,
+			"Email Service: $msg",
+			$returnVal
+		);
 	}
 }
 
