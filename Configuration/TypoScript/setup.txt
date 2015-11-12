@@ -28,6 +28,10 @@ config.tx_extbase{
 }
 
 plugin.tx_cicbase.settings {
+	recaptcha {
+		public_key = {$plugin.tx_cicbase.settings.recaptcha.public_key}
+		private_key = {$plugin.tx_cicbase.settings.recaptcha.private_key}
+	}
 	emailTemplateOverrides {
 		extensions {
 			# 0 = extensionName
