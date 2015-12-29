@@ -1,10 +1,14 @@
 {
-	"name": "castiron/cicbase",
-	"type": "typo3-cms-extension",
-	"description": "A collection of services, repositories, and tools to be used by Extbase-based extensions in TYPO3.",
-	"homepage": "https://github.com/castiron/cicbase",
-	"license": ["GPL-2.0+"],
-	"keywords": ["TYPO3 CMS"],
-	"version": "0.1.1"
+  "name": "castiron/cicbase",
+  "type": "typo3-cms-extension",
+  "description": "A collection of services, repositories, and tools to be used by Extbase-based extensions in TYPO3.",
+  "homepage": "https://github.com/castiron/cicbase",
+  "license": ["GPL-2.0+"],
+  "keywords": ["TYPO3 CMS"],
+  "autoload": {
+    "psr-4": {
+      "CIC\\Cicbase\\": "Classes"
+    }
+  }
 }
 
