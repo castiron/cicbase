@@ -45,8 +45,8 @@ class QueryFactory extends \TYPO3\CMS\Extbase\Persistence\Generic\QueryFactory {
 	 * @return \TYPO3\CMS\Extbase\Persistence\QueryInterface
 	 */
 	public function create($className) {
-		$query = $this->objectManager->create('TYPO3\CMS\Extbase\Persistence\QueryInterface', $className);
-		$querySettings = $this->objectManager->create('TYPO3\CMS\Extbase\Persistence\Generic\QuerySettingsInterface');
+		$query = $this->objectManager->get('TYPO3\CMS\Extbase\Persistence\QueryInterface', $className);
+		$querySettings = $this->objectManager->get('TYPO3\CMS\Extbase\Persistence\Generic\QuerySettingsInterface');
 		$frameworkConfiguration = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
 		$classes = $frameworkConfiguration['persistence']['classes'];
 		if(isset($classes[$className]) && !empty($classes[$className]['storagePid'])) {
