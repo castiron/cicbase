@@ -1,7 +1,8 @@
 # CICBase
 
 ### Compatibility ###
-* master => TYPO3 6.x
+* [master](https://github.com/castiron/cicbase/tree/master) => TYPO3 7.6.x
+* [TYPO3_6.2.x](https://github.com/castiron/cicbase/tree/TYPO3_6.2.x) => TYPO3 6.2.x
 * [TYPO3_4.7.x](https://github.com/castiron/cicbase/tree/TYPO3_4.7.x) => TYPO3 4.7.x
 
 ## Features
@@ -133,7 +134,7 @@ class FixActionCategoryActionCounts1402602721 extends \CIC\Cicbase\Migration\Abs
 ExtBase does not provide user upload support with their new FAL setup. Instead we've rolled our own:
 * Works with latest FAL
 * Works with extbase property mapper for single or collection properties. Errors are applied to the appropriate property.
-* Does real validation of size and mime type. 
+* Does real validation of size and mime type.
 * Saves uploaded files if there are other errors on the form, so users don't have to re-upload if the form fails.
 
 Refer to the class comments on the  [FileReferenceConverter](Classes/Property/TypeConverter/FileReferenceConverter.php) for specific details.
@@ -174,20 +175,20 @@ Or simply:
 $firstChapter = Arr::safePath($arr, 'I.1.a');
 ```
 
-Anyway, there’s a ton of goodies in the utility classes and you should add more because you love us. 
+Anyway, there’s a ton of goodies in the utility classes and you should add more because you love us.
 
 <a name="bucketlist"></a>
 ### Bucket Lists
 
 If this isn’t something you should use before you die, then I have no idea what it is.
 
-Every so often, you need to list things according to a particular order that doesn’t make sense by just looking at it. Let’s say you need to render a list of photos with categories ordered by IDs `7, 3, 2, 5`. So photos in category `7` are listed first, then photos in category `3`, etc. How would you do this? 
+Every so often, you need to list things according to a particular order that doesn’t make sense by just looking at it. Let’s say you need to render a list of photos with categories ordered by IDs `7, 3, 2, 5`. So photos in category `7` are listed first, then photos in category `3`, etc. How would you do this?
 
-Well you’d probably create buckets. Then you’d add sorted photos to each bucket and loop through the buckets in the right order to make one big list. Not too hard to fathom. 
+Well you’d probably create buckets. Then you’d add sorted photos to each bucket and loop through the buckets in the right order to make one big list. Not too hard to fathom.
 
-Now let’s say you need to list news articles in the same category order, and events, and people, etc. Are you really going to do the same algorithm over and over? Of course not. 
+Now let’s say you need to list news articles in the same category order, and events, and people, etc. Are you really going to do the same algorithm over and over? Of course not.
 
-This is what you’d do: 
+This is what you’d do:
 
 ```
 $list = new BucketList([7,3,2,5]);
@@ -227,8 +228,8 @@ So amaze.
 <a name="abstractTask"></a>
 ### AbstractTask and InjectionService
 
-In ExtBase, tasks do not come with the magic injections and stuff that you normally have in a controller or view helper. It's usually a roll-your-own kinda thing. But no more. 
- 
+In ExtBase, tasks do not come with the magic injections and stuff that you normally have in a controller or view helper. It's usually a roll-your-own kinda thing. But no more.
+
 To get injections (anywhere) you can easily invoke the [InjectionService](Classes/Service/InjectionService.php):
 
 ```
@@ -241,17 +242,17 @@ This uses the tools provided by ExtBase to inject things in the same ways you ex
 Even more handy, you can extend [AbstractTask](Classes/Scheduler/AbstractTask.php) and call `parent::initialize()` to get the injections as well as to get your extension typoscript settings. **You _must_ pass in the extension and plugin names.**
 
 ```
-public function execute() { 
-	parent::initialize('myext', 'default'); 
-	
-	// ... 
+public function execute() {
+	parent::initialize('myext', 'default');
+
+	// ...
 }
 ```
 
 <a name="sqlLogging"></a>
 ### SQL Logger
 
-This is handy tool for debugging complicated SQL queries. You'd only use this while developing. 
+This is handy tool for debugging complicated SQL queries. You'd only use this while developing.
 
 TYPO3 provides the ability to get the last executed query, but by the time your breakpoint is reached, other queries may have been executed and the one you're interested is no longer there. Lucky for us, TYPO3 also sends out a signal about the last executed query and we can save that info for use by us later. The [SQLLogger](Classes/Persistence/SQLLogger.php) keeps tabs of the last executed queries _by table_. So now you can at least see the last executed query for your table. It's not a perfect solution, but it does the trick about 95% of the time. And if you've ever debugged your way through ExtBase to figure out what the query was, you'll see that this can be super handy.
 
@@ -261,7 +262,7 @@ To enable, add this to your `environment/localconf_context.php` file:
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cicbase']['enableSQLLogging'] = 1;
 ```
 
-And then at whatever you point you expect the query has been executed, you can put this in your code to see what the query was: 
+And then at whatever you point you expect the query has been executed, you can put this in your code to see what the query was:
 
 ```
 $q = SQLLogger::getLastQuery('tx_myext_domain_model_mymodel');
@@ -269,6 +270,6 @@ $q = SQLLogger::getLastQuery('tx_myext_domain_model_mymodel');
 
 Woohoo!
 
-Now, things to note: 
+Now, things to note:
 * We only save the last query by table, so if another query to your table was made that you aren't interested in, this may not work for you.
-* ExtBase `QueryResult` objects do not execute until the last minute, which is basically when you're actually getting the objects. So you may need to inspect the query while in a `foreach` loop or call `getFirst` or `toArray` on the `QueryResult` object first. 
+* ExtBase `QueryResult` objects do not execute until the last minute, which is basically when you're actually getting the objects. So you may need to inspect the query while in a `foreach` loop or call `getFirst` or `toArray` on the `QueryResult` object first.
