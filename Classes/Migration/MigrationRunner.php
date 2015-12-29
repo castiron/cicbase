@@ -98,7 +98,7 @@ class MigrationRunner {
 	 * @return array
 	 */
 	public static function migratableExtensions() {
-		$allExts = array_keys($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']);
+		$allExts = ExtensionManagementUtility::getLoadedExtensionListArray();
 		$exts = array();
 		foreach ($allExts as $ext) {
 			if (count(self::getAvailableMigrations($ext))) {
