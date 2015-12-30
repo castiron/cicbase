@@ -114,7 +114,7 @@ abstract class AbstractMigration implements MigrationInterface {
      * @throws \Exception
      */
     protected function expectTables(array $tables, $message = '') {
-        if (!$this->tablesExist($tables, $message)) {
+        if (!$this->tablesExist($tables)) {
             $this->errorMsg = $message . "\n  At least one of these tables doesn't exist: ".implode(', ', $tables).'.';
             throw new \Exception();
         }
