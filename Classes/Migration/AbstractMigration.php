@@ -214,6 +214,78 @@ abstract class AbstractMigration implements MigrationInterface {
 		return $this->_tables;
 	}
 
+    /**
+     * @param string $table
+     * @return string
+     */
+    protected function safeTickQuoteName($table) {
+        return '`' . str_replace('`', '\`', (string)$table) . '`';
+    }
+
+    /**
+     * @param $table
+     * @param $field
+     * @param string $size
+     * @throws \Exception
+     */
+    protected function addVarcharField($table, $field, $size = '255') {
+        $size = intval($size);
+        $this->expectTable($table, "Can't add varchar field '$field($size)' to missing table '$table'");
+        $this->db->sql_query('ALTER TABLE ' . $this->safeTickQuoteName($table)
+            . ' ADD ' . $this->safeTickQuoteName($field)
+            . ' varchar(' . $size . ') default NULL;');
+    }
+
+    /**
+     * @param $table
+     * @param $field
+     * @param int $default
+     * @throws \Exception
+     */
+    protected function addTinyIntField($table, $field, $default = 0) {
+        $default = intval($default);
+        $this->expectTable($table, "Can't add tinyint field '$field' to missing table '$table'");
+        $this->db->sql_query('ALTER TABLE ' . $this->safeTickQuoteName($table)
+            . ' ADD ' . $this->safeTickQuoteName($field)
+            . ' tinyint(4) NOT NULL default \'' . $default . '\'');
+    }
+
+    /**
+     * @param $table
+     * @param $field
+     * @param int $size
+     * @param int $default
+     * @throws \Exception
+     */
+    protected function addIntField($table, $field, $size = 11, $default = 0) {
+        $size = intval($size);
+        $default = intval($default);
+        $this->expectTable($table, "Can't add int field '$field($size)' to missing table '$table'");
+        $this->db->sql_query('ALTER TABLE ' . $this->safeTickQuoteName($table)
+            . ' ADD ' . $this->safeTickQuoteName($field)
+            . ' int(' . $size . ') NOT NULL default \'' . $default . '\'');
+    }
+
+    /**
+     * @param $table
+     * @param $field
+     * @throws \Exception
+     */
+    protected function addTextField($table, $field) {
+        $this->expectTable($table, "Can't add text field '$field' to missing table '$table'");
+        $this->db->sql_query('ALTER TABLE ' . $this->safeTickQuoteName($table)
+            . ' ADD ' . $this->safeTickQuoteName($field) . ' text');
+    }
+
+    /**
+     * @param $table
+     * @param $field
+     * @throws \Exception
+     */
+    protected function dropFieldFromTable($table, $field) {
+        $this->expectColumn($table, $field, "Can't drop non-existent field '$field' from table '$table'");
+        $this->db->sql_query('ALTER TABLE ' . $this->safeTickQuoteName($table) . ' DROP ' . $this->safeTickQuoteName($field) . ';');
+    }
 
 	/**
 	 * @param string $msg
