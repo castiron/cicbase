@@ -1,6 +1,10 @@
 <?php
 namespace CIC\Cicbase\Migration;
 
+/**
+ * Class AbstractMigration
+ * @package CIC\Cicbase\Migration
+ */
 abstract class AbstractMigration implements MigrationInterface {
 
 	/** @var \TYPO3\CMS\Core\Database\DatabaseConnection */
@@ -22,7 +26,6 @@ abstract class AbstractMigration implements MigrationInterface {
 		return method_exists($this, 'rollback');
 	}
 
-
 	/**
 	 * Copies the data from one table to another.
 	 * If the source table has more columns than the destination table,
@@ -37,8 +40,6 @@ abstract class AbstractMigration implements MigrationInterface {
 		$this->expectTables(array($source, $destination), "Can't copy table");
 		$sourceCols = $this->fields($source);
 		$destCols = $this->fields($destination);
-
-
 
 		// Only copy columns that exist in both tables
 		$columnsInSourceNotInDest = array_diff($sourceCols, $destCols);
@@ -294,6 +295,9 @@ abstract class AbstractMigration implements MigrationInterface {
 		echo "  LOG: $msg\n";
 	}
 
+    /**
+     * @param $msg
+     */
 	protected function success($msg) {
 		echo "  SUCCESS: $msg\n";
 	}
@@ -306,5 +310,3 @@ abstract class AbstractMigration implements MigrationInterface {
 	}
 
 }
-
-?>
