@@ -264,7 +264,7 @@ abstract class AbstractMigration implements MigrationInterface {
         $this->expectTable($table, "Can't add int field '$field($size)' to missing table '$table'");
         $this->db->sql_query('ALTER TABLE ' . $this->safeTickQuoteName($table)
             . ' ADD ' . $this->safeTickQuoteName($field)
-            . ' int(' . $size . ') NOT NULL default \'' . $default . '\'');
+            . ' int(' . $size . ') unsigned default \'' . $default . '\'');
     }
 
     /**
