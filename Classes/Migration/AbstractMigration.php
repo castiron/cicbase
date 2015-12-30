@@ -13,10 +13,21 @@ abstract class AbstractMigration implements MigrationInterface {
     /** @var string */
     protected $errorMsg = '';
 
+    /**
+     * @var bool
+     */
+    protected $forgiving = false;
+
+    /**
+     * AbstractMigration constructor.
+     */
     public function __construct() {
         $this->db = $GLOBALS['TYPO3_DB'];
     }
 
+    /**
+     * @return mixed
+     */
     abstract public function run();
 
     /**
@@ -24,6 +35,13 @@ abstract class AbstractMigration implements MigrationInterface {
      */
     public function canRollback() {
         return method_exists($this, 'rollback');
+    }
+
+    /**
+     * @param bool $val
+     */
+    protected function setForgiving($val) {
+        $this->forgiving = $val ? true : false;
     }
 
     /**
@@ -230,6 +248,11 @@ abstract class AbstractMigration implements MigrationInterface {
      * @throws \Exception
      */
     protected function addVarcharField($table, $field, $size = '255') {
+        if ($this->forgiving && $this->columnExists($table, $field)) {
+            $this->log('Nothing to do.');
+            return;
+        }
+
         $size = intval($size);
         $this->expectTable($table, "Can't add varchar field '$field($size)' to missing table '$table'");
         $this->db->sql_query('ALTER TABLE ' . $this->safeTickQuoteName($table)
@@ -244,6 +267,11 @@ abstract class AbstractMigration implements MigrationInterface {
      * @throws \Exception
      */
     protected function addTinyIntField($table, $field, $default = 0) {
+        if ($this->forgiving && $this->columnExists($table, $field)) {
+            $this->log('Nothing to do.');
+            return;
+        }
+
         $default = intval($default);
         $this->expectTable($table, "Can't add tinyint field '$field' to missing table '$table'");
         $this->db->sql_query('ALTER TABLE ' . $this->safeTickQuoteName($table)
@@ -259,6 +287,11 @@ abstract class AbstractMigration implements MigrationInterface {
      * @throws \Exception
      */
     protected function addIntField($table, $field, $size = 11, $default = 0) {
+        if ($this->forgiving && $this->columnExists($table, $field)) {
+            $this->log('Nothing to do.');
+            return;
+        }
+
         $size = intval($size);
         $default = intval($default);
         $this->expectTable($table, "Can't add int field '$field($size)' to missing table '$table'");
@@ -273,6 +306,11 @@ abstract class AbstractMigration implements MigrationInterface {
      * @throws \Exception
      */
     protected function addTextField($table, $field) {
+        if ($this->forgiving && $this->columnExists($table, $field)) {
+            $this->log('Nothing to do.');
+            return;
+        }
+
         $this->expectTable($table, "Can't add text field '$field' to missing table '$table'");
         $this->db->sql_query('ALTER TABLE ' . $this->safeTickQuoteName($table)
             . ' ADD ' . $this->safeTickQuoteName($field) . ' text');
@@ -284,6 +322,11 @@ abstract class AbstractMigration implements MigrationInterface {
      * @throws \Exception
      */
     protected function dropFieldFromTable($table, $field) {
+        if ($this->forgiving && !$this->columnExists($table, $field)) {
+            $this->log('Nothing to do.');
+            return;
+        }
+
         $this->expectColumn($table, $field, "Can't drop non-existent field '$field' from table '$table'");
         $this->db->sql_query('ALTER TABLE ' . $this->safeTickQuoteName($table) . ' DROP ' . $this->safeTickQuoteName($field) . ';');
     }
