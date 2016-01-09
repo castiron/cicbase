@@ -57,6 +57,15 @@ class PageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\PageViewHelper {
 	public function render($pageUid = NULL, array $additionalParams = array(), $pageType = 0, $noCache = FALSE, $noCacheHash = FALSE, $section = '', $linkAccessRestrictedPages = FALSE, $absolute = FALSE, $addQueryString = FALSE, array $argumentsToBeExcludedFromQueryString = array(), $frontendPath = '', $backupDomain = '') {
 
 		$uriBuilder = $this->controllerContext->getUriBuilder();
+		$pieces = preg_split('/\s+/', $pageUid);
+		$target = '';
+
+		foreach($pieces as $piece) {
+				if($piece == '_blank' || g$piece == '_top') {
+						$target = $piece;
+				}
+		}
+
 		$uri = $uriBuilder
 			->reset()
 			->setTargetPageUid($pageUid)
@@ -79,6 +88,10 @@ class PageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\PageViewHelper {
 			$parts['query'] = preg_replace('/M=[^&]+/', '', $parts['query']);
 			$parts['path'] = $frontendPath;
 			$uri = self::http_build_url($parts);
+		}
+
+		if($target) {
+			$this->tag->addAttribute('target', $target);
 		}
 
 		$this->tag->addAttribute('href', $uri);
