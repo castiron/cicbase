@@ -321,6 +321,22 @@ abstract class AbstractMigration implements MigrationInterface {
      * @param $field
      * @throws \Exception
      */
+    protected function addTinytextField($table, $field) {
+        if ($this->forgiving && $this->columnExists($table, $field)) {
+            $this->log('Nothing to do.');
+            return;
+        }
+
+        $this->expectTable($table, "Can't add tinytext field '$field' to missing table '$table'");
+        $this->db->sql_query('ALTER TABLE ' . $this->safeTickQuoteName($table)
+            . ' ADD ' . $this->safeTickQuoteName($field) . ' tinytext NOT NULL');
+    }
+
+    /**
+     * @param $table
+     * @param $field
+     * @throws \Exception
+     */
     protected function dropFieldFromTable($table, $field) {
         if ($this->forgiving && !$this->columnExists($table, $field)) {
             $this->log('Nothing to do.');
