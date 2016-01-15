@@ -6,36 +6,36 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class MigrationCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandController {
 
-	/**
-	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
-	 * @inject
-	 */
-	protected $objectManager;
+    /**
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @inject
+     */
+    protected $objectManager;
 
-	/**
-	 * @var \CIC\Cicbase\Migration\MigrationRunner
-	 * @inject
-	 */
-	protected $runner;
+    /**
+     * @var \CIC\Cicbase\Migration\MigrationRunner
+     * @inject
+     */
+    protected $runner;
 
-	/**
-	 * @param \TYPO3\CMS\Extbase\Mvc\Controller\Arguments $arguments
-	 * @return void
-	 */
-	public function injectArguments(\TYPO3\CMS\Extbase\Mvc\Controller\Arguments $arguments) {
-		$this->arguments = $arguments;
-	}
+    /**
+     * @param \TYPO3\CMS\Extbase\Mvc\Controller\Arguments $arguments
+     * @return void
+     */
+    public function injectArguments(\TYPO3\CMS\Extbase\Mvc\Controller\Arguments $arguments) {
+        $this->arguments = $arguments;
+    }
 
-	/**
-	 * Runs migrations for an extension. This is gonna be weird.
-	 * @param string $extKey Key of extension containing migrations
-	 * @return void
-	 */
-	public function runCommand($extKey) {
-		$this->outputLine();
+    /**
+     * Runs migrations for an extension. This is gonna be weird.
+     * @param string $extKey Key of extension containing migrations
+     * @return void
+     */
+    public function runCommand($extKey) {
+        $this->outputLine();
         $this->runExtension($extKey);
-		$this->outputLine();
-	}
+        $this->outputLine();
+    }
 
     /**
      * @param $extKey
@@ -62,16 +62,16 @@ class MigrationCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\Comma
         }
     }
 
-	/**
-	 * Rolls back a migration.
-	 * @param string $extKey Key of extension containing migrations
-	 * @return void
-	 */
-	public function rollbackCommand($extKey) {
-		$this->outputLine();
+    /**
+     * Rolls back a migration.
+     * @param string $extKey Key of extension containing migrations
+     * @return void
+     */
+    public function rollbackCommand($extKey) {
+        $this->outputLine();
         $this->rollbackExtension($extKey);
-		$this->outputLine();
-	}
+        $this->outputLine();
+    }
 
     /**
      *
