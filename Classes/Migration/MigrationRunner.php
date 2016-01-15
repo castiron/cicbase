@@ -58,13 +58,21 @@ class MigrationRunner {
 		);
 	}
 
+    /**
+     * @param $extKey
+     * @return bool
+     */
+    public function hasMigrations($extKey) {
+        return count(self::getAvailableMigrations($extKey)) > 0;
+    }
+
 	/**
 	 * @param string $extKey
 	 * @return array
 	 */
 	public function run($extKey) {
 		$this->reset($extKey);
-		$this->messages[] = 'Running migrations...';
+        $this->messages[] = 'Running migrations for ' . $extKey . '...';
 		$availableMigrations = self::getAvailableMigrations($extKey);
 		try {
 			foreach($availableMigrations as $migration) {

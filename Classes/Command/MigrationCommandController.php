@@ -1,5 +1,9 @@
 <?php
 namespace CIC\Cicbase\Command;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\File\BasicFileUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 class MigrationCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\CommandController {
 
 	/**
@@ -29,12 +33,34 @@ class MigrationCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\Comma
 	 */
 	public function runCommand($extKey) {
 		$this->outputLine();
-		$messages = $this->runner->run($extKey);
-		foreach($messages as $msg) {
-			$this->outputLine($msg);
-		}
+        $this->runExtension($extKey);
 		$this->outputLine();
 	}
+
+    /**
+     * @param $extKey
+     */
+    protected function runExtension($extKey) {
+        $messages = $this->runner->run($extKey);
+        $this->putMessages($messages);
+    }
+
+    /**
+     * @param $extKey
+     */
+    protected function rollbackExtension($extKey) {
+        $messages = $this->runner->rollback($extKey);
+        $this->putMessages($messages);
+    }
+
+    /**
+     * @param $messages
+     */
+    protected function putMessages($messages) {
+        foreach($messages as $msg) {
+            $this->outputLine($msg);
+        }
+    }
 
 	/**
 	 * Rolls back a migration.
@@ -43,11 +69,34 @@ class MigrationCommandController extends \TYPO3\CMS\Extbase\Mvc\Controller\Comma
 	 */
 	public function rollbackCommand($extKey) {
 		$this->outputLine();
-		$messages = $this->runner->rollback($extKey);
-		foreach($messages as $msg) {
-			$this->outputLine($msg);
-		}
+        $this->rollbackExtension($extKey);
 		$this->outputLine();
 	}
+
+    /**
+     *
+     */
+    public function runAllCommand() {
+        $keys = GeneralUtility::get_dirs(PATH_site . 'typo3conf/ext');
+        foreach ($keys as $extKey) {
+            if (ExtensionManagementUtility::isLoaded($extKey)
+                && $this->runner->hasMigrations($extKey)) {
+                $this->runExtension($extKey);
+                $this->outputLine();
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    public function rollbackAllCommand() {
+        $keys = GeneralUtility::get_dirs(PATH_site . 'typo3conf/ext');
+        foreach ($keys as $extKey) {
+            if (ExtensionManagementUtility::isLoaded($extKey)) {
+                $this->rollbackExtension($extKey);
+                $this->outputLine();
+            }
+        }
+    }
 }
-?>
