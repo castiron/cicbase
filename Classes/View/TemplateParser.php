@@ -16,7 +16,7 @@ class TemplateParser extends \TYPO3\CMS\Fluid\Core\Parser\TemplateParser {
 	protected $configurationManager;
 
 	/** @var array */
-	protected $extensionSettings = [];
+	protected $extensionSettings = array();
 
 	/**
 	 * Namespace identifiers and their component name prefix (Associative array).
