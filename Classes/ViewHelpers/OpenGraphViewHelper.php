@@ -268,8 +268,8 @@ class OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewH
 	protected function getHeaderDataKey() {
 		if($this->arguments['merge']) {
 			$key = array_reduce($GLOBALS['TSFE']->pSetup['headerData.'], function ($res, $v) {
-				if(is_array($v) && $v[self::MERGE_TS_KEY]) {
-					return $v[self::MERGE_TS_KEY];
+				if(is_array($v) && $v[OpenGraphViewHelper::MERGE_TS_KEY]) {
+					return $v[OpenGraphViewHelper::MERGE_TS_KEY];
 				}
 				return $res;
 			}, false);
