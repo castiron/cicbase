@@ -10,7 +10,7 @@ namespace CIC\Cicbase\Utility;
  */
 class Date {
 
-	public static $months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+	public static $months = array('january','february','march','april','may','june','july','august','september','october','november','december');
 
 	/**
 	 * @param string $monthString

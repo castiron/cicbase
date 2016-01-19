@@ -20,19 +20,19 @@ class PathTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 
 	/** @test */
 	public function itMakesPathFromSomeArrayArgsVar1() {
-		$res = Path::make(['some','dir'],'file','xml');
+		$res = Path::make(array('some','dir'),'file','xml');
 		$this->assertEquals('some/dir/file.xml', $res);
 	}
 
 	/** @test */
 	public function itMakesPathFromSomeArrayArgsVar2() {
-		$res = Path::make(['some','dir','file'],'xml');
+		$res = Path::make(array('some','dir','file'),'xml');
 		$this->assertEquals('some/dir/file.xml', $res);
 	}
 
 	/** @test */
 	public function itMakesPathFromSomeArrayArgsVar3() {
-		$res = Path::make(['some','dir/file'],'xml');
+		$res = Path::make(array('some','dir/file'),'xml');
 		$this->assertEquals('some/dir/file.xml', $res);
 	}
 

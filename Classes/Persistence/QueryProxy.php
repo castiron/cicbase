@@ -10,7 +10,7 @@ class QueryProxy implements QueryProxyInterface{
 	protected $query;
 
 	/** @var array */
-	protected $constraints = [];
+	protected $constraints = array();
 
 	/**
 	 * @param QueryInterface $query
@@ -119,6 +119,6 @@ class QueryProxy implements QueryProxyInterface{
 	 * @param array $args
 	 */
 	public function __call($name, $args) {
-		$this->constraints[] = call_user_func_array([$this->query, $name], $args);
+		$this->constraints[] = call_user_func_array(array($this->query, $name), $args);
 	}
 }

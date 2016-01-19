@@ -22,7 +22,7 @@ class MigrationTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 
 	/** @test */
 	public function itTestsForMultipleTableExistence() {
-		$this->assertTrue($this->migration->_call('tablesExist', ['sys_language','fe_users']));
+		$this->assertTrue($this->migration->_call('tablesExist', array('sys_language','fe_users')));
 	}
 
 	/** @test */
@@ -32,7 +32,7 @@ class MigrationTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 
 	/** @test */
 	public function itTestsForMultipleTableExistenceNegative() {
-		$this->assertFalse($this->migration->_call('tablesExist', ['sys_language', 'nor_this_one']));
+		$this->assertFalse($this->migration->_call('tablesExist', array('sys_language', 'nor_this_one')));
 	}
 
 	/** @test */
@@ -42,7 +42,7 @@ class MigrationTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 
 	/** @test */
 	public function itTestsForMultipleColumnExistence() {
-		$this->assertTrue($this->migration->_call('columnsExist', 'fe_users', ['username','address']));
+		$this->assertTrue($this->migration->_call('columnsExist', 'fe_users', array('username','address')));
 	}
 
 	/** @test */
@@ -52,7 +52,7 @@ class MigrationTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 
 	/** @test */
 	public function itTestsForMultipleColumnExistenceNegative() {
-		$this->assertFalse($this->migration->_call('columnsExist', 'fe_users', ['username', 'nor_this_one']));
+		$this->assertFalse($this->migration->_call('columnsExist', 'fe_users', array('username', 'nor_this_one')));
 	}
 }
 
