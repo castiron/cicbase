@@ -7,10 +7,6 @@ use CIC\Cicbase\Utility\Arr;
 class Pagination
 {
     /** @var integer */
-    protected $total;
-    /** @var integer */
-    protected $pageSize;
-    /** @var integer */
     protected $current;
     /** @var integer */
     protected $last;
@@ -18,21 +14,19 @@ class Pagination
     protected $surrounding = 2;
 
     /**
-     * @param integer $totalPages
+     * @param integer $totalItems
      * @param integer $pageSize
      * @param integer $currentPage
      * @throws \Exception
      */
-    public function __construct($totalPages, $pageSize, $currentPage = 1)
+    public function __construct($totalItems, $pageSize, $currentPage = 1)
     {
         if ($currentPage < 1) {
             throw new \Exception('Current page must be 1 or more');
         }
 
-        $this->total = $totalPages;
-        $this->pageSize = $pageSize;
         $this->current = $currentPage;
-        $this->last = ceil($totalPages / $pageSize);
+        $this->last = ceil($totalItems / $pageSize);
     }
 
     /**
