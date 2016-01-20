@@ -19,12 +19,8 @@ class Pagination
      * @param integer $currentPage
      * @throws \Exception
      */
-    public function __construct($totalItems, $pageSize, $currentPage = 1)
+    public function __construct($totalItems, $pageSize, $currentPage)
     {
-        if ($currentPage < 1) {
-            throw new \Exception('Current page must be 1 or more');
-        }
-
         $this->current = $currentPage;
         $this->last = ceil($totalItems / $pageSize);
     }
