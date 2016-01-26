@@ -21,6 +21,9 @@ class Pagination
      */
     public function __construct($totalItems, $pageSize, $currentPage)
     {
+        if ($pageSize == 0) {
+            throw new \Exception('Cannot paginate without a $pageSize parameter');
+        }
         $this->current = $currentPage;
         $this->last = ceil($totalItems / $pageSize);
     }
@@ -35,11 +38,27 @@ class Pagination
         $this->surrounding = $size;
     }
 
+    /**
+     * @return bool|int
+     */
+    public function getNextPage()
+    {
+        return $this->current == $this->last ? false : $this->current + 1;
+    }
+
+    /**
+     * @return bool|int
+     */
+    public function getPrevPage()
+    {
+        return $this->current == 1 ? false : $this->current - 1;
+    }
+
 
     /**
      * Creates an array of pages like
      *
-     * 1,2,3,'...',10,11,12,13,14,'...',99,100,101
+     * 1,2,3,'…',10,11,12,13,14,'…',99,100,101
      *
      * where there are 101 pages and the current page is 12.
      *
@@ -48,7 +67,7 @@ class Pagination
      * @param string $ellipsis
      * @return array
      */
-    public function makeSimpleArray($ellipsis = '...')
+    public function makeSimpleArray($ellipsis = '&hellip;')
     {
         // learn our bounds and protect for going too far at either end
         $minMiddle = max(1, $this->current - $this->surrounding);
