@@ -31,7 +31,7 @@ namespace CIC\Cicbase\Service;
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  *
  */
-class SolrService implements \TYPO3\CMS\Core\SingletonInterface {
+class SolrService {
 	/**
 	 *        @var array
 	 */
