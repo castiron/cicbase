@@ -54,7 +54,7 @@ class Date {
 			$nextMonth = 1;
 			++$year;
 		}
-		$dt = new \DateTime("$nextMonth/1/$year 00:00", $tz);
+		$dt = self::newDateTime("$nextMonth/1/$year 00:00", $tz);
 		return (int) $dt->sub(new \DateInterval('PT1S'))->format('U');
 	}
 
@@ -147,5 +147,33 @@ class Date {
 	 */
 	public static function reformat($str, $inFormat, $outFormat) {
 		return \DateTime::createFromFormat($inFormat, $str)->format($outFormat);
+	}
+
+	/**
+	 * @param null $date
+	 * @param string $zone
+	 * @return \DateTime
+	 */
+	public static function newDateTime($date = null, $zone = null) {
+		return new \DateTime($date, self::determineTimeZone($zone));
+	}
+
+	/**
+	 * @param null $date
+	 * @param string $zone
+	 * @return \DateTime
+	 */
+	public static function newDateTimeFromFormat($format, $date, $zone = null) {
+		return \DateTime::createFromFormat($format, $date, self::determineTimeZone($zone));
+	}
+
+	/**
+	 * @param $zone
+	 */
+	public static function determineTimeZone($zone = null) {
+		if(in_array($zone, \DateTimeZone::listIdentifiers())) {
+			return new \DateTimeZone($zone);
+		}
+		return null;
 	}
 }
