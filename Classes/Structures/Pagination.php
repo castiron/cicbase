@@ -6,26 +6,57 @@ use CIC\Cicbase\Utility\Arr;
 
 class Pagination
 {
+    const MODE_SIMPLE = 'simple';
+
     /** @var integer */
     protected $current;
     /** @var integer */
     protected $last;
     /** @var integer */
+    protected $pageSize;
+    /** @var integer */
     protected $surrounding = 2;
+    /** @var integer */
+    protected $mode;
+    /** @var array */
+    protected $cachedResult = array();
 
     /**
      * @param integer $totalItems
      * @param integer $pageSize
      * @param integer $currentPage
+     * @param string $mode
      * @throws \Exception
      */
-    public function __construct($totalItems, $pageSize, $currentPage)
+    public function __construct($totalItems, $pageSize, $currentPage, $mode = self::MODE_SIMPLE)
     {
         if ($pageSize == 0) {
             throw new \Exception('Cannot paginate without a $pageSize parameter');
         }
         $this->current = $currentPage;
         $this->last = ceil($totalItems / $pageSize);
+        $this->pageSize = $pageSize;
+        $this->mode = $mode;
+    }
+
+    /**
+     * Returns the list of pages needed to display pagination.
+     * The result here may be different depending on the mode.
+     *
+     * @return array
+     */
+    public function getPages()
+    {
+        return $this->initialize();
+    }
+
+    /**
+     * @return bool
+     */
+    public function getHasPages()
+    {
+        $this->initialize();
+        return count($this->cachedResult) > 1;
     }
 
     /**
@@ -56,6 +87,61 @@ class Pagination
 
 
     /**
+     * Returns the limit clause value for use in a SQL statement.
+     * This can include the relevant offset if the current page
+     * is greater than 1.
+     *
+     * @return string
+     */
+    public function getSqlLimit()
+    {
+        $ps = $this->pageSize;
+        $p = $this->current;
+        return $p == 1 ? $ps : $ps * ($p - 1) . ',' . $ps;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPageSize()
+    {
+        return $this->pageSize;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCurrentPage()
+    {
+        return $this->current;
+    }
+
+    /**
+     * @return float|int
+     */
+    public function getLastPage()
+    {
+        return $this->last;
+    }
+
+    /**
+     * Generates our resulting pagination pages once.
+     */
+    protected function initialize()
+    {
+        if (!empty($this->cachedResult)) {
+            return $this->cachedResult;
+        }
+        switch ($this->mode) {
+            case self::MODE_SIMPLE:
+                $this->cachedResult = $this->makeSimpleArray();
+                break;
+        }
+        return $this->cachedResult;
+    }
+
+
+    /**
      * Creates an array of pages like
      *
      * 1,2,3,'…',10,11,12,13,14,'…',99,100,101
@@ -64,11 +150,12 @@ class Pagination
      *
      * There is no meta data here, just the page numbers and ellipses.
      *
-     * @param string $ellipsis
      * @return array
      */
-    public function makeSimpleArray($ellipsis = '&hellip;')
+    protected function makeSimpleArray()
     {
+        $ellipsis = '…';
+
         // learn our bounds and protect for going too far at either end
         $minMiddle = max(1, $this->current - $this->surrounding);
         $maxMiddle = min($this->last, $this->current + $this->surrounding);
