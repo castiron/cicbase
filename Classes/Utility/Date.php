@@ -171,6 +171,7 @@ class Date {
 	 * @param $zone
 	 */
 	public static function determineTimeZone($zone = null) {
+		if(is_null($zone)) $zone = $GLOBALS['TYPO3_CONF_VARS']['SYS']['phpTimeZone'];
 		if(in_array($zone, \DateTimeZone::listIdentifiers())) {
 			return new \DateTimeZone($zone);
 		}
