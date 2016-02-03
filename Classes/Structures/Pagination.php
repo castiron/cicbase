@@ -156,6 +156,10 @@ class Pagination
     {
         $ellipsis = '…';
 
+        if ($this->last == 0) {
+            return array();
+        }
+
         // learn our bounds and protect for going too far at either end
         $minMiddle = max(1, $this->current - $this->surrounding);
         $maxMiddle = min($this->last, $this->current + $this->surrounding);
