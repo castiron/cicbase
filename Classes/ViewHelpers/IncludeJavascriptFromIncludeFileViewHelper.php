@@ -55,7 +55,7 @@ class IncludeJavascriptFromIncludeFileViewHelper extends \TYPO3\CMS\Fluid\Core\V
 		}
 
 		try {
-			$fileContents = file_get_contents($filePath);
+			$fileContents = trim(file_get_contents($filePath));
 		} catch(\Exception $e) {
 			throw new \Exception('Could not read include file for js inclusion');
 		}
@@ -65,7 +65,7 @@ class IncludeJavascriptFromIncludeFileViewHelper extends \TYPO3\CMS\Fluid\Core\V
 		$basePath = $this->getRelativeFromAbsolutePath($pathInfo['dirname']);
 		foreach (GeneralUtility::trimExplode(chr(10), $fileContents) as $line) {
 			$file = "$basePath/$line";
-			if (file_exists($file)) {
+			if (is_file($file)) {
 				$lines[] = "<script src=\"$file\"></script>";
 			}
 		}
