@@ -193,10 +193,37 @@ class Pagination
         return $res2;
     }
 
+
+    /**
+     * If the given two sequences overlap or touch, then we don't join
+     * them with an ellipsis in the middle.
+     *
+     * Given [1,2,3] & [4,5,6], we just merge: [1,2,3,4,5,6].
+     * Given [1,2,3] & [7,8,9], we add an ellipsis, then merge: [1,2,3,…,7,8,9].
+     *
+     *
+     * However, for a point of clarity, we're going to go one step further.
+     * If the two sequences are only separated by 1 number (that is, if the
+     * ellipsis is only standing in for one number), then we're going to just
+     * insert the missing number.
+     *
+     * Given [1,2,3] & [5,6,7], it'd be a little silly to resolve that to
+     * [1,2,3,…,5,6,7]. Don't you agree? Instead, we'll just give you
+     * [1,2,3,4,5,6,7]. 
+     *
+     *
+     * @param $first
+     * @param $second
+     * @param $ellipsis
+     * @return array
+     */
     protected static function mergeOrEllipsify($first, $second, $ellipsis)
     {
         if (max($first) + 1 >= min($second)) {
             return self::merge($first, $second);
+        }
+        if (max($first) + 2 >= min($second)) {
+            return self::merge($first, max($first) + 1, $second);
         }
         return self::merge($first, $ellipsis, $second);
     }
