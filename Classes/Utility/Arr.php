@@ -333,8 +333,29 @@ class Arr {
 			foreach ($rows as $row) $newRows[$row[$keyColumn]] = $row;
 			return $newRows;
 		}
+	}
 
-
+	/**
+	 * Split the items into newspaper ordered columns.
+	 * For example, if there are 11 items and $columnCount is 4,
+	 * then the columns look like this:
+	 *
+	 * col 1: 1, 2, 3
+	 * col 2: 4, 5, 6
+	 * col 3: 7, 8, 9
+	 * col 4: 10, 11
+	 *
+	 * See how this is different than using `array_chunk` directly?
+	 * We're not specifying the number of elements per chunk, but rather
+	 * the number of columns.
+	 *
+	 * @param array $items
+	 * @param integer $columnCount
+	 * @return array
+	 */
+	public static function columnify(array $items, $columnCount)
+	{
+		return array_chunk($items, ceil(count($items) / $columnCount));
 	}
 
 
