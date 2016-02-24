@@ -132,7 +132,7 @@ class OpenGraphViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewH
 					case 'image':
 						if ($this->canAddImages()) {
 							if(!GeneralUtility::isValidUrl($v)) {
-								$v = GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . $v;
+								$v = GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . ltrim($v, '/');
 								if (!GeneralUtility::isValidUrl($v)) {
 									break;
 								}
