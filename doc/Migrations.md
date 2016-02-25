@@ -75,4 +75,13 @@ class FixActionCategoryActionCounts1402602721 extends \CIC\Cicbase\Migration\Abs
 ?>
 ```
 
+The `AbstractMigration` class has several convenient methods that you may find useful like:
+
+* `copyTable($source, $destination, $renameColumns = array())`
+* `columnExists($table, $column)`
+* `copyField($table, $sourceField, $destinationField)`
+* `expectTable($table, $message = '')` 
+
+Remember, migrations are to be run _after_ database updates are run. So you may need to throw errors on purpose if you're going to work with fields that only exist after the database update to remind admins that they need to run the update.
+
 [back to docs](.)
