@@ -104,3 +104,4 @@ $count = $this->count(function($q) {
 });
 ```
 
+[back to docs](.)

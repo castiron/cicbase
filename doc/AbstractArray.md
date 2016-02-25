@@ -7,3 +7,5 @@ For example, let's say you've created a cursor structure that pulls items from a
 That's rather simple and you're really only maintaing the array of results. That is, the structure itself is not that complicated. It's just the lifecycle of iteration that you're concerned with. So, instead of writing the `current()`, `key()`, `next()` methods which you just pass on to the array anyway, you only need to concern yourself with writing the `rewind()` method and probably the `count()` method. 
 
 Basically, use this when your internal structure is just an array and you don't feel like writing all the dumb wrappers that just defer to that internal array.
+
+[back to docs](.)

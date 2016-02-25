@@ -23,3 +23,5 @@ plugin.my_ext {
 ```
 
 Now, you can use `<cic:special>` in all your templates without needing to re-declare the namespace.
+
+[back to docs](.)
