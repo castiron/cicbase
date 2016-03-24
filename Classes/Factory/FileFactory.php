@@ -161,16 +161,34 @@ class FileFactory implements \TYPO3\CMS\Core\SingletonInterface {
 		}
 	}
 
-	protected function validateType($uploadedFileData,$allowedTypes) {
+	protected function validateType($uploadedFileData, $allowedTypes, $ignoreMime = false) {
 		$pathInfo = pathinfo($uploadedFileData['name']);
 		$extension = strtolower($pathInfo['extension']);
-		$allowedMimes = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',',$allowedTypes[$extension]);
-		if(in_array($uploadedFileData['type'],$allowedMimes)) {
-			return NULL;
+
+		if($ignoreMime) {
+			return $this->validateFileExtension($extension, $allowedTypes);
 		} else {
-			$this->addError('Invalid mime type: '.$uploadedFileData['type'], 1336597086);
+			return $this->validateTypeAndMime($extension, $allowedTypes);
 		}
 	}
+
+	protected function validateFileExtension($extension, $allowedTypes) {
+		if(array_key_exists($extension, $allowedTypes)) {
+			return NULL;
+		} else {
+			$this->addError('Invalid file extension: '. $extension, 1336597187);
+		}
+	}
+
+	protected function validateTypeAndMime($extension, $allowedTypes) {
+		$allowedMimes = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $allowedTypes[$extension]);
+		if (in_array($uploadedFileData['type'], $allowedMimes)) {
+			return NULL;
+		} else {
+			$this->addError('Invalid mime type: ' . $uploadedFileData['type'], 1336597086);
+		}
+	}
+
 
 	protected function addError($msg, $key) {
 		$error = new \TYPO3\CMS\Extbase\Error\Error($msg, $key);
@@ -203,7 +221,8 @@ class FileFactory implements \TYPO3\CMS\Core\SingletonInterface {
 			return $this->messages->getFirstError();
 		} else {
 			if(!$this->settings['file']['dontValidateType']) {
-				$this->validateType($uploadedFileData,$allowedTypes);
+				$ignoreMime = $this->settings['file']['dontValidateMime'];
+				$this->validateType($uploadedFileData,$allowedTypes, $ignoreMime);
 			}
 			if(!$this->settings['file']['dontValidateName']) {
 				$this->validateName($uploadedFileData);
