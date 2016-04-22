@@ -20,6 +20,14 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper {
     }
 
     /**
+     * @param \TYPO3\CMS\Core\Resource\FileInterface $image
+     * @return bool
+     */
+    protected function isWebEmbeddable(\TYPO3\CMS\Core\Resource\FileInterface $image) {
+        return $image->getExtension() !== 'pdf';
+    }
+
+    /**
      * Resizes a given image (if required) and renders the respective img tag
      *
      * @see https://docs.typo3.org/typo3cms/TyposcriptReference/ContentObjects/Image/
@@ -56,8 +64,21 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper {
                     'maxHeight' => $maxHeight,
                     'additionalParameters' => $additionalParameters ? $additionalParameters : $this->getDefaultAdditionalImagemagickParams($image),
                 );
+
                 $processedImage = $this->imageService->applyProcessingInstructions($image, $processingInstructions);
                 $imageUri = $this->imageService->getImageUri($processedImage);
+
+                /**
+                 * Sometimes an image just can't be generated from certain file types in the current gm/gs/ImageMagick setup.
+                 * We don't want a .pdf URL in an img src attribute, for example, so we just fully bail here in that
+                 * case...
+                 */
+                if (
+                    !$this->isWebEmbeddable($image)
+                    && ltrim($imageUri, '/') == ltrim($image->getPublicUrl(), '/')
+                ) {
+                    return '';
+                }
 
                 $this->tag->addAttribute('src', $imageUri);
                 $this->tag->addAttribute('width', $processedImage->getProperty('width'));
