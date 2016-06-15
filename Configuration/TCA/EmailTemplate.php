@@ -6,10 +6,10 @@ if (!defined ('TYPO3_MODE')) {
 $TCA['tx_cicbase_domain_model_emailtemplate'] = array(
 	'ctrl' => $TCA['tx_cicbase_domain_model_emailtemplate']['ctrl'],
 	'interface' => array(
-		'showRecordFieldList' => 'template_key, is_draft, body'
+		'showRecordFieldList' => 'template_key, is_draft, subject, body'
 	),
 	'types' => array(
-		'1' => array('showitem' => 'template_key, is_draft, body'),
+		'1' => array('showitem' => 'template_key, is_draft, subject, body'),
 	),
 	'palettes' => array(
 		'1' => array('showitem' => ''),
@@ -25,6 +25,15 @@ $TCA['tx_cicbase_domain_model_emailtemplate'] = array(
 		'template_key' => array(
 			'exclude' => 0,
 			'label' => 'Corresponding Template Key',
+			'config' => array(
+				'type' => 'input',
+				'size' => 30,
+				'eval' => 'trim,required'
+			),
+		),
+		'subject' => array(
+			'exclude' => 0,
+			'label' => 'Subject',
 			'config' => array(
 				'type' => 'input',
 				'size' => 30,

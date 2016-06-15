@@ -85,6 +85,7 @@ CREATE TABLE tx_cicbase_domain_model_emailtemplate (
 
   template_key varchar(255) DEFAULT '' NOT NULL,
   body text NOT NULL,
+  subject varchar(255) DEFAULT '' NOT NULL,
   is_draft tinyint(4) unsigned DEFAULT '0' NOT NULL,
 
   tstamp int(11) unsigned DEFAULT '0' NOT NULL,

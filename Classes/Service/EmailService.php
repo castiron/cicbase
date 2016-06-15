@@ -193,6 +193,15 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	protected $foundTemplateOverrides = array();
 
 	/**
+	 * The subject value on the template override record.
+	 * If the value on the record is an empty string, it will fall back
+	 * to the Typoscript defined subject.
+	 *
+	 * @var array
+	 */
+	protected $foundSubjectOverrides = array();
+
+	/**
 	 * @var \CIC\Cicbase\Domain\Repository\EmailTemplateRepository
 	 * @inject
 	 */
@@ -338,6 +347,29 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	/**
 	 * This is a helper method for other classes, not necessarily part of the EmailService API.
 	 *
+	 * Gets the email subject for a template key "{ext}.{templateKey}"
+	 *
+	 * @see getAvailableTemplateKeys()
+	 *
+	 * @param string $templateKey
+	 * @return string
+	 */
+	public function getSubjectFromKey($templateKey) {
+		$parts = explode('.', $templateKey);
+		$ext = $parts[0];
+		$key = $parts[1];
+
+		$extbaseFrameworkConfiguration = $this->getTyposcriptForExtension($ext);
+
+		$extSettings = $extbaseFrameworkConfiguration['settings'];
+		if (!isset($extSettings['email']['templates'][$key])) return FALSE;
+
+		return $extSettings['email']['templates'][$key]['subject'];
+	}
+
+	/**
+	 * This is a helper method for other classes, not necessarily part of the EmailService API.
+	 *
 	 * @return array
 	 */
 	public function getAvailableTemplateKeys() {
@@ -469,7 +501,11 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 */
 	protected function getTemplateSubject($templateName) {
 		if($this->templateExists($templateName)) {
-			return $this->templates[$templateName]['subject'];
+			if(array_key_exists($templateName, $this->foundSubjectOverrides)) {
+				return $this->foundSubjectOverrides[$templateName];
+			} else {
+				return $this->templates[$templateName]['subject'];
+			}
 		}
 		return '';
 	}
@@ -490,6 +526,8 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 		$record = $this->emailTemplateRepository->findOneByTemplateKey("$ext.$templateName");
 
 		if ($record) {
+			$overrideSubject = $record->getSubject();
+			if(strlen($overrideSubject) != 0) $this->foundSubjectOverrides[$templateName] = $overrideSubject;
 			$this->foundTemplateOverrides[$templateName] = $record->getBody();
 			return TRUE;
 		}

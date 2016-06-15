@@ -9,23 +9,23 @@
 			<tr class="c-table-row-spacer">
 				<td nowrap="nowrap" class="col-icon"><img src="clear.gif" width="1" height="8" alt=""></td>
 				<td nowrap="nowrap" class="col-icon"><img src="clear.gif" width="1" height="8" alt=""></td>
-				<td nowrap="nowrap" class="" colspan="4"></td>
+				<td nowrap="nowrap" class="" colspan="5"></td>
 			</tr>
 			<!-- Element, begin: -->
 			<tr class="t3-row-header">
 				<td nowrap="nowrap" class="col-icon"></td>
 				<td nowrap="nowrap" class="col-icon"></td>
-				<td nowrap="nowrap" class="" colspan="4"><span class="c-table">Email Template</span> ({f:count(subject:templates)})</td>
+				<td nowrap="nowrap" class="" colspan="5"><span class="c-table">Email Template</span> ({f:count(subject:templates)})</td>
 			</tr>
 			<!-- Element, begin: -->
 			<tr class="c-headLine">
 				<td nowrap="nowrap" class="col-icon"></td>
 				<td nowrap="nowrap" class="col-icon"></td>
-
 				<td nowrap="nowrap" class="col-title"><strong>Corresponding Template Key</strong></td>
 				<td nowrap="nowrap" class="">&nbsp;</td>
-				<td nowrap="nowrap" class=""><strong>Is Draft?</strong></td>
+				<td nowrap="nowrap" class=""><strong>Subject</strong></td>
 				<td nowrap="nowrap" class=""><strong>Template Body</strong></td>
+				<td nowrap="nowrap" class=""><strong>Is Draft?</strong></td>
 			</tr>
 
 			<f:for each="{templates}" as="template" iteration="iter">
@@ -44,10 +44,11 @@
 
 					<td nowrap="nowrap" class="col-title">{template.templateKey}</td>
 					<td nowrap="nowrap" class="">&nbsp;</td>
-					<td nowrap="nowrap" class="">{f:if(condition:template.isDraft, then: 'Yes', else: 'No')}</td>
+					<td nowrap="nowrap" class="">{template.subject}</td>
 					<td nowrap="nowrap" class="">
 						<f:format.crop maxCharacters="50">{template.body}</f:format.crop>
 					</td>
+					<td nowrap="nowrap" class="">{f:if(condition:template.isDraft, then: 'Yes', else: 'No')}</td>
 				</tr>
 			</f:for>
 

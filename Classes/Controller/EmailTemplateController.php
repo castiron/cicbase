@@ -40,10 +40,12 @@ class EmailTemplateController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionCo
 	 */
 	public function newAction($selectedTemplateKey, EmailTemplate $emailTemplate = NULL) {
 		$defaultBody = $this->emailService->getTemplateBodyFromKey($selectedTemplateKey);
+		$defaultSubject = $this->emailService->getSubjectFromKey($selectedTemplateKey);
 		$this->view->assignMultiple(array(
 			'selectedTemplateKey' => $selectedTemplateKey,
 			'emailTemplate' => $emailTemplate,
 			'defaultBody' => $defaultBody,
+			'defaultSubject' => $defaultSubject,
 		));
 	}
 

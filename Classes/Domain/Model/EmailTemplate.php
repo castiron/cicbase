@@ -6,7 +6,6 @@ class EmailTemplate extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	/** @var bool */
 	protected $isDraft;
 
-	/** @var string */
 	/**
 	 * @var string
 	 * @validate \CIC\Cicbase\Validation\Validator\FluidStringValidator
@@ -15,6 +14,12 @@ class EmailTemplate extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
 	/** @var string */
 	protected $templateKey;
+
+	/**
+	 * @var string
+	 * @validate NotEmpty
+	 */
+	protected $subject;
 
 	/**
 	 * @return boolean
@@ -38,11 +43,26 @@ class EmailTemplate extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	}
 
 	/**
+	 * @param string $subject
+	 */
+	public function setSubject($subject) {
+		$this->subject = $subject;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getSubject() {
+		return $this->subject;
+	}
+
+	/**
 	 * @param string $body
 	 */
 	public function setBody($body) {
 		$this->body = $body;
 	}
+
 
 	/**
 	 * @return string
@@ -57,9 +77,4 @@ class EmailTemplate extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	public function setTemplateKey($templateKey) {
 		$this->templateKey = $templateKey;
 	}
-
-
-	
 }
-
-?>

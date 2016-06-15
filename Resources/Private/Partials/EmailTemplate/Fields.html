@@ -3,6 +3,19 @@
 </div>
 
 <div class="field">
+	<label>Email Subject</label>
+	<p>Email subjects are static string that do no marker replacement. Please enter the subject exactly as it should appear in the email.</p>
+	<f:if condition="{emailTemplate.subject}">
+		<f:then>
+			<f:form.textfield property="subject" style="width:600px" />
+		</f:then>
+		<f:else>
+			<f:form.textfield property="subject" style="width:600px" value="{defaultSubject}" />
+		</f:else>
+	</f:if>
+</div>
+
+<div class="field">
 	<label>Email Body</label>
 	<p>Email templates are written in Fluid html. This allows for access to data values (within curly brackets
 	i.e.<code>{settings.pid.storage}</code>) and certain helper tags (starting with <code>&lt;f:</code>). Be
