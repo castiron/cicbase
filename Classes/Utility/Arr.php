@@ -355,7 +355,24 @@ class Arr {
 	 */
 	public static function columnify(array $items, $columnCount)
 	{
-		return array_chunk($items, ceil(count($items) / $columnCount));
+		$colCounts = array_fill(0, $columnCount, 0);
+		for($i = 0; $i < count($items); $i++) {
+			$colCounts[$i % $columnCount]++;
+		}
+
+		$cols = [];
+		$colI = 0;
+		reset($items);
+		while(current($items)) {
+			if(count($cols[$colI]) >= $colCounts[$colI]) {
+				$colI++;
+			}
+
+			$cols[$colI][] = current($items);
+			next($items);
+		}
+
+		return $cols;
 	}
 
 
