@@ -1,8 +1,8 @@
 <?php namespace CIC\Cicbase\Service;
 
+use CIC\Cicbase\Traits\ExtbaseInstantiable;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use TYPO3\CMS\Frontend\Page\PageRepository;
 
@@ -11,6 +11,8 @@ use TYPO3\CMS\Frontend\Page\PageRepository;
  * @package CIC\Cicbase\Service
  */
 class TypolinkService implements SingletonInterface {
+    use ExtbaseInstantiable;
+
     /**
      * @var \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
      */
@@ -23,7 +25,7 @@ class TypolinkService implements SingletonInterface {
     var $objectManager;
 
     /**
-     * 
+     *
      */
     public function initializeObject() {
         if (!is_object($GLOBALS['TSFE'])) {
