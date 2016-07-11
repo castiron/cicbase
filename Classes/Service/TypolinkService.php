@@ -42,6 +42,19 @@ class TypolinkService implements SingletonInterface {
             $tsfe = $GLOBALS['TSFE'];
             $tsfe->initTemplate();
         }
+        /**
+         * This is needed if we're trying to use RealURL :(
+         */
+        if (!is_array($GLOBALS['TSFE']->config)) {
+            /**
+             * This is needed for one of the subsequent TSFE or RealURL calls
+             */
+            if (!$GLOBALS['TCA']) {
+                \TYPO3\CMS\Core\Core\Bootstrap::getInstance()->loadCachedTca();
+            }
+            $GLOBALS['TSFE']->determineId();
+            $GLOBALS['TSFE']->getConfigArray();
+        }
     }
 
     /**
