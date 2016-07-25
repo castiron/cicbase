@@ -67,7 +67,7 @@ class SolrService {
 
 	/**
 	 * Solr search object, set when the query is executed
-	 * @var mixed|\tx_solr_Search|boolean
+	 * @var Search
 	 */
 	private $search = false;
 
@@ -388,9 +388,9 @@ class SolrService {
 
 
 		// Get default filters from the SOLR search configuration
-		if (isset($solrConfiguration['search.']['query.']['filter.']) && is_array($solrConfiguration['search.']['query.']['filter.'])) {
+		if ($config = $solrConfiguration->getObjectByPath('search.query.filter')) {
 			$defaultFilters = array();
-			foreach ($solrConfiguration['search.']['query.']['filter.'] as $searchFilter) {
+			foreach ($configcc as $searchFilter) {
 				$parts = explode(':', $searchFilter);
 				$defaultFilters[$parts[0]] = $parts[1];
 			}
@@ -415,7 +415,7 @@ class SolrService {
 	 */
 	public function getResultDocuments() {
 		$this->executeQuery();
-		return $this->search->getResultDocuments();
+        return $this->search->getResultDocumentsEscaped();
 	}
 
 	/**
