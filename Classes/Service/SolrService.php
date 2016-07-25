@@ -23,6 +23,10 @@ namespace CIC\Cicbase\Service;
 	 *
 	 *  This copyright notice MUST APPEAR in all copies of the script!
 	 ***************************************************************/
+use ApacheSolrForTypo3\Solr\ConnectionManager;
+use ApacheSolrForTypo3\Solr\Query;
+use ApacheSolrForTypo3\Solr\Search;
+use ApacheSolrForTypo3\Solr\Util;
 
 /**
  *
@@ -354,10 +358,10 @@ class SolrService {
 	private function executeQuery() {
 		$this->queryExecuted = true;
 
-		$solrConnection = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_solr_ConnectionManager')->getConnection();
-		$search = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_solr_Search', $solrConnection);
-		$query = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_solr_Query', $this->getKeywords());
-		$solrConfiguration = \tx_solr_Util::getSolrConfiguration();
+		$solrConnection = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('ApacheSolrForTypo3\\Solr\\ConnectionManager')->getConnection();
+		$search = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('ApacheSolrForTypo3\\Solr\\Search', $solrConnection);
+		$query = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('ApacheSolrForTypo3\\Solr\\Query', $this->getKeywords());
+		$solrConfiguration = Util::getSolrConfiguration();
 
 		$query->setFieldList($this->getFieldList());
 
@@ -371,8 +375,8 @@ class SolrService {
 
 			$sorts = array();
 			foreach ($sortArray as $field => $dir) {
-				if ($dir != \tx_solr_Query::SORT_DESC && $dir != \tx_solr_Query::SORT_ASC) {
-					$dir = \tx_solr_Query::SORT_ASC; // an implicit default
+				if ($dir != Query::SORT_DESC && $dir != Query::SORT_ASC) {
+					$dir = Query::SORT_ASC; // an implicit default
 				}
 				$sorts[] = "$field ".strtolower($dir);
 			}
