@@ -327,4 +327,85 @@ class ArrTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
 		}
 		$this->assertGreaterThan($sameCount, $diffCount);
 	}
+
+    /**
+     * @test
+     */
+    public function testItDedupesByKey() {
+        $startArray = array(
+            'something' => 'ok ok ok',
+            'something_else' => 'no no no',
+            'a_third_thing' => 'whatevsies',
+            'dirtman' => 123,
+            'sandwich' => array('sandwich'),
+        );
+        $inputBase = array(
+            $startArray,
+            array(
+                'something' => '000000',
+            ),
+            array(
+                'wild_guts' => 'forget it',
+                'something' => 323298,
+                'sandwich' => array('weevil'),
+            ),
+            array(
+                'organism' => 'bird',
+                'body_part' => 'wing',
+                'something' => 'sure',
+            )
+        );
+
+        /**
+         * Shouldn't be any de-duping, no duplicate 'something's
+         */
+        $input = $inputBase;
+        $this->assertEquals(
+            $input,
+            Arr::dedupeByKey($input, 'something')
+        );
+
+        /**
+         * Should remove the new items because they have matching 'something'
+         */
+        $input = $inputBase;
+        $input[] = array(
+            'something' => 'ok ok ok',
+            'whatever' => 'it does not matter',
+        );
+        $input[] = array(
+            'something' => 'ok ok ok',
+            'old man hankie' => 'no luck',
+        );
+
+        $this->assertEquals($inputBase, Arr::dedupeByKey($input, 'something'));
+
+
+        /**
+         * Should NOT remove items that have falsy 'something's
+         */
+        $input = $inputBase;
+        $input[] = array(
+            'whatever' => 'it does not matter',
+        );
+        $input[] = array(
+            'something' => false,
+            'old man hankie' => 'no luck',
+        );
+        $input[] = array(
+            'something' => null,
+            'old man hankie' => 'no luck 123',
+        );
+        $input[] = array(
+            'everything' => '',
+            'old man hankie' => 'no 321 luck',
+        );
+
+        $this->assertEquals($input, Arr::dedupeByKey($input, 'something'));
+
+        /**
+         * Should remove them if we don't ignore falsies
+         */
+        $this->assertEquals($inputBase, Arr::dedupeByKey($input, 'something', false));
+    }
 }

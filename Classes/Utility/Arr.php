@@ -85,7 +85,7 @@ class Arr {
 	/**
 	 * Returns the key with the highest value. If there are multiple keys
 	 * with the highest value, then the last one is returned.
-	 * 
+	 *
 	 * @param array $array
 	 * @return null|mixed
 	 */
@@ -99,7 +99,7 @@ class Arr {
 	/**
 	 * Returns the key with the lowest value. If there are multiple keys
 	 * with the lowest value, then the last one is returned.
-	 * 
+	 *
 	 * @param array $array
 	 * @return null|mixed
 	 */
@@ -512,4 +512,56 @@ class Arr {
 		}
 		$array[$index][] = $value;
 	}
+
+    /**
+     * De-duplicate an array of arrays by comparing the values of a given key of the sub-arrays
+     *
+     * @param array $array
+     * @param string|int $key
+     * @param bool $ignoreEmpties Whether to ignore falsy values for $key in the comparison
+     * @return array
+     */
+    public static function dedupeByKey($array, $key, $ignoreEmpties = true) {
+        $out = array();
+        $keyHolder = '_____||_____key';
+        $smashed = array();
+        $ignored = array();
+        $i = 0;
+        foreach ($array as $k => $item) {
+            if ($ignoreEmpties && !$item[$key]) {
+                $ignored[$k] = $item;
+                $item[$key] = $i . '__|||_TOREPLACE';
+                $i++;
+            }
+
+            /**
+             * Stash the key -- we'll need to restore it later
+             */
+            $item[$keyHolder] = $k;
+
+            /**
+             * Use the serialized array for a key, and the target field as a value
+             */
+            $serial = serialize($item);
+            if (!$smashed[$serial]) {
+                $smashed[$serial] = $item[$key];
+            }
+        }
+
+        /**
+         * Er, this is absurdly unreadable sorry! It just gets the arrays unserialized and put back into a container
+         * array (albeit with the wrong keys)
+         */
+        $hydrated = array_map('unserialize', array_flip(array_unique($smashed)));
+
+        /**
+         * Build the output array by constructing it from pieces of the original input array
+         */
+        foreach ($hydrated as $item) {
+            $j = $item[$keyHolder];
+            $out[$j] = $array[$j];
+        }
+
+        return $out;
+    }
 }
