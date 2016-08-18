@@ -384,6 +384,18 @@ abstract class AbstractMigration implements MigrationInterface {
 
     /**
      * @param $table
+     */
+    protected function dropTable($table) {
+        if ($this->forgiving && !$this->tableExists($table)) {
+            $this->log('Nothing to do.');
+            return;
+        }
+
+        $this->db->sql_query('DROP TABLE ' . static::safeTickQuoteName($table) . ';');
+    }
+
+    /**
+     * @param $table
      * @param $key
      */
     protected function addPrimaryKey($table, $key) {
