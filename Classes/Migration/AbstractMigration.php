@@ -237,7 +237,7 @@ abstract class AbstractMigration implements MigrationInterface {
      * @param string $table
      * @return string
      */
-    protected function safeTickQuoteName($table) {
+    protected static function safeTickQuoteName($table) {
         return '`' . str_replace('`', '\`', (string)$table) . '`';
     }
 
@@ -255,8 +255,8 @@ abstract class AbstractMigration implements MigrationInterface {
 
         $size = intval($size);
         $this->expectTable($table, "Can't add varchar field '$field($size)' to missing table '$table'");
-        $this->db->sql_query('ALTER TABLE ' . $this->safeTickQuoteName($table)
-            . ' ADD ' . $this->safeTickQuoteName($field)
+        $this->db->sql_query('ALTER TABLE ' . static::safeTickQuoteName($table)
+            . ' ADD ' . static::safeTickQuoteName($field)
             . ' varchar(' . $size . ') default NULL;');
     }
 
@@ -274,8 +274,8 @@ abstract class AbstractMigration implements MigrationInterface {
 
         $default = intval($default);
         $this->expectTable($table, "Can't add tinyint field '$field' to missing table '$table'");
-        $this->db->sql_query('ALTER TABLE ' . $this->safeTickQuoteName($table)
-            . ' ADD ' . $this->safeTickQuoteName($field)
+        $this->db->sql_query('ALTER TABLE ' . static::safeTickQuoteName($table)
+            . ' ADD ' . static::safeTickQuoteName($field)
             . ' tinyint(4) NOT NULL default \'' . $default . '\'');
     }
 
@@ -295,8 +295,8 @@ abstract class AbstractMigration implements MigrationInterface {
         $size = intval($size);
         $default = intval($default);
         $this->expectTable($table, "Can't add int field '$field($size)' to missing table '$table'");
-        $this->db->sql_query('ALTER TABLE ' . $this->safeTickQuoteName($table)
-            . ' ADD ' . $this->safeTickQuoteName($field)
+        $this->db->sql_query('ALTER TABLE ' . static::safeTickQuoteName($table)
+            . ' ADD ' . static::safeTickQuoteName($field)
             . ' int(' . $size . ') unsigned default \'' . $default . '\'');
     }
 
@@ -312,8 +312,8 @@ abstract class AbstractMigration implements MigrationInterface {
         }
 
         $this->expectTable($table, "Can't add text field '$field' to missing table '$table'");
-        $this->db->sql_query('ALTER TABLE ' . $this->safeTickQuoteName($table)
-            . ' ADD ' . $this->safeTickQuoteName($field) . ' text');
+        $this->db->sql_query('ALTER TABLE ' . static::safeTickQuoteName($table)
+            . ' ADD ' . static::safeTickQuoteName($field) . ' text');
     }
 
     /**
@@ -328,8 +328,8 @@ abstract class AbstractMigration implements MigrationInterface {
         }
 
         $this->expectTable($table, "Can't add tinytext field '$field' to missing table '$table'");
-        $this->db->sql_query('ALTER TABLE ' . $this->safeTickQuoteName($table)
-            . ' ADD ' . $this->safeTickQuoteName($field) . ' tinytext NOT NULL');
+        $this->db->sql_query('ALTER TABLE ' . static::safeTickQuoteName($table)
+            . ' ADD ' . static::safeTickQuoteName($field) . ' tinytext NOT NULL');
     }
 
     /**
@@ -344,7 +344,7 @@ abstract class AbstractMigration implements MigrationInterface {
         }
 
         $this->expectColumn($table, $field, "Can't drop non-existent field '$field' from table '$table'");
-        $this->db->sql_query('ALTER TABLE ' . $this->safeTickQuoteName($table) . ' DROP ' . $this->safeTickQuoteName($field) . ';');
+        $this->db->sql_query('ALTER TABLE ' . static::safeTickQuoteName($table) . ' DROP ' . static::safeTickQuoteName($field) . ';');
     }
 
     /**
@@ -366,6 +366,51 @@ abstract class AbstractMigration implements MigrationInterface {
      */
     public function getErrorMsg() {
         return $this->errorMsg;
+    }
+
+    /**
+     * @param $table
+     * @param array $fieldsDefs
+     */
+    protected function createTable($table, array $fieldsDefs) {
+        if ($this->forgiving && $this->tableExists($table)) {
+            $this->log('Nothing to do.');
+            return;
+        }
+
+        $defs = implode(',', $fieldsDefs);
+        $this->db->sql_query('CREATE TABLE ' . static::safeTickQuoteName($table) . '( '. $defs .' );');
+    }
+
+    /**
+     * @param $table
+     * @param $key
+     */
+    protected function addPrimaryKey($table, $key) {
+        if ($this->forgiving && $this->hasKey($table, $key)) {
+            $this->log('Nothing to do.');
+            return;
+        }
+
+        $this->db->sql_query(
+            'ALTER TABLE ' . static::safeTickQuoteName($table)
+            . ' ADD PRIMARY KEY(' . static::safeTickQuoteName($key) . ')'
+        );
+    }
+
+    /**
+     * @param $table
+     * @param string $key
+     * @return bool
+     */
+    protected function hasKey($table, $key = 'PRIMARY') {
+        $res = $this->db->sql_query(
+            'SHOW INDEXES FROM ' . static::safeTickQuoteName($table) . ' WHERE key_name=' . "'$key'"
+        );
+        if ($row = $this->db->sql_fetch_row($res)) {
+            return true;
+        }
+        return false;
     }
 
 }
