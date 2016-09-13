@@ -2,6 +2,7 @@
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
+use TYPO3\CMS\Frontend\Page\PageRepository;
 
 /**
  * Class FrontendInstantiating
@@ -43,6 +44,16 @@ trait FrontendInstantiating {
             $GLOBALS['TSFE']->determineId();
             $GLOBALS['TSFE']->getConfigArray();
         }
+    }
+
+    /**
+     * @return PageRepository
+     */
+    protected static function initSysPage() {
+        /** @var PageRepository $out */
+        $out = GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
+        $out->init(false);
+        return $out;
     }
 
     /**
