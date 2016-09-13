@@ -11,9 +11,12 @@ trait ExtbaseInstantiable {
      * @return object
      */
     public static function get() {
-        $params = func_get_args();
-        array_unshift($params, static::class);
-        return call_user_func_array([static::objectManager(), 'get'], $params);
+        $args = func_get_args();
+        array_unshift($args, get_called_class());
+        return call_user_func_array(
+            array(static::objectManager(), 'get'),
+            $args
+        );
     }
 
     /**
