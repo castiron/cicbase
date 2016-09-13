@@ -24,6 +24,18 @@ config.tx_extbase{
 		TYPO3\CMS\Extbase\Validation\ValidatorResolver {
 			className = CIC\Cicbase\Validation\ValidatorResolver
 		}
+
+    # File proxying-related classes
+    # NOTE: this doesn't work in eID contexts
+    CIC\Cicbase\Proxy\File\Contracts\FileProxyDelivererInterface {
+      className = CIC\Cicbase\Proxy\File\FileProxyDeliverer
+    }
+    CIC\Cicbase\Proxy\File\Contracts\FileProxyDenierInterface {
+      className = CIC\Cicbase\Proxy\File\FileProxyDenier
+    }
+    CIC\Cicbase\Proxy\File\Contracts\FileProxyGatewayInterface {
+      className = CIC\Cicbase\Proxy\File\FileProxyGateway
+    }
 	}
 }
 
