@@ -18,7 +18,9 @@ trait FrontendInstantiating {
             );
         }
 
-        $GLOBALS['TSFE']->initFEuser();
+        if (!static::userSessionExists()) {
+            $GLOBALS['TSFE']->initFEuser();
+        }
 
         if (!is_object($GLOBALS['TSFE']->sys_page)) {
             $GLOBALS['TSFE']->sys_page = static::initSysPage();
@@ -41,6 +43,13 @@ trait FrontendInstantiating {
             $GLOBALS['TSFE']->determineId();
             $GLOBALS['TSFE']->getConfigArray();
         }
+    }
+
+    /**
+     * @return bool
+     */
+    protected static function userSessionExists() {
+        return $GLOBALS['TSFE'] && $GLOBALS['TSFE']->fe_user && $GLOBALS['TSFE']->fe_user->user['uid'];
     }
 }
 
