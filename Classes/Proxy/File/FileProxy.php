@@ -2,6 +2,7 @@
 
 use CIC\Cicbase\Traits\ExtbaseInstantiable;
 use CIC\Cicbase\Proxy\File\Contracts\FileProxyInterface;
+use CIC\Cicbase\Utility\HttpHeaderUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 /**
@@ -72,7 +73,13 @@ class FileProxy implements FileProxyInterface {
         }
 
         if ($this->fileGateway->isAccessible()) {
-            $this->fileDeliverer->respond();
+            $headers = array();
+            if ($this->fileGateway->isPublic()) {
+                $headers[] = 'Cache-Control: public';
+            } else {
+                $headers = array_merge($headers, HttpHeaderUtility::noCacheHeaders());
+            }
+            $this->fileDeliverer->respond($headers);
             die;
         }
 

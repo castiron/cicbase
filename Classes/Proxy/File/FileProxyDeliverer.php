@@ -2,6 +2,7 @@
 
 use CIC\Cicbase\Proxy\File\Contracts\FileProxyDelivererInterface;
 use CIC\Cicbase\Proxy\File\Traits\FileAssociable;
+use CIC\Cicbase\Utility\HttpHeaderUtility;
 
 /**
  * Class FileProxyDeliverer
@@ -12,22 +13,26 @@ class FileProxyDeliverer implements FileProxyDelivererInterface {
     use FileAssociable;
 
     /**
-     *
+     * @param array $headers
      */
-    public function respond() {
-        static::deliverFile($this->file);
+    public function respond($headers) {
+        static::deliverFile($this->file, $headers);
     }
 
     /**
-     * @param $path string
+     * @param $path
+     * @param array $headers
      */
-    protected static function deliverFile($path) {
+    protected static function deliverFile($path, $headers = array()) {
         if (!$path) {
             $GLOBALS['TSFE']->pageNotFoundAndExit();
         }
 
         $mimeType = static::getMimeType($path);
         header("Content-Type: $mimeType");
+        if (count($headers)) {
+            HttpHeaderUtility::sendHeaders($headers);
+        }
         readfile($path);
         exit;
     }

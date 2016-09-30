@@ -8,9 +8,18 @@
  */
 interface FileProxyGatewayInterface {
     /**
+     * Does the current session allow access to the file?
      * @return bool
      */
     public function isAccessible();
+
+    /**
+     * Sometimes you want to know whether a particular file is publicly available.
+     * For example, when you're deciding what HTTP caching headers to send.
+     *
+     * @return bool
+     */
+    public function isPublic();
 
     /**
      * Absolute path to a file
