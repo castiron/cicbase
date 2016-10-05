@@ -3,6 +3,7 @@
 use CIC\Cicbase\Proxy\File\Contracts\FileProxyDelivererInterface;
 use CIC\Cicbase\Proxy\File\Traits\FileAssociable;
 use CIC\Cicbase\Utility\HttpHeaderUtility;
+use CIC\Cicbase\Utility\MimeTypeUtility;
 
 /**
  * Class FileProxyDeliverer
@@ -24,28 +25,30 @@ class FileProxyDeliverer implements FileProxyDelivererInterface {
      * @param array $headers
      */
     protected static function deliverFile($path, $headers = array()) {
+        /**
+         * Thrash if no file
+         */
         if (!$path) {
             $GLOBALS['TSFE']->pageNotFoundAndExit();
         }
 
-        $mimeType = static::getMimeType($path);
+        /**
+         * Send MIME type
+         */
+        $mimeType = MimeTypeUtility::mimeFromPath($path);
         header("Content-Type: $mimeType");
+
+        /**
+         * Send the headers
+         */
         if (count($headers)) {
             HttpHeaderUtility::sendHeaders($headers);
         }
+
+        /**
+         * Send the file data
+         */
         readfile($path);
         exit;
     }
-
-    /**
-     * @param $path
-     * @return mixed
-     */
-    protected static function getMimeType($path) {
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $out = finfo_file($finfo, $path);
-        finfo_close($finfo);
-        return $out;
-    }
-
 }
