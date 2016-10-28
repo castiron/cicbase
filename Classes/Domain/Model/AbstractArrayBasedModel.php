@@ -13,6 +13,7 @@ class AbstractArrayBasedModel {
     /**
      * @param $name
      * @param $arguments
+     * @return mixed|void
      */
     public function __call($name, $arguments) {
         /**
