@@ -12,4 +12,11 @@ trait Database {
     protected static function db() {
         return $GLOBALS['TYPO3_DB'];
     }
+
+    /**
+     * @param $table
+     */
+    protected static function enableFields($table) {
+        return $GLOBALS['TSFE']->sys_page->enableFields($table);
+    }
 }
