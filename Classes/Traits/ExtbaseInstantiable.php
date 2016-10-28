@@ -8,7 +8,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 trait ExtbaseInstantiable {
     /**
-     * @return object
+     * @return self
      */
     public static function get() {
         $args = func_get_args();
