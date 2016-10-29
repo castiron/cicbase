@@ -476,7 +476,7 @@ class Arr {
 	 * @throws \Exception
 	 */
 	public static function commaListToArray($items, $msg = "Expected comma list or array") {
-		if (is_string($items)) {
+		if (is_string($items) || is_int($items)) {
 			$items = array_map('trim', explode(',', $items));
 		}
 		if (!is_array($items)) {
