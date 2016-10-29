@@ -488,6 +488,17 @@ class Arr {
 		return $items;
 	}
 
+    /**
+     * @param $items
+     * @param string $msg
+     * @return array
+     */
+    public static function commaListToIntArray($items, $msg = 'Expected comma list or array') {
+        return array_map(function ($el) {
+            return intval($el);
+        }, static::commaListToArray($items, $msg));
+    }
+
 	/**
 	 * Access an array element by index regardless of whether that
 	 * index has been defined.
