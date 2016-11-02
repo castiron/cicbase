@@ -6,7 +6,7 @@ namespace CIC\Cicbase\Domain\Model;
 *
 *  (c) 2010 Zach Davis <zach@castironcoding.com>, Cast Iron Coding, Inc
 *  			Lucas Thurston <lucas@castironcoding.com>, Cast Iron Coding, Inc
-*  			
+*
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -25,6 +25,7 @@ namespace CIC\Cicbase\Domain\Model;
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
+use CIC\Cicbase\Traits\ExtbaseInstantiable;
 
 /**
  * Address Model
@@ -35,13 +36,14 @@ namespace CIC\Cicbase\Domain\Model;
  */
 
 class Address {
-	
+    use ExtbaseInstantiable;
+
 	/**
 	 * address
 	 * @var string
 	 */
 	protected $address;
-	
+
 	/**
 	 * city
 	 * @var string
@@ -54,14 +56,23 @@ class Address {
 	 */
 	protected $state;
 
-	
 	/**
 	 * zip code
 	 * @var string
 	 */
 	protected $zip;
-	
-	/**
+
+    /**
+     * Address constructor
+     */
+    public function __construct($args) {
+        $this->address = $args['address'];
+        $this->city = $args['city'];
+        $this->state = $args['state'];
+        $this->zip = $args['zip'];
+    }
+
+    /**
 	 * Setter for address
 	 *
 	 * @param string $address public address
@@ -79,7 +90,7 @@ class Address {
 	public function getAddress() {
 		return $this->address;
 	}
-	
+
 	/**
 	 *  Returns the full address all on one line, primarily used for geocoding
 	 *
@@ -88,7 +99,7 @@ class Address {
 	public function getFullAddressOneLine() {
 		return implode(', ',explode(chr(10),$this->getFullAddress()));
 	}
-	
+
 	/**
 	 *  Returns the full address on multiple lines.
 	 */
@@ -103,11 +114,11 @@ class Address {
 		$out = implode(chr(10),$a);
 		return $out;
 	}
-	
+
 	/**
 	 * Setter for state
 	 *
-	 * @param string $state State 
+	 * @param string $state State
 	 * @return void
 	 */
 	public function setState($state) {
@@ -117,16 +128,16 @@ class Address {
 	/**
 	 * Getter for state
 	 *
-	 * @return string State 
+	 * @return string State
 	 */
 	public function getState() {
 		return $this->state;
 	}
-	
+
 	/**
 	 * Setter for city
 	 *
-	 * @param string $city City 
+	 * @param string $city City
 	 * @return void
 	 */
 	public function setCity($city) {
@@ -136,12 +147,12 @@ class Address {
 	/**
 	 * Getter for city
 	 *
-	 * @return string City 
+	 * @return string City
 	 */
 	public function getCity() {
 		return $this->city;
 	}
-	
+
 	/**
 	 * Setter for zip
 	 *
@@ -160,9 +171,9 @@ class Address {
 	public function getZip() {
 		return $this->zip;
 	}
-	
-	
-	
+
+
+
 }
 
 ?>
