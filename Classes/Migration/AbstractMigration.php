@@ -425,4 +425,37 @@ abstract class AbstractMigration implements MigrationInterface {
         return false;
     }
 
+    /**
+     * @param $cacheKey
+     */
+    protected function createCacheTables($cacheKey) {
+        $this->createTable("cf_${cacheKey}", array(
+            "id int(11) NOT NULL auto_increment",
+            "identifier varchar(128) NOT NULL DEFAULT ''",
+            "crdate int(11) unsigned NOT NULL DEFAULT '0'",
+            "content mediumtext",
+            "lifetime int(11) unsigned NOT NULL DEFAULT '0'",
+            "expires int(11) unsigned NOT NULL DEFAULT '0'",
+            "PRIMARY KEY (id)",
+            "KEY cache_id (`identifier`)",
+        ));
+
+        $this->createTable("cf_${cacheKey}_tags", array(
+            "id int(11) NOT NULL auto_increment",
+            "identifier varchar(128) NOT NULL DEFAULT ''",
+            "tag varchar(128) NOT NULL DEFAULT ''",
+            "PRIMARY KEY (id)",
+            "KEY cache_id (`identifier`)",
+            "KEY cache_tag (`tag`)",
+        ));
+    }
+
+    /**
+     * @param $cacheKey
+     */
+    protected function removeCacheTables($cacheKey) {
+        $this->dropTable("cf_${cacheKey}");
+        $this->dropTable("cf_${cacheKey}_tags");
+    }
+
 }
