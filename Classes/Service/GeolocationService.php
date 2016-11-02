@@ -25,6 +25,7 @@ namespace CIC\Cicbase\Service;
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
+use CIC\Cicbase\Traits\ExtbaseInstantiable;
 
 /**
  * Controller for the Project object
@@ -35,14 +36,23 @@ namespace CIC\Cicbase\Service;
  */
 
 class GeolocationService {
+    use ExtbaseInstantiable;
 
 	protected $apiKey = false;
 	protected $cache = false;
+    protected $cacheLifetime = 3600;
 
-
-	public function __construct($apiKey = false) {
+    /**
+     * GeolocationService constructor.
+     * @param bool $apiKey
+     * @param $cacheLifetetime
+     */
+	public function __construct($apiKey = false, $cacheLifetetime) {
 		$this->setApiKey($apiKey);
 		$this->cache = $this->getCache();
+        if ($cacheLifetetime) {
+            $this->cacheLifetime = $cacheLifetetime;
+        }
 	}
 
 	protected function setApiKey($apiKey) {
@@ -59,7 +69,7 @@ class GeolocationService {
 	 * @param \CIC\Cicbase\Domain\Model\Address $address The address to geocode
 	 * @return \CIC\Cicbase\Domain\Model\LatLng
 	 */
-	public function getLatLng($address) {
+	public function getLatLng($address, $cacheFailures = false) {
 
 		// get the address string
 		$addressString = $address->getFullAddressOneLine();
@@ -68,7 +78,7 @@ class GeolocationService {
 		$latLng = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('CIC\Cicbase\Domain\Model\LatLng');
 
 		// do the query
-		$res = $this->geocode($addressString);
+		$res = $this->geocode($addressString, $cacheFailures);
 
 		$latLng->setLat($res->location->lat);
 		$latLng->setLng($res->location->lng);
@@ -91,7 +101,7 @@ class GeolocationService {
 	 * @param string The address to geocode in string format
 	 * @return array The results of the Google geocoding API query
 	 */
-	protected function geocode($address) {
+	protected function geocode($address, $cacheFailures = false) {
 		$urlBase = 'http://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=';
 		$addressParamValue = urlencode($address);
 		$requestUrl = $urlBase.$addressParamValue;
@@ -110,11 +120,9 @@ class GeolocationService {
 				}
 			}
 
-			if($out->location->lat && $out->location->lng) $this->cache->set($cacheKey,serialize($out),array(),3600);
+			if($cacheFailures || ($out->location->lat && $out->location->lng)) $this->cache->set($cacheKey, serialize($out), array(), $this->cacheLifetime);
 		}
 		return $out;
 	}
 
 }
-
-?>
