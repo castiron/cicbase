@@ -74,6 +74,13 @@ class IncludeJavascriptViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstr
 		$uri = 'EXT:' . GeneralUtility::camelCaseToLowerCaseUnderscored($this->arguments['extensionName']) . $this->getResourcesPathAndFilename($file);
 		$uri = GeneralUtility::getFileAbsFileName($uri);
 		$uri = substr($uri, strlen(PATH_site));
+        /**
+         * No URI -- maybe this is an external URL? In any case, bail.
+         */
+        if (!$uri) {
+            $this->handleExternalUrl($file);
+            return;
+        }
 		switch ($this->arguments['where']) {
 			case 'footer':
 				$this->pageRenderer->addJsFooterFile(
@@ -109,8 +116,50 @@ class IncludeJavascriptViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstr
 				);
 			break;
 		}
-
 	}
+
+    /**
+     * @param $url
+     */
+    protected function handleExternalUrl($url) {
+        if (!GeneralUtility::isValidUrl($url)) {
+            return;
+        }
+        $scriptTag = $this->urlToScriptTag($url);
+        switch ($this->arguments['where']) {
+            case 'footer':
+            case 'footerLibs':
+                $this->pageRenderer->addFooterData($scriptTag);
+                break;
+
+            default:
+                $this->pageRenderer->addHeaderData($scriptTag);
+                break;
+        }
+    }
+
+    /**
+     * @param $url
+     * @return string
+     */
+    protected function urlToScriptTag($url) {
+        /**
+         * Bail if not super duper
+         */
+        if (!$url) {
+            return '';
+        }
+
+        /**
+         * Bail if not magic
+         */
+        if (!GeneralUtility::isValidUrl($url)) {
+            return '';
+        }
+
+        return "<script type=\"text/javascript\" src=\"$url\"></script>";
+
+    }
 
 	protected function getResourcesPathAndFilename($file) {
 		if(substr($file,0,1) == '/') {
