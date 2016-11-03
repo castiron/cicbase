@@ -49,6 +49,14 @@ trait FrontendInstantiating {
     /**
      * @return PageRepository
      */
+    public static function sysPage() {
+        static::initializeFrontend();
+        return $GLOBALS['TSFE']->sys_page;
+    }
+
+    /**
+     * @return PageRepository
+     */
     protected static function initSysPage() {
         /** @var PageRepository $out */
         $out = GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
