@@ -47,7 +47,7 @@ class GeolocationService {
      * @param bool $apiKey
      * @param $cacheLifetetime
      */
-	public function __construct($apiKey = false, $cacheLifetetime) {
+	public function __construct($apiKey = false, $cacheLifetetime = null) {
 		$this->setApiKey($apiKey);
 		$this->cache = $this->getCache();
         if ($cacheLifetetime) {

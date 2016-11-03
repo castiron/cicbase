@@ -6,7 +6,7 @@ namespace CIC\Cicbase\Domain\Model;
 *
 *  (c) 2010 Zach Davis <zach@castironcoding.com>, Cast Iron Coding, Inc
 *  			Lucas Thurston <lucas@castironcoding.com>, Cast Iron Coding, Inc
-*  			
+*
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -25,6 +25,7 @@ namespace CIC\Cicbase\Domain\Model;
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
+use CIC\Cicbase\Traits\ExtbaseInstantiable;
 
 /**
  * Address Model
@@ -35,20 +36,21 @@ namespace CIC\Cicbase\Domain\Model;
  */
 
 class LatLng extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
-	
+    use ExtbaseInstantiable;
+
 	/**
 	 * latitude
 	 * @var string
 	 */
 	protected $lat;
-	
+
 	/**
 	 * longitude
 	 * @var string
 	 */
 	protected $lng;
 
-	
+
 	/**
 	 * Setter for lat
 	 *
@@ -71,8 +73,8 @@ class LatLng extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
 	/**
 	 * Getter for lat
-	 * 
-	 * @return string Lat 
+	 *
+	 * @return string Lat
 	 */
 	public function getLat() {
 		return $this->lat;
@@ -80,15 +82,14 @@ class LatLng extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
 	/**
 	 * Getter for lng
-	 * 
-	 * @return string lng 
+	 *
+	 * @return string lng
 	 */
 	public function getlng() {
 		return $this->lng;
 	}
 
-	
-	
+
+
 }
 
-?>
