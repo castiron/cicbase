@@ -6,6 +6,7 @@ use TYPO3\CMS\Core\Database\DatabaseConnection;
  * @package CIC\Cicbase\Traits
  */
 trait Database {
+    use FrontendInstantiating;
     /**
      * @return DatabaseConnection
      */
@@ -17,6 +18,7 @@ trait Database {
      * @param $table
      */
     protected static function enableFields($table) {
+        static::initializeFrontend();
         return $GLOBALS['TSFE']->sys_page->enableFields($table);
     }
 
