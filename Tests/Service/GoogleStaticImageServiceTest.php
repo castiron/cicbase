@@ -2,6 +2,7 @@
 
 use CIC\Cicbase\Service\GoogleStaticImageService;
 use TYPO3\CMS\Core\Tests\UnitTestCase;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class GoogleStaticImageServiceTest
@@ -46,16 +47,27 @@ class GoogleStaticImageServiceTest extends UnitTestCase {
      *
      */
     public function tearDown() {
-        rmdir(static::storageFolderPath());
+        GeneralUtility::rmdir(static::storageFolderPath(), true);
     }
 
     /**
      *
      */
-    public function testItCachesAnImage() {
-        $url = $this->staticImageService->fetchImage(array(
+    public function testItReturnsAUri() {
+        $uri = $this->staticImageService->fetchImage(array(
             'size' => '100x100',
         ));
-        $this->assertEquals($url, 'https://maps.googleapis.com/maps/api/staticmap?key=AIzaSyACbXmjntXUE_gpvloSbu4u1FIw2p09Ees&size=100x100');
+        $this->assertStringStartsWith(static::TEST_STORAGE_FOLDER . '/map_', $uri);
+        $this->assertStringEndsWith('.png', $uri);
+    }
+
+    /**
+     *
+     */
+    public function testItCreatesAFile() {
+        $uri = $this->staticImageService->fetchImage(array(
+            'size' => '100x100',
+        ));
+        $this->assertFileExists(PATH_site . DIRECTORY_SEPARATOR . $uri);
     }
 }
