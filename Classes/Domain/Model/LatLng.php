@@ -54,7 +54,7 @@ class LatLng extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
      * LatLng constructor.
      * @param $args
      */
-    public function __construct($args) {
+    public function __construct($args = array()) {
         if ($args['lat']) {
             $this->setLat($args['lat']);
         }

@@ -82,7 +82,9 @@ class StaticImage {
      */
     protected function filterArgs($args) {
         $keys = array_filter(array_keys($args), function($name) {
-            // NB: for some reason passing a $name of 0 into "in_array()" gives you true ...
+            /**
+             * NB: for some reason passing a $name of 0 into "in_array()" gives you true ...
+             */
             return !is_int($name) && in_array($name, $this->allowedArgs);
         });
         return array_intersect_key($args, array_flip($keys));
