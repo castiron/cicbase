@@ -43,7 +43,7 @@ class GeolocationQueryUtility {
     /**
      * @param string $tableName
      * @param string $select
-     * @param int|float $distance
+     * @param int|float|string $distance
      * @param LatLng $fromLatLng
      * @param string $addWhere
      * @param string $unitType
