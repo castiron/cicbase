@@ -1,4 +1,5 @@
 <?php namespace CIC\Cicbase\Traits;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 
 /**
@@ -7,6 +8,7 @@ use TYPO3\CMS\Core\Database\DatabaseConnection;
  */
 trait Database {
     use FrontendInstantiating;
+
     /**
      * @return DatabaseConnection
      */
@@ -16,10 +18,21 @@ trait Database {
 
     /**
      * @param $table
+     * @return string
      */
     protected static function enableFields($table) {
+        if (static::isBackend()) {
+            return BackendUtility::BEenableFields($table);
+        }
         static::initializeFrontend();
         return $GLOBALS['TSFE']->sys_page->enableFields($table);
+    }
+
+    /**
+     * @return bool
+     */
+    protected static function isBackend() {
+        return TYPO3_MODE === 'BE';
     }
 
     /**
