@@ -40,25 +40,38 @@ class LatLng extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
 	/**
 	 * latitude
-	 * @var string
+	 * @var float
 	 */
-	protected $lat;
+	protected $lat = 0;
 
 	/**
 	 * longitude
-	 * @var string
+	 * @var float
 	 */
-	protected $lng;
+	protected $lng = 0;
 
+    /**
+     * LatLng constructor.
+     * @param $args
+     */
+    public function __construct($args) {
+        if ($args['lat']) {
+            $this->setLat($args['lat']);
+        }
 
-	/**
+        if ($args['lng']) {
+            $this->setLng($args['lng']);
+        }
+    }
+
+    /**
 	 * Setter for lat
 	 *
 	 * @param string $lat Latitude
 	 * @return void
 	 */
 	public function setLat($lat) {
-		$this->lat = $lat;
+		$this->lat = floatval($lat);
 	}
 
 	/**
@@ -68,7 +81,7 @@ class LatLng extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	 * @return void
 	 */
 	public function setlng($lng) {
-		$this->lng = $lng;
+		$this->lng = floatval($lng);
 	}
 
 	/**
@@ -89,7 +102,19 @@ class LatLng extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 		return $this->lng;
 	}
 
+    /**
+     * @return string
+     */
+	public function getStringTuple() {
+        return implode(',', $this->getTuple());
+    }
 
+    /**
+     * @return array
+     */
+    public function getTuple() {
+        return array('lat' => $this->getLat(), 'lng' => $this->getlng());
+    }
 
 }
 
