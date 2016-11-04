@@ -50,7 +50,6 @@ class StaticImageMarker {
                 throw new Exception('"locations" parameter must be an array of LatLang objects');
             }
         }
-
     }
 
     /**
