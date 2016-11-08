@@ -22,6 +22,7 @@ namespace CIC\Cicbase\Persistence;
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * CIC\Cicbase\Persistence\PaginationRepository
@@ -182,29 +183,31 @@ class Repository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 	 */
 	protected function orderResultsByUids($iterable,$uidArray) {
 		/**
-		 * We have a problem here, because the workspace overlay may have already
+		 * We have a problem in older TYPO3 versions, because the workspace overlay may have already
 		 * been done (by initial repo fetch), so the $uidArray provided for sorting
 		 * contains only the LIVE uids, while the uids in $iterable correspond
 		 * to the Workspace versions :/
 		 */
-		if(is_object($GLOBALS['TSFE']) && $GLOBALS['TSFE']->sys_page->versioningWorkspaceId > 0) {
-			$select = 'x.uid,x.t3ver_oid,GROUP_CONCAT(y.uid) as versions';
-			$tableName = $iterable->getQuery()->getSource()->getSelectorName();
-			$uidList = implode(',',$GLOBALS['TYPO3_DB']->fullQuoteArray($uidArray,$tableName));
+        if (!GeneralUtility::compat_version('7.0.0')) {
+            if(is_object($GLOBALS['TSFE']) && $GLOBALS['TSFE']->sys_page->versioningWorkspaceId > 0) {
+                $select = 'x.uid,x.t3ver_oid,GROUP_CONCAT(y.uid) as versions';
+                $tableName = $iterable->getQuery()->getSource()->getSelectorName();
+                $uidList = implode(',',$GLOBALS['TYPO3_DB']->fullQuoteArray($uidArray,$tableName));
 
-			$table =  $tableName . ' x LEFT JOIN ' . $tableName . ' y ON x.uid = y.t3ver_oid AND y.t3ver_wsid = '.intval($GLOBALS['TSFE']->sys_page->versioningWorkspaceId) . ' AND y.deleted=0 AND y.hidden=0';
-			$where = 'x.uid IN ( ' . $uidList . ' ) AND x.deleted=0 AND x.hidden=0' ;
-			$groupBy = 'x.uid';
-			$orderBy = 'FIND_IN_SET(x.uid,"'.implode(',',$uidArray).'")';
-			$limit = '';
+                $table =  $tableName . ' x LEFT JOIN ' . $tableName . ' y ON x.uid = y.t3ver_oid AND y.t3ver_wsid = '.intval($GLOBALS['TSFE']->sys_page->versioningWorkspaceId) . ' AND y.deleted=0 AND y.hidden=0';
+                $where = 'x.uid IN ( ' . $uidList . ' ) AND x.deleted=0 AND x.hidden=0' ;
+                $groupBy = 'x.uid';
+                $orderBy = 'FIND_IN_SET(x.uid,"'.implode(',',$uidArray).'")';
+                $limit = '';
 
-			$qres = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select,$table,$where,$groupBy,$orderBy,$limit);
-			$uids = array();
-			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($qres)) {
-				$uids[] = $row['versions'] ? array_shift(\TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',',$row['versions'])) : $row['uid'];
-			}
-			$uidArray = $uids;
-		}
+                $qres = $GLOBALS['TYPO3_DB']->exec_SELECTquery($select,$table,$where,$groupBy,$orderBy,$limit);
+                $uids = array();
+                while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($qres)) {
+                    $uids[] = $row['versions'] ? array_shift(\TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',',$row['versions'])) : $row['uid'];
+                }
+                $uidArray = $uids;
+            }
+        }
 
 		$objectStorage = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Persistence\ObjectStorage');
 		foreach($uidArray as $uid) {
@@ -220,4 +223,3 @@ class Repository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 	}
 
 }
-?>
