@@ -22,6 +22,14 @@ class Date {
 		return (int) date_format(date_create("1 $monthString 2000"), $format);
 	}
 
+    /**
+     * @param \DateTime $date
+     * @return bool
+     */
+    public static function isMidnight(\DateTime $date) {
+        return $date->format('Hi') === '0000';
+    }
+
 	/**
 	 * @param integer $monthInteger
 	 * @param string $format
