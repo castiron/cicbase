@@ -110,8 +110,12 @@ class GoogleStaticImageService {
          * Get the cache
          */
         $cache = $this->getCache();
+
+        /**
+         * Check for a currently cached one
+         */
         $existing = $cache->get($key);
-        if ($existing && file_exists(PATH_site . $existing)) {
+        if ($existing) { // NB: checking for file_exists here hurts runtime in a big way
             return $existing;
         }
 
@@ -123,12 +127,13 @@ class GoogleStaticImageService {
             /**
              * Set the URL in the cache
              */
-            $cache->set($key, $newFile);
+            $uri = static::absolutePathToRelativePath($newFile);
+            $cache->set($key, $uri);
 
             /**
              * Return the path to the file
              */
-            return static::absolutePathToRelativePath($newFile);
+            return $uri;
         }
 
         return '';
