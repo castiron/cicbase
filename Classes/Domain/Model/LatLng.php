@@ -26,6 +26,7 @@ namespace CIC\Cicbase\Domain\Model;
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 use CIC\Cicbase\Traits\ExtbaseInstantiable;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Address Model
@@ -52,15 +53,21 @@ class LatLng extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
     /**
      * LatLng constructor.
-     * @param $args
+     * @param array|string $args
      */
     public function __construct($args = array()) {
-        if ($args['lat']) {
-            $this->setLat($args['lat']);
-        }
+        if (is_string($args)) {
+            $coords = GeneralUtility::trimExplode(',', $args);
+            $this->setLat($coords[0]);
+            $this->setlng($coords[1]);
+        } else {
+            if ($args['lat']) {
+                $this->setLat($args['lat']);
+            }
 
-        if ($args['lng']) {
-            $this->setLng($args['lng']);
+            if ($args['lng']) {
+                $this->setLng($args['lng']);
+            }
         }
     }
 
@@ -116,5 +123,11 @@ class LatLng extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
         return array('lat' => $this->getLat(), 'lng' => $this->getlng());
     }
 
-}
+    /**
+     * @return array
+     */
+    public function getCoordinates() {
+        return array($this->getLat(), $this->getlng());
+    }
 
+}
