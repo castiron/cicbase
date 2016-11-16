@@ -87,7 +87,7 @@ class LatLng extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	 * @param string $lng longitude
 	 * @return void
 	 */
-	public function setlng($lng) {
+	public function setLng($lng) {
 		$this->lng = floatval($lng);
 	}
 
