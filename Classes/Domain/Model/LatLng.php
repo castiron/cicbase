@@ -91,6 +91,13 @@ class LatLng extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 		$this->lng = floatval($lng);
 	}
 
+    /**
+     * @return bool
+     */
+	public function isValid() {
+        return $this->getLat() && $this->getlng();
+    }
+
 	/**
 	 * Getter for lat
 	 *
