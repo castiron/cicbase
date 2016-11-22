@@ -78,4 +78,38 @@ trait Database {
         }
         return implode(',', $out);
     }
+
+    /**
+     * @param boolean|\mysqli_result|object $res
+     * @return array
+     */
+    protected static function fetchRows($res) {
+        $out = array();
+        while ($row = static::db()->sql_fetch_assoc($res)) {
+            $out[] = $row;
+        }
+        return $out;
+    }
+
+    /**
+     * Proxy to \TYPO3\CMS\Core\Database\DatabaseConnection::exec_SELECTquery that also fetches the results into and
+     * returns an array
+     * @param $select_fields
+     * @param $from_table
+     * @param $where_clause
+     * @param string $groupBy
+     * @param string $orderBy
+     * @param string $limit
+     * @return array
+     */
+    protected function selectArray($select_fields, $from_table, $where_clause, $groupBy = '', $orderBy = '', $limit = '') {
+        return static::fetchRows(static::db()->exec_SELECTquery(
+            $select_fields,
+            $from_table,
+            $where_clause,
+            $groupBy,
+            $orderBy,
+            $limit
+        ));
+    }
 }
