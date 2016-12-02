@@ -592,7 +592,7 @@ class Arr {
              * Use the serialized array for a key, and the target field as a value
              */
             $serial = serialize($item);
-            if (!$smashed[$serial]) {
+            if (!$smashed[$serial] && $item[$key]) {
                 $smashed[$serial] = $item[$key];
             }
         }
