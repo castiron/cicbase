@@ -30,6 +30,14 @@ class Date {
         return $date->format('Hi') === '0000';
     }
 
+    /**
+     * @param \DateTime $date
+     * @return bool
+     */
+    public static function isInThePast(\DateTime $date) {
+        return $date->format('U') < time();
+    }
+
 	/**
 	 * @param integer $monthInteger
 	 * @param string $format
