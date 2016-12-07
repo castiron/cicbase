@@ -25,6 +25,17 @@ Class HtmlUtilityTest extends UnitTestCase {
     public function testRemoveAttributesHandlesEmptyInputs() {
         $markup = '';
         $this->assertEquals($markup, HtmlUtility::removeAttributes($markup));
+
+        $markup = null;
+        $this->assertEquals('', HtmlUtility::removeTags($markup));
+    }
+
+    public function testRemoveTagsHandlesEmptyInputs() {
+        $markup = '';
+        $this->assertEquals($markup, HtmlUtility::removeTags($markup));
+
+        $markup = null;
+        $this->assertEquals('', HtmlUtility::removeTags($markup));
     }
 
     /**
