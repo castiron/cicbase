@@ -19,6 +19,13 @@ class AbstractArrayBasedModel {
     protected $attrWritable = array();
 
     /**
+     * @return mixed
+     */
+    public function getRec() {
+        return $this->rec;
+    }
+
+    /**
      * @param $name
      * @param $arguments
      * @return mixed|void
