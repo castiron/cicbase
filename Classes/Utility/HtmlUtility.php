@@ -45,8 +45,22 @@ class HtmlUtility {
      * @throws Exception
      */
     public static function removeTags($subject, $tags = array()) {
+        if (!$subject) {
+            return '';
+        }
+
+        /**
+         * Normalize tags
+         */
         if (is_string($tags)) {
             $tags = GeneralUtility::trimExplode(',', $tags);
+        }
+
+        /**
+         * Normalize subject
+         */
+        if (is_string($subject)) {
+            $subject = static::getDomDocumentFromString($subject);
         }
 
         if (!count($tags)) {
@@ -79,10 +93,9 @@ class HtmlUtility {
      * @return bool
      */
     public static function hasTag($subject, $tag = '') {
-        if (!$tag) {
-            return false;
-        }
-        return $subject->getElementsByTagName($tag)->length ? true : false;
+        return $tag
+            && is_object($subject)
+            && $subject->getElementsByTagName($tag)->length;
     }
 
     /**
