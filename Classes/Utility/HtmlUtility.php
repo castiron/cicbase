@@ -144,7 +144,9 @@ class HtmlUtility {
      */
     protected static function getDomDocumentFromString($str) {
         $document = new \DOMDocument();
-        $document->loadHTML($str);
+        if($str) {
+            $document->loadHTML($str);
+        }
         return $document;
     }
 
