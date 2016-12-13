@@ -65,10 +65,17 @@ class FileProxy implements FileProxyInterface {
     }
 
     /**
+     * @return bool
+     */
+    protected function fileIsDownloadable() {
+        return file_exists($this->file) && is_file($this->file);
+    }
+
+    /**
      * Hanldle the request by delivering the file or denying access
      */
     public function proxy() {
-        if (!file_exists($this->file)) {
+        if (!$this->fileIsDownloadable()) {
             static::getTsfe()->pageNotFoundAndExit('File not found');
         }
 
