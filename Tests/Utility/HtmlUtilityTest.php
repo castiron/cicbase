@@ -9,7 +9,7 @@ use TYPO3\CMS\Core\Tests\UnitTestCase;
  */
 Class HtmlUtilityTest extends UnitTestCase {
     /**
-     *
+     * @test
      */
     public function testItRemovesAttributes() {
         $markup = '<div style="text-align: left;"></div>';
@@ -20,7 +20,64 @@ Class HtmlUtilityTest extends UnitTestCase {
     }
 
     /**
-     *
+     * @test
+     */
+    public function testItRemovesParticularAttributes() {
+        $markup = '<div style="text-align: left;"><span style="color: black;">OK WHATEVER</span></div>';
+        $this->assertEquals('<div><span>OK WHATEVER</span></div>', HtmlUtility::removeAttributes($markup, ['style']));
+
+        $markup = '<div style="text-align: left;"><span class="something">OK WHATEVER</span></div>';
+        $this->assertEquals('<div><span class="something">OK WHATEVER</span></div>', HtmlUtility::removeAttributes($markup, ['style']));
+
+        $markup = '<div style="text-align: left;"><div data-sandwich="eaten"><span class="something">OK WHATEVER</span></div></div>';
+        $this->assertEquals('<div style="text-align: left;"><div><span class="something">OK WHATEVER</span></div></div>', HtmlUtility::removeAttributes($markup, ['data-sandwich']));
+    }
+
+    /**
+     * @test
+     */
+    public function testItRemovesMultipleSpecificAttributes() {
+        $markup = '<div style="text-align: left;"><div data-sandwich="eaten"><span class="something">OK WHATEVER</span></div></div>';
+        $this->assertEquals('<div style="text-align: left;"><div><span>OK WHATEVER</span></div></div>', HtmlUtility::removeAttributes($markup, ['data-sandwich', 'class']));
+    }
+
+    /**
+     * @test
+     */
+    public function testItRemovesSpecificValuelessAttribute() {
+        $markup = '<div style="text-align: left;"><div data-sandwich><span class="something">OK WHATEVER</span></div></div>';
+        $this->assertEquals('<div style="text-align: left;"><div><span class="something">OK WHATEVER</span></div></div>', HtmlUtility::removeAttributes($markup, ['data-sandwich']));
+    }
+
+    /**
+     * @test
+     */
+    public function testItToleratesNotFoundAttributes() {
+        $markup = '<div style="text-align: left;"><div data-sandwich="eaten"><span class="something">OK WHATEVER</span></div></div>';
+        $this->assertEquals('<div style="text-align: left;"><div><span>OK WHATEVER</span></div></div>', HtmlUtility::removeAttributes($markup, ['data-sandwich', 'class', 'some-unused-attribute']));
+    }
+
+    /**
+     * @test
+     */
+    public function testItDoesNotRemoveWhitelistedAttributes() {
+        $markup = '<div style="text-align: left;"><div data-sandwich="eaten"><span class="something">OK WHATEVER</span></div></div>';
+        $this->assertEquals('<div style="text-align: left;"><div><span>OK WHATEVER</span></div></div>', HtmlUtility::removeAttributes($markup, [], ['style']));
+
+        $markup = '<div style="text-align: left;"><div data-sandwich="eaten"><span class="something">OK WHATEVER</span></div></div>';
+        $this->assertEquals('<div><div data-sandwich="eaten"><span>OK WHATEVER</span></div></div>', HtmlUtility::removeAttributes($markup, [], ['data-sandwich']));
+    }
+
+    /**
+     * @test
+     */
+    public function testAttributesOverrideWhitelistedAttributes() {
+        $markup = '<div style="text-align: left;"><div data-sandwich="eaten"><span class="something">OK WHATEVER</span></div></div>';
+        $this->assertEquals('<div><div data-sandwich="eaten"><span class="something">OK WHATEVER</span></div></div>', HtmlUtility::removeAttributes($markup, ['style'], ['style']));
+    }
+
+    /**
+     * @test
      */
     public function testRemoveAttributesHandlesEmptyInputs() {
         $markup = '';
@@ -110,7 +167,7 @@ Class HtmlUtilityTest extends UnitTestCase {
     }
 
     /**
-     *
+     * @test
      */
     public function testItLeavesContentWhenRemovingOutermostTag() {
         $samples = [

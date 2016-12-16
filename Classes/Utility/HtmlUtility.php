@@ -12,18 +12,19 @@ class HtmlUtility {
     /**
      * @param \DOMDocument|string $subject
      * @param array $attributes
+     * @param array $whitelist NB: $attributes takes precedence over this
      * @return string
      */
-    public static function removeAttributes($subject, array $attributes = array()) {
+    public static function removeAttributes($subject, array $attributes = array(), $whitelist = array()) {
         /**
          * Update the document by applying a call to every element on it
          */
-        $updatedDocument = static::onAllElements($subject, function (\DOMElement $element) use ($attributes) {
+        $updatedDocument = static::onAllElements($subject, function (\DOMElement $element) use ($attributes, $whitelist) {
             /**
              * If an empty array is passed, remove every attribute
              */
             if (!count($attributes)) {
-                static::removeAllAttributes($element);
+                static::removeAllAttributes($element, $whitelist);
                 return;
             }
 
@@ -128,12 +129,17 @@ class HtmlUtility {
 
     /**
      * @param \DOMElement $element
+     * @param array $whitelist
      * @return \DOMElement
      */
-    protected function removeAllAttributes(\DOMElement $element) {
+    protected function removeAllAttributes(\DOMElement $element, array $whitelist = array()) {
         $attributes = $element->attributes;
-        while ($attributes->length) {
-            $element->removeAttribute($attributes->item(0)->name);
+        for ($i = $attributes->length; $i > 0; $i--) {
+            $name = $attributes->item(0)->name;
+            if (in_array($name, $whitelist)) {
+                continue;
+            }
+            $element->removeAttribute($name);
         }
         return $element;
     }
