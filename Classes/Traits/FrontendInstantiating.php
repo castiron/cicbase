@@ -1,5 +1,6 @@
 <?php namespace CIC\Cicbase\Traits;
 
+use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use TYPO3\CMS\Frontend\Page\PageRepository;
@@ -15,13 +16,19 @@ trait FrontendInstantiating {
             $GLOBALS['TSFE'] = GeneralUtility::makeInstance(
                 'TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController',
                 $TYPO3_CONF_VARS,
-                GeneralUtility::_GP('id')
+                GeneralUtility::_GP('id'),
+                0
             );
         }
 
         if (!static::userSessionExists()) {
             $GLOBALS['TSFE']->initFEuser();
         }
+
+        /**
+         * Load the TCA over here
+         */
+        static::getBootstrap()->loadCachedTca();
 
         if (!is_object($GLOBALS['TSFE']->sys_page)) {
             $GLOBALS['TSFE']->sys_page = static::initSysPage();
@@ -44,6 +51,13 @@ trait FrontendInstantiating {
             $GLOBALS['TSFE']->determineId();
             $GLOBALS['TSFE']->getConfigArray();
         }
+    }
+
+    /**
+     * @return Bootstrap
+     */
+    protected static function getBootstrap() {
+        return Bootstrap::getInstance();
     }
 
     /**
