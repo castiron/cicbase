@@ -352,7 +352,7 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 		$configuration = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, $ext, $plugin);
 		if ($configuration['storagePids'][$this->objectType]) {
 			$this->internalPid = $configuration['storagePids'][$this->objectType];
-			$this->defaultQuerySettings = $this->objectManager->create('TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings');
+			$this->defaultQuerySettings = $this->objectManager->get('TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings');
 			$this->defaultQuerySettings->setStoragePageIds(explode(',', $configuration['storagePids'][$this->objectType]));
 		}
 	}
