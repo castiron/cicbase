@@ -69,9 +69,9 @@ class Task extends \TYPO3\CMS\Scheduler\Task\AbstractTask {
 		list ($extensionName, $controllerName, $commandName) = explode(':', $this->commandIdentifier);
 		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
 		$this->injectObjectManager($objectManager);
-		$request = $this->objectManager->create('TYPO3\CMS\Extbase\Mvc\Cli\Request');
+		$request = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Cli\Request');
 		$dispatcher = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Dispatcher');
-		$response = $this->objectManager->create('TYPO3\CMS\Extbase\Mvc\Cli\Response');
+		$response = $this->objectManager->get('TYPO3\CMS\Extbase\Mvc\Cli\Response');
 		try {
 			$upperCamelCaseExtensionName = \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($extensionName);
 			$upperCamelCaseControllerName = \TYPO3\CMS\Core\Utility\GeneralUtility::underscoredToUpperCamelCase($controllerName);

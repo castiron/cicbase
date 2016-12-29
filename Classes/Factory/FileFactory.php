@@ -238,7 +238,7 @@ class FileFactory implements \TYPO3\CMS\Core\SingletonInterface {
 		} else {
 			// ok to make a file object
 			$pathInfo = pathinfo($uploadedFileData['tmp_name']);
-			$fileObject = $this->objectManager->create('CIC\Cicbase\Domain\Model\File');
+			$fileObject = $this->objectManager->get('CIC\Cicbase\Domain\Model\File');
 			$fileObject->setTitle($sourceData['title']);
 
 			// TODO: Set a default title if it's not provided.
