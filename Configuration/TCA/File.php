@@ -20,6 +20,7 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 			'label' => 'LLL:EXT:lang/locallang_general.xml:LGL.language',
 			'config' => array(
 				'type' => 'select',
+                'renderType' => 'selectSingle',
 				'foreign_table' => 'sys_language',
 				'foreign_table_where' => 'ORDER BY sys_language.title',
 				'items' => array(
@@ -34,6 +35,7 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 			'label' => 'LLL:EXT:lang/locallang_general.xml:LGL.l18n_parent',
 			'config' => array(
 				'type' => 'select',
+                'renderType' => 'selectSingle',
 				'items' => array(
 					array('', 0),
 				),
@@ -171,6 +173,7 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 			'label' => 'Creator',
 			'config' => array(
 				'type' => 'select',
+                'renderType' => 'selectSingle',
 				'foreign_table' => 'fe_users',
 				'size' => 10,
 				'autoSizeMax' => 30,
