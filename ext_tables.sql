@@ -29,7 +29,7 @@ CREATE TABLE tx_cicbase_zipcodes (
 
 
 CREATE TABLE tx_cicbase_migrations (
-  version int(11) unsigned NOT NULL DEFAULT '0',
+  version varchar(11) DEFAULT '' NOT NULL,
   ext_key varchar(255) DEFAULT '' NOT NULL,
   PRIMARY KEY (version)
 );
