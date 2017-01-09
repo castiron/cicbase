@@ -49,7 +49,7 @@ class AbstractArrayBasedModel {
          * Does the method start with 'set'?
          */
         if (strlen($name) > 3 && strpos($name, 'set') === 0) {
-            $this->__setField($this->__methodToField($name), func_get_arg(1));
+            $this->__setField($this->__methodToField($name), $arguments[0]);
         }
     }
 
