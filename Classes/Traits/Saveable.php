@@ -10,6 +10,7 @@ trait Saveable {
     public function save() {
         $query = static::UPSERTquery(static::$table, $this->saveFields());
         static::db()->sql_query($query);
+        return $this;
     }
 
     /**
