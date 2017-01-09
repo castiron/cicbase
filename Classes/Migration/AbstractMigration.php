@@ -1,5 +1,6 @@
 <?php
 namespace CIC\Cicbase\Migration;
+use TYPO3\CMS\Core\Error\Exception;
 
 /**
  * Class AbstractMigration
@@ -407,6 +408,28 @@ abstract class AbstractMigration implements MigrationInterface {
         $this->db->sql_query(
             'ALTER TABLE ' . static::safeTickQuoteName($table)
             . ' ADD PRIMARY KEY(' . static::safeTickQuoteName($key) . ')'
+        );
+    }
+
+    /**
+     * @param $table
+     * @param $keyName
+     * @param $field
+     * @param int $size
+     * @throws Exception
+     */
+    protected function addUniqueKey($table, $keyName, $field, $size = 200) {
+        if (!$field) {
+            throw new Exception('Please specify the field(s) to use for your key');
+        }
+        if ($this->forgiving && $this->hasKey($table, $keyName)) {
+            $this->log('Nothing to do.');
+            return;
+        }
+
+        $this->db->sql_query(
+            'ALTER TABLE ' . static::safeTickQuoteName($table)
+            . ' ADD UNIQUE KEY ' . static::safeTickQuoteName($keyName) . '(' . static::safeTickQuoteName($field) . '(' . intval($size) .'))'
         );
     }
 
