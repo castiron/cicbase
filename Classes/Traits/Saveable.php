@@ -7,6 +7,9 @@
 trait Saveable {
     use Database;
 
+    /**
+     * @return $this
+     */
     public function save() {
         $query = static::UPSERTquery(static::$table, $this->saveFields());
         static::db()->sql_query($query);
