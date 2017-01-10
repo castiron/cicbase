@@ -1,6 +1,7 @@
 <?php namespace CIC\Cicbase\Traits;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
+use TYPO3\CMS\Core\Error\Exception;
 
 /**
  * Class Database
@@ -96,20 +97,71 @@ trait Database {
      * returns an array
      * @param $select_fields
      * @param $from_table
-     * @param $where_clause
+     * @param string|array $where_clause
      * @param string $groupBy
      * @param string $orderBy
      * @param string $limit
      * @return array
      */
     protected function selectArray($select_fields, $from_table, $where_clause, $groupBy = '', $orderBy = '', $limit = '') {
+        $where = is_array($where_clause) ? static::buildWhereClause($where_clause) : $where_clause;
         return static::fetchRows(static::db()->exec_SELECTquery(
             $select_fields,
             $from_table,
-            $where_clause,
+            $where,
             $groupBy,
             $orderBy,
             $limit
         ));
+    }
+
+    /**
+     *
+     *
+     * @param array $whereArray A nested array of conditions like
+     * [
+     *   'pid=12',
+     *   'deleted=0',
+     * ]
+     *
+     * or like
+     *
+     * [
+     *   'AND' => [
+     *     'pid=12', 'deleted=0'
+     *      'OR' => [
+     *         't3ver_wsid > 0',
+     *         'something_else IN (1,2,3)',
+     *      ]
+     *   ]
+     * ]
+     *
+     * @param string $conjunction The conjunction to use for the top set of conditions. Can be "AND" or "OR"
+     * @return string
+     * @throws Exception
+     */
+    protected static function buildWhereClause($whereArray = [], $conjunction = 'AND') {
+        $staged = '';
+
+        $validConjunction = function($val) {
+            return $val === 'AND' || $val === 'OR';
+        };
+
+        /**
+         * Do a little quick validation on conjunction
+         */
+        if (!$validConjunction($conjunction)) {
+            throw new Exception('Invalid conjunction provided');
+        }
+
+        foreach ($whereArray as $k => $value) {
+            if (is_array($value)) {
+                $staged[] = '(' . static::buildWhereClause($value, $k) . ')';
+            } else {
+                $staged[] = $value;
+            }
+        }
+
+        return count($staged) ? implode(" $conjunction ", $staged) : '';
     }
 }
