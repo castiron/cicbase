@@ -105,8 +105,9 @@ trait Database {
      */
     protected function selectArray($select_fields, $from_table, $where_clause, $groupBy = '', $orderBy = '', $limit = '') {
         $where = is_array($where_clause) ? static::buildWhereClause($where_clause) : $where_clause;
+        $select = is_array($select_fields) ? implode(',', $select_fields) : $select_fields;
         return static::fetchRows(static::db()->exec_SELECTquery(
-            $select_fields,
+            $select,
             $from_table,
             $where,
             $groupBy,
