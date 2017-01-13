@@ -1,4 +1,5 @@
 <?php namespace CIC\Cicbase\Traits;
+use CIC\Cicbase\Utility\Arr;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Error\Exception;
@@ -38,12 +39,14 @@ trait Database {
 
     /**
      * Cobbled from DatabaseConnection
+     *
      * @param $table
      * @param $fields_values
      * @param bool $no_quote_fields
+     * @param array $excludeFromUpdate Fields to exclude from the update statement if the record exists
      * @return null|string
      */
-    public static function UPSERTquery($table, $fields_values, $no_quote_fields = FALSE) {
+    public static function UPSERTquery($table, $fields_values, $no_quote_fields = FALSE, $excludeFromUpdate = array()) {
         /**
          * Table and fieldnames should be "SQL-injection-safe" when supplied to this
          * function (contrary to values in the arrays which may be insecure).
@@ -61,7 +64,8 @@ trait Database {
         /**
          * Hopefully add the duplicate key clause
          */
-        if ($update = static::updateClause($fields_values)) {
+        $update_fields_values = Arr::removeByKeys($fields_values, $excludeFromUpdate);
+        if ($update = static::updateClause($update_fields_values)) {
             $query .= ' ON DUPLICATE KEY UPDATE ' . $update;
         }
 
