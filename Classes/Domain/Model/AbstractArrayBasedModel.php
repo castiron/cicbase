@@ -98,7 +98,14 @@ class AbstractArrayBasedModel {
      * @return bool
      */
     protected function __fieldIsWritable($field) {
-        return $this->attrWritable[0] === '*' || $this->attrWritable === '*' || in_array($field, $this->attrWritable);
+        return $this->__allFieldsAreWritable() || in_array($field, $this->attrWritable);
+    }
+
+    /**
+     * @return bool
+     */
+    protected function __allFieldsAreWritable() {
+        return $this->attrWritable[0] === '*' || $this->attrWritable === '*';
     }
 
     /**
