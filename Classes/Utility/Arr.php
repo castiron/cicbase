@@ -123,7 +123,7 @@ class Arr {
 	}
 
 	/**
-	 * Returns a new array with only the elements with the given keys.
+	 * Returns a new array with only the elements not having the given keys.
 	 * Associations are preserved.
 	 *
 	 * @param array $array
