@@ -435,6 +435,27 @@ abstract class AbstractMigration implements MigrationInterface {
 
     /**
      * @param $table
+     * @param $keyName
+     * @throws Exception
+     */
+    protected function dropKeyFromTable($table, $keyName) {
+        if (!$keyName) {
+            throw new Exception('Please specify the index name to drop');
+        }
+
+        if ($this->forgiving && !$this->hasKey($table, $keyName)) {
+            $this->log('Nothing to do.');
+            return;
+        }
+
+        $this->db->sql_query(
+            'ALTER TABLE ' . static::safeTickQuoteName($table)
+            . ' DROP INDEX ' . static::safeTickQuoteName($keyName)
+        );
+    }
+
+    /**
+     * @param $table
      * @param string $key
      * @return bool
      */
