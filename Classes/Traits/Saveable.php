@@ -11,7 +11,7 @@ trait Saveable {
      * @return $this
      */
     public function save() {
-        $query = static::UPSERTquery(static::$table, $this->saveFields());
+        $query = static::UPSERTquery(static::$table, $this->saveFields(), false, $this->excludeFromUpdateFields());
         static::db()->sql_query($query);
         return $this;
     }
@@ -38,6 +38,13 @@ trait Saveable {
      * @return array
      */
     protected function saveFields() {
+        return [];
+    }
+
+    /**
+     * @return array
+     */
+    protected function excludeFromUpdateFields() {
         return [];
     }
 }
