@@ -20,14 +20,16 @@ trait Database {
 
     /**
      * @param $table
+     * @param string $alias
      * @return string
      */
-    protected static function enableFields($table) {
+    protected static function enableFields($table, $alias = '') {
         if (static::isBackend()) {
             return BackendUtility::BEenableFields($table);
         }
         static::initializeFrontend();
-        return $GLOBALS['TSFE']->sys_page->enableFields($table);
+        $out = $GLOBALS['TSFE']->sys_page->enableFields($table);
+        return $alias ? str_replace("$table.", "$alias.", $out) : $out;
     }
 
     /**
