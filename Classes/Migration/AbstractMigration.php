@@ -41,7 +41,7 @@ abstract class AbstractMigration implements MigrationInterface {
     /**
      * @param bool $val
      */
-    protected function setForgiving($val) {
+    protected function setForgiving($val = true) {
         $this->forgiving = $val ? true : false;
     }
 
