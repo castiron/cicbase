@@ -408,4 +408,35 @@ class ArrTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
          */
         $this->assertEquals($inputBase, Arr::dedupeByKey($input, 'something', false));
     }
+
+    /**
+     * @test
+     */
+    public function testItKeysArraysByField() {
+        $this->assertEquals([
+            'dirtman' => ['a' => 'dirtman'],
+            'leg' => ['b' => 'sandwich', 'a' => 'leg'],
+            'whatever' => ['b' => 'sandwich', 'a' => 'whatever'],
+        ], Arr::keyByField([
+            ['a' => 'dirtman'],
+            ['b' => 'sandwich', 'a' => 'leg'],
+            ['b' => 'sandwich', 'a' => 'whatever'],
+        ], 'a'));
+    }
+
+    public function testItKeysArrayByFieldAndPreservesDupes() {
+        $this->assertEquals([
+            'dirtman' => ['a' => 'dirtman'],
+            'leg' => ['b' => 'sandwich', 'a' => 'leg'],
+            2 => ['b' => 'sandwich', 'a' => 'leg'],
+            3 => ['b' => 'feet', 'a' => 'leg'],
+            'whatever' => ['b' => 'sandwich', 'a' => 'whatever'],
+        ], Arr::keyByField([
+            ['a' => 'dirtman'],
+            ['b' => 'sandwich', 'a' => 'leg'],
+            ['b' => 'sandwich', 'a' => 'leg'],
+            ['b' => 'feet', 'a' => 'leg'],
+            ['b' => 'sandwich', 'a' => 'whatever'],
+        ], 'a', true));
+    }
 }

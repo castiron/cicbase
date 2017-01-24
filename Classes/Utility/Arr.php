@@ -562,75 +562,123 @@ class Arr {
 		$array[$index][] = $value;
 	}
 
-	/**
-	 * De-duplicate an array of arrays by comparing the values of a given key of the sub-arrays
-	 *
-	 * @param array $array
-	 * @param string|int $key
-	 * @param bool $ignoreEmpties Whether to ignore falsy values for $key in the comparison
-	 * @return array
-	 */
-	public static function dedupeByKey($array, $key, $ignoreEmpties = true) {
-		$out = array();
-		$keyHolder = '_____||_____key';
-		$smashed = array();
-		$ignored = array();
-		$i = 0;
-		foreach ($array as $k => $item) {
-			if ($ignoreEmpties && !$item[$key]) {
-				$ignored[$k] = $item;
-				$item[$key] = $i . '__|||_TOREPLACE';
-				$i++;
-			}
+    /**
+     * De-duplicate an array of arrays by comparing the values of a given key of the sub-arrays
+     *
+     * @param array $array
+     * @param string|int $key
+     * @param bool $ignoreEmpties Whether to ignore falsy values for $key in the comparison
+     * @return array
+     */
+    public static function dedupeByKey($array, $key, $ignoreEmpties = true) {
+        $out = array();
+        $keyHolder = '_____||_____key';
+        $smashed = array();
+        $ignored = array();
+        $i = 0;
+        foreach ($array as $k => $item) {
+            if ($ignoreEmpties && !$item[$key]) {
+                $ignored[$k] = $item;
+                $item[$key] = $i . '__|||_TOREPLACE';
+                $i++;
+            }
 
-			/**
-			 * Stash the key -- we'll need to restore it later
-			 */
-			$item[$keyHolder] = $k;
+            /**
+             * Stash the key -- we'll need to restore it later
+             */
+            $item[$keyHolder] = $k;
 
-			/**
-			 * Use the serialized array for a key, and the target field as a value
-			 */
-			$serial = serialize($item);
-			if (!$smashed[$serial]) {
-				$smashed[$serial] = $item[$key];
-			}
-		}
+            /**
+             * Use the serialized array for a key, and the target field as a value
+             */
+            $serial = serialize($item);
+            if (!$smashed[$serial] && $item[$key]) {
+                $smashed[$serial] = $item[$key];
+            }
+        }
 
-		/**
-		 * Er, this is absurdly unreadable sorry! It just gets the arrays unserialized and put back into a container
-		 * array (albeit with the wrong keys)
-		 */
-		$hydrated = array_map('unserialize', array_flip(array_unique($smashed)));
+        /**
+         * Er, this is absurdly unreadable sorry! It just gets the arrays unserialized and put back into a container
+         * array (albeit with the wrong keys)
+         */
+        $hydrated = array_map('unserialize', array_flip(array_unique($smashed)));
 
-		/**
-		 * Build the output array by constructing it from pieces of the original input array
-		 */
-		foreach ($hydrated as $item) {
-			$j = $item[$keyHolder];
-			$out[$j] = $array[$j];
-		}
+        /**
+         * Build the output array by constructing it from pieces of the original input array
+         */
+        foreach ($hydrated as $item) {
+            $j = $item[$keyHolder];
+            $out[$j] = $array[$j];
+        }
 
-		return $out;
-	}
+        return $out;
+    }
 
-	/**
-	 * Takes an array of uids and limits to integer characters and ensures uniqueness
-	 * @param $array
-	 * @return array
-	 */
-	public static function uniquePositiveInts($array) {
-		if(!is_array($array)) return array();
+    /**
+     * Takes an array of uids and limits to integer characters and ensures uniqueness
+     * @param $array
+     * @return array
+     */
+    public static function uniquePositiveInts($array) {
+        if(!is_array($array)) return array();
 
-		$newArray = array();
-		foreach($array as $item) {
-			if(is_int($item) || is_string($item)) {
-				$item = intval($item);
-				if($item > 0) {
-					$newArray[] = $item;
-				}
-			}
-		}
-		return array_unique($newArray);
-	}
+        $newArray = array();
+        foreach($array as $item) {
+            if(is_int($item) || is_string($item)) {
+                $item = intval($item);
+                if($item > 0) {
+                    $newArray[] = $item;
+                }
+            }
+        }
+        return array_unique($newArray);
+    }
+
+    /**
+     * Sort an array of arrays by a particular key in the child arrays
+     *
+     * @param array $arr An array of arrays having the key you want to sort on
+     * @param string $keyName The key you want to sort on
+     * @param string $direction The sorting direction. Can be 'asc' or 'desc'.
+     */
+    public static function sortByStringKeys(&$arr = [], $keyName = '', $direction = 'asc') {
+        usort($arr, function ($a, $b) use ($keyName, $direction) {
+            return strnatcmp($a[$keyName], $b[$keyName]) * ($direction === 'desc' ? -1 : 1);
+        });
+    }
+
+    /**
+     * Key an array of arrays by a particular key in the child arrays
+     * NB: If there are duplicate keys, then only the last array having the duplicate key will persist
+     *     unless you use $keepDuplicates, in which case you'll get back an array with unchanged keys for all but
+     *     one of the items.
+     * NB: If a particular child array does not have the key you specified, the existing key will not be changed
+     *
+     * @param array $arr
+     * @param string $field
+     * @param bool $keepDuplicates
+     * @return array
+     */
+    public static function keyByField($arr = [], $field = '', $keepDuplicates = false) {
+        $out = [];
+        foreach ($arr as $k => $array) {
+            /**
+             * Pick the key we will use. If no value in the field, just keep the same key.
+             */
+            $kk = $array[$field] ?: $k;
+
+            if (array_key_exists($kk, $out) && $keepDuplicates) {
+                /**
+                 * We've already set this key? And we are supposed to keep dupes?
+                 */
+                $out[$k] = $array;
+            } else {
+                /**
+                 * We don't care if we nuke a previous value
+                 */
+                $out[$kk] = $array;
+            }
+        }
+        return $out;
+    }
 }
