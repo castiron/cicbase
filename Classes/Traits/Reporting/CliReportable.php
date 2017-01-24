@@ -44,4 +44,18 @@ trait CliReportable {
             static::cliMsg('Memory usage: ' . static::getMemoryUsage());
         }
     }
+
+    /**
+     * A simple CLI status bar
+     * Credit: http://stackoverflow.com/questions/2124195/command-line-progress-bar-in-php#answer-27147177
+     *
+     * @param $done
+     * @param $total
+     */
+    protected static function statusBarUpdate($done, $total) {
+        $perc = ceil(($done / $total) * 100);
+        $left = 100 - $perc;
+        $write = sprintf("\033[0G\033[2K[%'={$perc}s>%-{$left}s] - $perc%% - $done/$total", "", "");
+        fwrite(STDERR, $write);
+    }
 }
