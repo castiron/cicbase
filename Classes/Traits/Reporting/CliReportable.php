@@ -14,10 +14,11 @@ trait CliReportable {
 
     /**
      * @param $msg
+     * @param bool $inPlace
      */
-    protected static function cliMsg($msg) {
+    protected static function cliMsg($msg, $inPlace = false) {
         if (static::isCli()) {
-            echo $msg . "\n";
+            echo $msg . ($inPlace ? "\r" : "\n");
         }
     }
 
@@ -41,7 +42,7 @@ trait CliReportable {
 
     protected static function reportMemoryUsage() {
         if (static::isCli()) {
-            static::cliMsg('Memory usage: ' . static::getMemoryUsage());
+            static::cliMsg('Memory usage: ' . static::getMemoryUsage(), true);
         }
     }
 
