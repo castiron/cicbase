@@ -54,6 +54,13 @@ trait CliReportable {
      * @param $total
      */
     protected static function statusBarUpdate($done, $total) {
+        /**
+         * This is not relevant if we're not in a CLI context.
+         */
+        if (!static::isCli()) {
+            return;
+        }
+
         $perc = ceil(($done / $total) * 100);
         $left = 100 - $perc;
         $write = sprintf("\033[0G\033[2K[%'={$perc}s>%-{$left}s] - $perc%% - $done/$total", "", "");
