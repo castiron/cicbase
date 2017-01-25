@@ -62,8 +62,10 @@ trait CliReportable {
         }
 
         $perc = ceil(($done / $total) * 100);
-        $left = 100 - $perc;
-        $write = sprintf("\033[0G\033[2K[%'={$perc}s>%-{$left}s] - $perc%% - $done/$total", "", "");
+        $filled = ceil($perc / 2);
+        $left = 50 - $filled;
+        $memoryUsage = static::getMemoryUsage();
+        $write = sprintf("\033[0G\033[2K[%'={$filled}s>%-{$left}s] - $perc%% - $done/$total - $memoryUsage", "", "");
         fwrite(STDERR, $write);
     }
 }
