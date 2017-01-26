@@ -19,6 +19,15 @@ class AbstractArrayBasedModel {
     protected $attrWritable = array();
 
     /**
+     * You can specify valid fieldname prefixes here, like 'tx_myext_` or whatever.
+     * That will tell the "get" and "set" magic methods to check for fields with those prefixes on them when
+     * determining the underlying field to use.
+     *
+     * @var array
+     */
+    protected $fieldPrefixes = array();
+
+    /**
      * @return mixed
      */
     public function getRec() {
@@ -62,9 +71,14 @@ class AbstractArrayBasedModel {
         $fromCamelCase = GeneralUtility::camelCaseToLowerCaseUnderscored(
             lcfirst(substr($methodName, $cropCount))
         );
+
+        /**
+         * See about fetching this after converting from camelcase
+         */
         if ($this->__hasField($fromCamelCase) || $this->__fieldIsWritable($fromCamelCase)) {
             return $fromCamelCase;
         }
+
         /**
          * Fallback for legacy setups (e.g. calls like $obj->getSome_field_by_name)
          */
@@ -78,6 +92,17 @@ class AbstractArrayBasedModel {
     protected function __getField($field) {
         if (array_key_exists($field, $this->rec)) {
             return $this->rec[$field];
+        }
+
+        /**
+         * If we didn't find any values based on the plain fieldname, let's try any valid prefixes
+         * in the order they were declared.
+         */
+        foreach ($this->fieldPrefixes as $prefix) {
+            $prefixed = $prefix . $field;
+            if (array_key_exists($prefixed, $this->rec)) {
+                return $this->rec[$prefixed];
+            }
         }
     }
 
@@ -98,7 +123,27 @@ class AbstractArrayBasedModel {
      * @return bool
      */
     protected function __fieldIsWritable($field) {
-        return $this->__allFieldsAreWritable() || in_array($field, $this->attrWritable);
+        /**
+         * Are all fields writable?
+         */
+        if ($this->__allFieldsAreWritable()) {
+            return true;
+        }
+
+        /**
+         * Check if the field is allowed by configured attr_writable after accounting
+         * for field prefixes (or no prefix, as the case may be).
+         */
+        foreach (array_merge([''], $this->fieldPrefixes) as $prefix) {
+            if (in_array($prefix . $field, $this->attrWritable)) {
+                return true;
+            }
+        }
+
+        /**
+         * No writable field found.
+         */
+        return false;
     }
 
     /**
