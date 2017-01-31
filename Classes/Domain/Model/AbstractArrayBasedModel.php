@@ -99,7 +99,7 @@ class AbstractArrayBasedModel {
          * in the order they were declared.
          */
         foreach ($this->fieldPrefixes as $prefix) {
-            $prefixed = $prefix . $field;
+            $prefixed = $prefix . GeneralUtility::camelCaseToLowerCaseUnderscored($field);
             if (array_key_exists($prefixed, $this->rec)) {
                 return $this->rec[$prefixed];
             }
