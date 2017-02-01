@@ -11,6 +11,14 @@ use TYPO3\CMS\Frontend\Page\PageRepository;
 trait FrontendInstantiating {
     protected static function initializeFrontend() {
         global $TYPO3_CONF_VARS;
+
+        /**
+         * Some frontend classes use this wacky time tracker and expect it to exist :/
+         */
+        if (!$GLOBALS['TT']) {
+            $GLOBALS['TT'] = new \TYPO3\CMS\Core\TimeTracker\NullTimeTracker();
+        }
+
         if (!$GLOBALS['TSFE']) {
             $GLOBALS['TSFE'] = GeneralUtility::makeInstance(
                 'TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController',
