@@ -1,6 +1,7 @@
 <?php namespace CIC\Cicbase\Service;
 
 use CIC\Cicbase\Traits\ExtbaseInstantiable;
+use CIC\Cicbase\Traits\FrontendInstantiating;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
@@ -12,6 +13,7 @@ use TYPO3\CMS\Frontend\Page\PageRepository;
  */
 class TypolinkService implements SingletonInterface {
     use ExtbaseInstantiable;
+    use FrontendInstantiating;
 
     /**
      * @var \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
@@ -29,7 +31,7 @@ class TypolinkService implements SingletonInterface {
      */
     public function initializeObject() {
         if (!is_object($GLOBALS['TSFE'])) {
-            throw new \RuntimeException(__CLASS__ . " doesn't currently work without an instantiated TSFE.");
+            static::initializeFrontend();
         }
         if (!is_object($this->contentObjectRenderer)) {
             $this->initContentObjectRenderer();
