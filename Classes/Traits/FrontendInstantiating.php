@@ -9,6 +9,26 @@ use TYPO3\CMS\Frontend\Page\PageRepository;
  * @package CIC\Cicbase\Traits
  */
 trait FrontendInstantiating {
+    /**
+     * @return bool
+     */
+    protected static function tsfeInitialized() {
+        return
+
+            /**
+             * It exists
+             */
+            $GLOBALS['TSFE']
+
+            /**
+             * It's the right object
+             */
+            && $GLOBALS['TSFE'] instanceof TypoScriptFrontendController;
+    }
+
+    /**
+     * Cal this to ensure that the frontend is instantiated
+     */
     protected static function initializeFrontend() {
         global $TYPO3_CONF_VARS;
 
@@ -19,7 +39,10 @@ trait FrontendInstantiating {
             $GLOBALS['TT'] = new \TYPO3\CMS\Core\TimeTracker\NullTimeTracker();
         }
 
-        if (!$GLOBALS['TSFE']) {
+        /**
+         * Maybe there isn't a TSFE on here
+         */
+        if (!static::tsfeInitialized()) {
             $GLOBALS['TSFE'] = GeneralUtility::makeInstance(
                 'TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController',
                 $TYPO3_CONF_VARS,
@@ -27,18 +50,29 @@ trait FrontendInstantiating {
             );
         }
 
+        /**
+         * Maybe there's no fe_user on that TSFE
+         */
         if (!static::userSessionExists()) {
             $GLOBALS['TSFE']->initFEuser();
         }
 
+        /**
+         * Maybe we don't have a sys_page object!
+         */
         if (!is_object($GLOBALS['TSFE']->sys_page)) {
             $GLOBALS['TSFE']->sys_page = static::initSysPage();
         }
+
+        /**
+         * Is the typoscript thinger in place?
+         */
         if (!is_object($GLOBALS['TSFE']->tmpl)) {
             /** @var TypoScriptFrontendController $tsfe */
             $tsfe = $GLOBALS['TSFE'];
             $tsfe->initTemplate();
         }
+
         /**
          * This is needed if we're trying to use RealURL :(
          */
