@@ -25,11 +25,21 @@ trait Database {
      */
     protected static function enableFields($table, $alias = '') {
         if (static::isBackend()) {
-            return BackendUtility::BEenableFields($table);
+            return static::aliasTableInQuery(BackendUtility::BEenableFields($table), $table, $alias);
         }
         static::initializeFrontend();
         $out = $GLOBALS['TSFE']->sys_page->enableFields($table);
-        return $alias ? str_replace("$table.", "$alias.", $out) : $out;
+        return static::aliasTableInQuery($out, $table, $alias);
+    }
+
+    /**
+     * @param string $query
+     * @param string $table
+     * @param string $alias
+     * @return mixed|string
+     */
+    protected static function aliasTableInQuery($query = '', $table = '', $alias = '') {
+        return $alias ? str_replace("$table.", "$alias.", $query) : $query;
     }
 
     /**
