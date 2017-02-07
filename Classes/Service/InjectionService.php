@@ -22,8 +22,17 @@ class InjectionService extends \TYPO3\CMS\Extbase\Object\Container\Container {
 		$this->injectDependencies($instance, $classInfo);
 	}
 
+    /**
+     *
+     */
+	protected function initializeObject() {
+	    /**
+         * Noop
+         */
+    }
 
-	/**
+
+    /**
 	 * Overriding this to let the REAL objectManager do the heavy lifting
 	 *
 	 * @param string $className
