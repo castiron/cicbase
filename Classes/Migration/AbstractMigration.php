@@ -436,6 +436,35 @@ abstract class AbstractMigration implements MigrationInterface {
     /**
      * @param $table
      * @param $keyName
+     * @param array $fields
+     * @param $size
+     * @throws Exception
+     */
+    protected function addKey($table, $keyName, $fields = [], $size = null) {
+        if (!$fields || !count($fields)) {
+            throw new Exception('Please specify the field(s) to use for your key');
+        }
+        if ($this->forgiving && $this->hasKey($table, $keyName)) {
+            $this->log('Nothing to do.');
+            return;
+        }
+
+        $fieldnames = array_map(function ($fieldname) {
+            return static::safeTickQuoteName($fieldname);
+        }, $fields);
+
+        $this->db->sql_query(
+            'ALTER TABLE ' . static::safeTickQuoteName($table)
+            . ' ADD KEY ' . static::safeTickQuoteName($keyName)
+            . '(' . implode(',', $fieldnames) .
+                ($size ? ' (' . intval($size) .')'  : '')
+            .')'
+        );
+    }
+
+    /**
+     * @param $table
+     * @param $keyName
      * @throws Exception
      */
     protected function dropKeyFromTable($table, $keyName) {
