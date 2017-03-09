@@ -413,6 +413,16 @@ abstract class AbstractMigration implements MigrationInterface {
 
     /**
      * @param $table
+     * @param $field
+     * @return bool
+     */
+    protected function isIntField($table, $field) {
+        $info = $this->db->admin_get_fields($table);
+        return strpos($info[$field]['Type'], 'int(') === 0;
+    }
+
+    /**
+     * @param $table
      * @param $keyName
      * @param $field
      * @param int $size
@@ -426,11 +436,17 @@ abstract class AbstractMigration implements MigrationInterface {
             $this->log('Nothing to do.');
             return;
         }
+        $q = 'ALTER TABLE ' . static::safeTickQuoteName($table)
+            . ' ADD UNIQUE KEY ' . static::safeTickQuoteName($keyName)
+            . '('
+                . static::safeTickQuoteName($field)
+                /**
+                 * integer fields can't have a key length specified here -- it's invalid
+                 */
+                . ( $this->isIntField($table, $field) ? '' : '(' . intval($size) . ')')
+            . ')';
 
-        $this->db->sql_query(
-            'ALTER TABLE ' . static::safeTickQuoteName($table)
-            . ' ADD UNIQUE KEY ' . static::safeTickQuoteName($keyName) . '(' . static::safeTickQuoteName($field) . '(' . intval($size) .'))'
-        );
+        $this->db->sql_query($q);
     }
 
     /**
