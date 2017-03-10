@@ -33,15 +33,20 @@ trait FrontendInstantiating {
         if (!is_object($GLOBALS['TSFE']->sys_page)) {
             $GLOBALS['TSFE']->sys_page = static::initSysPage();
         }
+
+        /**
+         * Init TSFE->tmpl if need-be
+         */
         if (!is_object($GLOBALS['TSFE']->tmpl)) {
             /** @var TypoScriptFrontendController $tsfe */
             $tsfe = $GLOBALS['TSFE'];
             $tsfe->initTemplate();
         }
+
         /**
          * This is needed if we're trying to use RealURL :(
          */
-        if (!is_array($GLOBALS['TSFE']->config)) {
+        if (!is_array($GLOBALS['TSFE']->config) || count($GLOBALS['TSFE']->config) === 0) {
             /**
              * This is needed for one of the subsequent TSFE or RealURL calls
              */
