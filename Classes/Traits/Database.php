@@ -102,7 +102,7 @@ trait Database {
      * @param string $limit
      * @return array
      */
-    protected function selectArray($select_fields, $from_table, $where_clause, $groupBy = '', $orderBy = '', $limit = '') {
+    protected static function selectArray($select_fields, $from_table, $where_clause, $groupBy = '', $orderBy = '', $limit = '') {
         return static::fetchRows(static::db()->exec_SELECTquery(
             $select_fields,
             $from_table,
