@@ -1,5 +1,6 @@
 <?php
 namespace CIC\Cicbase\Migration;
+use TYPO3\CMS\Core\Error\Exception;
 
 /**
  * Class AbstractMigration
@@ -40,7 +41,7 @@ abstract class AbstractMigration implements MigrationInterface {
     /**
      * @param bool $val
      */
-    protected function setForgiving($val) {
+    protected function setForgiving($val = true) {
         $this->forgiving = $val ? true : false;
     }
 
@@ -407,6 +408,94 @@ abstract class AbstractMigration implements MigrationInterface {
         $this->db->sql_query(
             'ALTER TABLE ' . static::safeTickQuoteName($table)
             . ' ADD PRIMARY KEY(' . static::safeTickQuoteName($key) . ')'
+        );
+    }
+
+    /**
+     * @param $table
+     * @param $field
+     * @return bool
+     */
+    protected function isIntField($table, $field) {
+        $info = $this->db->admin_get_fields($table);
+        return strpos($info[$field]['Type'], 'int(') === 0;
+    }
+
+    /**
+     * @param $table
+     * @param $keyName
+     * @param $field
+     * @param int $size
+     * @throws Exception
+     */
+    protected function addUniqueKey($table, $keyName, $field, $size = 200) {
+        if (!$field) {
+            throw new Exception('Please specify the field(s) to use for your key');
+        }
+        if ($this->forgiving && $this->hasKey($table, $keyName)) {
+            $this->log('Nothing to do.');
+            return;
+        }
+        $q = 'ALTER TABLE ' . static::safeTickQuoteName($table)
+            . ' ADD UNIQUE KEY ' . static::safeTickQuoteName($keyName)
+            . '('
+                . static::safeTickQuoteName($field)
+                /**
+                 * integer fields can't have a key length specified here -- it's invalid
+                 */
+                . ( $this->isIntField($table, $field) ? '' : '(' . intval($size) . ')')
+            . ')';
+
+        $this->db->sql_query($q);
+    }
+
+    /**
+     * @param $table
+     * @param $keyName
+     * @param array $fields
+     * @param $size
+     * @throws Exception
+     */
+    protected function addKey($table, $keyName, $fields = [], $size = null) {
+        if (!$fields || !count($fields)) {
+            throw new Exception('Please specify the field(s) to use for your key');
+        }
+        if ($this->forgiving && $this->hasKey($table, $keyName)) {
+            $this->log('Nothing to do.');
+            return;
+        }
+
+        $fieldnames = array_map(function ($fieldname) {
+            return static::safeTickQuoteName($fieldname);
+        }, $fields);
+
+        $this->db->sql_query(
+            'ALTER TABLE ' . static::safeTickQuoteName($table)
+            . ' ADD KEY ' . static::safeTickQuoteName($keyName)
+            . '(' . implode(',', $fieldnames) .
+                ($size ? ' (' . intval($size) .')'  : '')
+            .')'
+        );
+    }
+
+    /**
+     * @param $table
+     * @param $keyName
+     * @throws Exception
+     */
+    protected function dropKeyFromTable($table, $keyName) {
+        if (!$keyName) {
+            throw new Exception('Please specify the index name to drop');
+        }
+
+        if ($this->forgiving && !$this->hasKey($table, $keyName)) {
+            $this->log('Nothing to do.');
+            return;
+        }
+
+        $this->db->sql_query(
+            'ALTER TABLE ' . static::safeTickQuoteName($table)
+            . ' DROP INDEX ' . static::safeTickQuoteName($keyName)
         );
     }
 

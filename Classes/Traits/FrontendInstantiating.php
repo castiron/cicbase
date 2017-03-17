@@ -10,9 +10,40 @@ use TYPO3\CMS\Frontend\Page\PageRepository;
  * @package CIC\Cicbase\Traits
  */
 trait FrontendInstantiating {
+    /**
+     * @return bool
+     */
+    protected static function tsfeInitialized() {
+        return
+
+            /**
+             * It exists
+             */
+            $GLOBALS['TSFE']
+
+            /**
+             * It's the right object
+             */
+            && $GLOBALS['TSFE'] instanceof TypoScriptFrontendController;
+    }
+
+    /**
+     * Cal this to ensure that the frontend is instantiated
+     */
     protected static function initializeFrontend() {
         global $TYPO3_CONF_VARS;
-        if (!$GLOBALS['TSFE']) {
+
+        /**
+         * Some frontend classes use this wacky time tracker and expect it to exist :/
+         */
+        if (!$GLOBALS['TT']) {
+            $GLOBALS['TT'] = new \TYPO3\CMS\Core\TimeTracker\NullTimeTracker();
+        }
+
+        /**
+         * Maybe there isn't a TSFE on here
+         */
+        if (!static::tsfeInitialized()) {
             $GLOBALS['TSFE'] = GeneralUtility::makeInstance(
                 'TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController',
                 $TYPO3_CONF_VARS,
@@ -21,6 +52,9 @@ trait FrontendInstantiating {
             );
         }
 
+        /**
+         * Maybe there's no fe_user on that TSFE
+         */
         if (!static::userSessionExists()) {
             $GLOBALS['TSFE']->initFEuser();
         }
@@ -29,7 +63,6 @@ trait FrontendInstantiating {
          * Load the TCA over here
          */
         static::getBootstrap()->loadCachedTca();
-
         if (!is_object($GLOBALS['TSFE']->sys_page)) {
             $GLOBALS['TSFE']->sys_page = static::initSysPage();
         }

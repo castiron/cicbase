@@ -10,6 +10,7 @@ namespace CIC\Cicbase\ViewHelpers;
 	 *                                                                        *
 	 * The TYPO3 project - inspiring people to share!                         *
 	 *                                                                        */
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  *
@@ -38,38 +39,35 @@ namespace CIC\Cicbase\ViewHelpers;
  * </div>
  *
  *
- * NOTE: You can also specify the name of the {yield} variable.
  */
 class RenderViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\RenderViewHelper {
-
 	/**
 	 * Renders the content.
 	 *
-	 * @param string $section Name of section to render. If used in a layout, renders a section of the main content file. If used inside a standard template, renders a section of the same file.
-	 * @param string $partial Reference to a partial.
-	 * @param array $arguments Arguments to pass to the partial.
-	 * @param boolean $optional Set to TRUE, to ignore unknown sections, so the definition of a section inside a template can be optional for a layout
-	 * @param string $yield The name of the variable passed to the section or argument for accessing the render tag's body.
+	 * @param array $arguments
+	 * @param \Closure $renderChildrenClosure
+	 * @param RenderingContextInterface $renderingContext
 	 * @return string
-	 * @api
 	 */
-	public function render($section = NULL, $partial = NULL, $arguments = array(), $optional = FALSE, $yield = 'yield') {
-		$arguments = $this->loadSettingsIntoArguments($arguments);
+	public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
+	{
 
-		$body = $this->renderChildren();
+		$section = $arguments['section'];
+		$partial = $arguments['partial'];
+		$optional = $arguments['optional'];
+		$arguments = static::loadSettingsIntoArguments($arguments['arguments'], $renderingContext);
 
-		if(trim($body)) {
-			$arguments[$yield] = new RenderViewHelperStringObject($body);
+		$arguments['yield'] = new RenderViewHelperStringObject($renderChildrenClosure());
+
+		$viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
+		if ($partial !== null) {
+			return $viewHelperVariableContainer->getView()->renderPartial($partial, $section, $arguments);
+		} elseif ($section !== null) {
+			return $viewHelperVariableContainer->getView()->renderSection($section, $arguments, $optional);
 		}
 
-		if ($partial !== NULL) {
-			return $this->viewHelperVariableContainer->getView()->renderPartial($partial, $section, $arguments);
-		} elseif ($section !== NULL) {
-			return $this->viewHelperVariableContainer->getView()->renderSection($section, $arguments, $optional);
-		}
 		return '';
 	}
-
 }
 
 /**
@@ -92,5 +90,3 @@ class RenderViewHelperStringObject {
 		return $this->content;
 	}
 }
-
-?>

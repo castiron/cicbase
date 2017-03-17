@@ -1,6 +1,8 @@
 <?php namespace CIC\Cicbase\Traits;
+use CIC\Cicbase\Utility\Arr;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
+use TYPO3\CMS\Core\Error\Exception;
 
 /**
  * Class Database
@@ -18,14 +20,26 @@ trait Database {
 
     /**
      * @param $table
+     * @param string $alias
      * @return string
      */
-    protected static function enableFields($table) {
+    protected static function enableFields($table, $alias = '') {
         if (static::isBackend()) {
-            return BackendUtility::BEenableFields($table);
+            return static::aliasTableInQuery(BackendUtility::BEenableFields($table), $table, $alias);
         }
         static::initializeFrontend();
-        return $GLOBALS['TSFE']->sys_page->enableFields($table);
+        $out = $GLOBALS['TSFE']->sys_page->enableFields($table);
+        return static::aliasTableInQuery($out, $table, $alias);
+    }
+
+    /**
+     * @param string $query
+     * @param string $table
+     * @param string $alias
+     * @return mixed|string
+     */
+    protected static function aliasTableInQuery($query = '', $table = '', $alias = '') {
+        return $alias ? str_replace("$table.", "$alias.", $query) : $query;
     }
 
     /**
@@ -37,12 +51,14 @@ trait Database {
 
     /**
      * Cobbled from DatabaseConnection
+     *
      * @param $table
      * @param $fields_values
      * @param bool $no_quote_fields
+     * @param array $excludeFromUpdate Fields to exclude from the update statement if the record exists
      * @return null|string
      */
-    public static function UPSERTquery($table, $fields_values, $no_quote_fields = FALSE) {
+    public static function UPSERTquery($table, $fields_values, $no_quote_fields = FALSE, $excludeFromUpdate = array()) {
         /**
          * Table and fieldnames should be "SQL-injection-safe" when supplied to this
          * function (contrary to values in the arrays which may be insecure).
@@ -60,7 +76,8 @@ trait Database {
         /**
          * Hopefully add the duplicate key clause
          */
-        if ($update = static::updateClause($fields_values)) {
+        $update_fields_values = Arr::removeByKeys($fields_values, $excludeFromUpdate);
+        if ($update = static::updateClause($update_fields_values)) {
             $query .= ' ON DUPLICATE KEY UPDATE ' . $update;
         }
 
@@ -96,20 +113,72 @@ trait Database {
      * returns an array
      * @param $select_fields
      * @param $from_table
-     * @param $where_clause
+     * @param string|array $where_clause
      * @param string $groupBy
      * @param string $orderBy
      * @param string $limit
      * @return array
      */
     protected static function selectArray($select_fields, $from_table, $where_clause, $groupBy = '', $orderBy = '', $limit = '') {
+        $where = is_array($where_clause) ? static::buildWhereClause($where_clause) : $where_clause;
+        $select = is_array($select_fields) ? implode(',', $select_fields) : $select_fields;
         return static::fetchRows(static::db()->exec_SELECTquery(
-            $select_fields,
+            $select,
             $from_table,
-            $where_clause,
+            $where,
             $groupBy,
             $orderBy,
             $limit
         ));
+    }
+
+    /**
+     *
+     *
+     * @param array $whereArray A nested array of conditions like
+     * [
+     *   'pid=12',
+     *   'deleted=0',
+     * ]
+     *
+     * or like
+     *
+     * [
+     *   'AND' => [
+     *     'pid=12', 'deleted=0'
+     *      'OR' => [
+     *         't3ver_wsid > 0',
+     *         'something_else IN (1,2,3)',
+     *      ]
+     *   ]
+     * ]
+     *
+     * @param string $conjunction The conjunction to use for the top set of conditions. Can be "AND" or "OR"
+     * @return string
+     * @throws Exception
+     */
+    protected static function buildWhereClause($whereArray = [], $conjunction = 'AND') {
+        $staged = '';
+
+        $validConjunction = function($val) {
+            return $val === 'AND' || $val === 'OR';
+        };
+
+        /**
+         * Do a little quick validation on conjunction
+         */
+        if (!$validConjunction($conjunction)) {
+            throw new Exception('Invalid conjunction provided');
+        }
+
+        foreach ($whereArray as $k => $value) {
+            if (is_array($value)) {
+                $staged[] = '(' . static::buildWhereClause($value, $k) . ')';
+            } else {
+                $staged[] = $value;
+            }
+        }
+
+        return count($staged) ? implode(" $conjunction ", $staged) : '';
     }
 }

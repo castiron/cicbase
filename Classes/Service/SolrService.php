@@ -58,6 +58,10 @@ class SolrService {
 	 */
 	private $keywords = '*';
 
+    /**
+     * @var array
+     */
+	protected $userAccessGroups = [];
 
 	/**
 	 * Solr response, set when the query is executed
@@ -364,6 +368,8 @@ class SolrService {
 		$solrConfiguration = Util::getSolrConfiguration();
 
 		$query->setFieldList($this->getFieldList());
+        $query->setUserAccessGroups($this->userAccessGroups);
+
 
 		if($this->hasSorting()) {
 			$sortArray = $this->sorting;
@@ -417,6 +423,16 @@ class SolrService {
 		$this->executeQuery();
         return $this->search->getResultDocumentsEscaped();
 	}
+
+    /**
+     * @param array $groups
+     */
+    public function setUserAccessGroups($groups = []) {
+        if (!is_array($groups)) {
+            return;
+        }
+        $this->userAccessGroups = $groups;
+    }
 
 	/**
 	 *

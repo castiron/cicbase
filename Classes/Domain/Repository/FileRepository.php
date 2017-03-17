@@ -35,6 +35,12 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 	protected $AWSEnabled = true;
 	protected $cicbaseConfiguration;
 
+    /**
+     * @var \TYPO3\CMS\Core\Cache\CacheManager
+     * @inject
+     */
+	var $cacheManager;
+
 	/**
 	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
 	 */
@@ -105,7 +111,7 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 	 */
 	protected function getCache() {
 		try {
-			$cache = $GLOBALS['typo3CacheManager']->getCache('cicbase_cache');
+			$cache = $this->cacheManager->getCache('cicbase_cache');
 		} catch (\TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException $e) {
 			throw new \Exception ('Unable to load the cicbase cache.');
 		}
@@ -352,7 +358,7 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 		$configuration = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, $ext, $plugin);
 		if ($configuration['storagePids'][$this->objectType]) {
 			$this->internalPid = $configuration['storagePids'][$this->objectType];
-			$this->defaultQuerySettings = $this->objectManager->create('TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings');
+			$this->defaultQuerySettings = $this->objectManager->get('TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings');
 			$this->defaultQuerySettings->setStoragePageIds(explode(',', $configuration['storagePids'][$this->objectType]));
 		}
 	}

@@ -123,7 +123,7 @@ class Arr {
 	}
 
 	/**
-	 * Returns a new array with only the elements with the given keys.
+	 * Returns a new array with only the elements not having the given keys.
 	 * Associations are preserved.
 	 *
 	 * @param array $array
@@ -611,6 +611,54 @@ class Arr {
             $out[$j] = $array[$j];
         }
 
+        return $out;
+    }
+
+    /**
+     * Sort an array of arrays by a particular key in the child arrays
+     *
+     * @param array $arr An array of arrays having the key you want to sort on
+     * @param string $keyName The key you want to sort on
+     * @param string $direction The sorting direction. Can be 'asc' or 'desc'.
+     */
+    public static function sortByStringKeys(&$arr = [], $keyName = '', $direction = 'asc') {
+        usort($arr, function ($a, $b) use ($keyName, $direction) {
+            return strnatcmp($a[$keyName], $b[$keyName]) * ($direction === 'desc' ? -1 : 1);
+        });
+    }
+
+    /**
+     * Key an array of arrays by a particular key in the child arrays
+     * NB: If there are duplicate keys, then only the last array having the duplicate key will persist
+     *     unless you use $keepDuplicates, in which case you'll get back an array with unchanged keys for all but
+     *     one of the items.
+     * NB: If a particular child array does not have the key you specified, the existing key will not be changed
+     *
+     * @param array $arr
+     * @param string $field
+     * @param bool $keepDuplicates
+     * @return array
+     */
+    public static function keyByField($arr = [], $field = '', $keepDuplicates = false) {
+        $out = [];
+        foreach ($arr as $k => $array) {
+            /**
+             * Pick the key we will use. If no value in the field, just keep the same key.
+             */
+            $kk = $array[$field] ?: $k;
+
+            if (array_key_exists($kk, $out) && $keepDuplicates) {
+                /**
+                 * We've already set this key? And we are supposed to keep dupes?
+                 */
+                $out[$k] = $array;
+            } else {
+                /**
+                 * We don't care if we nuke a previous value
+                 */
+                $out[$kk] = $array;
+            }
+        }
         return $out;
     }
 }
