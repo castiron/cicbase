@@ -182,7 +182,7 @@ class SolrService {
 	 * @param mixed $value
 	 * @param string $glue
 	 */
-	protected function addFilter($key, $value, $glue = 'OR') {
+	public function addFilter($key, $value, $glue = 'OR') {
 		if(is_string($value)) {
 			$value = self::quote($value);
 		} else if(is_array($value) && $glue) {
