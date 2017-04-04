@@ -661,4 +661,24 @@ class Arr {
         }
         return $out;
     }
+
+    /**
+     * Takes an array of uids and limits to integer characters and ensures uniqueness
+     * @param $array
+     * @return array
+     */
+    public static function uniquePositiveInts($array) {
+        if(!is_array($array)) return array();
+
+        $newArray = array();
+        foreach($array as $item) {
+            if(is_int($item) || is_string($item)) {
+                $item = intval($item);
+                if($item > 0) {
+                    $newArray[] = $item;
+                }
+            }
+        }
+        return array_unique($newArray);
+    }
 }
