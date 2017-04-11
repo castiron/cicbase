@@ -1,4 +1,5 @@
 <?php namespace CIC\Cicbase\Traits;
+use TYPO3\CMS\Core\Error\Exception;
 
 /**
  * Class Saveable
@@ -9,10 +10,14 @@ trait Saveable {
 
     /**
      * @return $this
+     * @throws Exception
      */
     public function save() {
         $query = static::UPSERTquery(static::$table, $this->saveFields(), false, $this->excludeFromUpdateFields());
         static::db()->sql_query($query);
+        if ($err = static::db()->sql_error()) {
+            throw new Exception($err);
+        }
         return $this;
     }
 
