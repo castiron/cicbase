@@ -69,7 +69,7 @@ $GLOBALS['TCA']['tx_cicbase_domain_model_file'] = array(
 			'endtime' => 'endtime',
 		),
 		'dynamicConfigFile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($_EXTKEY) . 'Configuration/TCA/File.php',
-		'iconfile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath($_EXTKEY) . 'Resources/Public/Icons/tx_cicbase_domain_model_file.gif'
+		'iconfile' => 'EXT:cicbase/Resources/Public/Icons/tx_cicbase_domain_model_file.gif'
 	),
 );
 
@@ -97,7 +97,7 @@ $GLOBALS['TCA']['tx_cicbase_domain_model_emailtemplate'] = array(
 		),
 		'hideTable' => TRUE,
 		'dynamicConfigFile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($_EXTKEY) . 'Configuration/TCA/EmailTemplate.php',
-		'iconfile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath($_EXTKEY) . 'Resources/Public/Icons/tx_cicbase_domain_model_emailtemplate.gif'
+		'iconfile' => 'EXT:cicbase/Resources/Public/Icons/tx_cicbase_domain_model_emailtemplate.gif'
 	),
 );
 
