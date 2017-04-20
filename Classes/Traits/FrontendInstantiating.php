@@ -2,6 +2,7 @@
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
+use TYPO3\CMS\Frontend\Page\PageGenerator;
 use TYPO3\CMS\Frontend\Page\PageRepository;
 
 /**
@@ -86,6 +87,12 @@ trait FrontendInstantiating {
             $GLOBALS['TSFE']->determineId();
             $GLOBALS['TSFE']->getConfigArray();
         }
+
+        /**
+         * Make sure absRefPrefix is set
+         */
+        PageGenerator::pagegenInit();
+        $GLOBALS['TSFE']->setAbsRefPrefix();
     }
 
     /**
