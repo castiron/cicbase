@@ -28,11 +28,9 @@ class TypolinkService implements SingletonInterface {
      */
     public function initializeObject() {
         /**
-         * Do we have a TSFE?
+         * Make sure TSFE is fully set up
          */
-        if (TYPO3_MODE !== 'FE') {
-            static::initializeFrontend();
-        }
+        static::initializeFrontend();
 
         /**
          * Do we have a cObj?
