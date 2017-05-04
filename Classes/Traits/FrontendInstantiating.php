@@ -1,5 +1,6 @@
 <?php namespace CIC\Cicbase\Traits;
 
+use CIC\Cicbase\Utility\FrontendUserUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use TYPO3\CMS\Frontend\Page\PageGenerator;
@@ -54,7 +55,7 @@ trait FrontendInstantiating {
         /**
          * Maybe there's no fe_user on that TSFE
          */
-        if (!static::userSessionExists()) {
+        if (!FrontendUserUtility::userSessionExists()) {
             $GLOBALS['TSFE']->initFEuser();
         }
 
@@ -111,13 +112,6 @@ trait FrontendInstantiating {
         $out = GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
         $out->init(false);
         return $out;
-    }
-
-    /**
-     * @return bool
-     */
-    protected static function userSessionExists() {
-        return $GLOBALS['TSFE'] && $GLOBALS['TSFE']->fe_user && $GLOBALS['TSFE']->fe_user->user['uid'];
     }
 }
 
