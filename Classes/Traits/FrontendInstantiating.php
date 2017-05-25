@@ -48,7 +48,8 @@ trait FrontendInstantiating {
             $GLOBALS['TSFE'] = GeneralUtility::makeInstance(
                 'TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController',
                 $TYPO3_CONF_VARS,
-                GeneralUtility::_GP('id')
+                GeneralUtility::_GP('id'),
+                0
             );
         }
 
