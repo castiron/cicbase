@@ -477,9 +477,13 @@ class SolrService {
 
     public function debugQuery() {
         \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($this->query);
+    }
 
+    /**
+     * @return mixed
+     */
+    public function getResultsCount() {
+        return $this->search->getNumberOfResults();
     }
 
 }
-
-?>
