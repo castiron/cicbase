@@ -86,9 +86,15 @@ trait FrontendInstantiating {
             if (!$GLOBALS['TCA']) {
                 \TYPO3\CMS\Core\Core\Bootstrap::getInstance()->loadCachedTca();
             }
+            $GLOBALS['TSFE']->checkAlternativeIdMethods();
             $GLOBALS['TSFE']->determineId();
             $GLOBALS['TSFE']->getConfigArray();
         }
+
+        /**
+         * Set language. There's not really a way to check if this has been done yet, so we just run it.
+         */
+        $GLOBALS['TSFE']->settingLanguage();
     }
 
     /**
