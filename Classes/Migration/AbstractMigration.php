@@ -384,6 +384,26 @@ abstract class AbstractMigration implements MigrationInterface {
     }
 
     /**
+     * @param $oldTableName
+     * @param $newTableName
+     * @throws Exception
+     */
+    protected function renameTable($oldTableName, $newTableName) {
+        if (!$oldTableName) {
+            throw new Exception('Please specify a table name to rename');
+        }
+
+        if (!$newTableName) {
+            throw new Exception('Please specify a new table name');
+        }
+
+        $this->db->sql_query('RENAME TABLE '
+            . static::safeTickQuoteName($oldTableName)
+            . ' TO '
+            . static::safeTickQuoteName($newTableName));
+    }
+
+    /**
      * @param $table
      */
     protected function dropTable($table) {
