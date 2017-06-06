@@ -15,16 +15,15 @@ use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
  * Class ExtbaseModelAccessible
  * @package CIC\Cicbase\Traits
  */
-trait ExtbaseModelAccessible implements DomainObjectInterface {
+trait ExtbaseModelAccessible {
     protected $_attrWritable = [];
-    protected $_attrReadable = [];
-    protected $_attrAccessible = [];
 
     /**
      * "Magic" getters and setters
      *
      * @param $name
      * @param $arguments
+     * @return mixed
      */
     public function __call($name, $arguments) {
         /**
@@ -38,7 +37,9 @@ trait ExtbaseModelAccessible implements DomainObjectInterface {
          * Does the method start with 'get'?
          */
         if (strlen($name) > 3 && strpos($name, 'get') === 0) {
-
+            if ($fieldName = $this->__methodToField($name)) {
+                return $this->__getField($fieldName);
+            }
         }
 
         /**
@@ -47,8 +48,22 @@ trait ExtbaseModelAccessible implements DomainObjectInterface {
         if (strlen($name) > 3 && strpos($name, 'set') === 0) {
             if ($fieldName = $this->__methodToField($name)) {
                 $this->__setField($fieldName, $arguments[0]);
+                return;
             }
         }
+
+        /**
+         * Fail. We already checked if this method exists.
+         */
+        throw new \Exception('Call to undefined method ' . $name);
+    }
+
+    /**
+     * @param $name
+     * @param $arguments
+     */
+    protected function __callBaseMethod($name, $arguments) {
+        call_user_func_array([$this, $name], $arguments);
     }
 
     /**
@@ -64,9 +79,11 @@ trait ExtbaseModelAccessible implements DomainObjectInterface {
         /**
          * See about fetching this after converting from camelcase
          */
-        if ($this->_hasProperty($fromCamelCase) || $this->__fieldIsWritable($fromCamelCase)) {
-            return $fromCamelCase;
+        if (!$this->_hasProperty($fromCamelCase)) {
+            return null;
         }
+
+        return $fromCamelCase;
     }
 
     /**
