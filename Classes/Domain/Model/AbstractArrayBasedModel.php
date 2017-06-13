@@ -10,7 +10,7 @@ class AbstractArrayBasedModel {
     /**
      * @var array
      */
-    var $rec;
+    var $rec = [];
 
     /**
      * The (lower camel case) names of any attrs that you want to be able to write to with `set` magic methods
@@ -90,6 +90,10 @@ class AbstractArrayBasedModel {
      * @return mixed
      */
     protected function __getField($field) {
+        if (!is_array($this->rec)) {
+            return null;
+        }
+
         if (array_key_exists($field, $this->rec)) {
             return $this->rec[$field];
         }
@@ -158,6 +162,9 @@ class AbstractArrayBasedModel {
      * @return bool
      */
     protected function __hasField($field) {
+        if (!is_array($this->rec)) {
+            return false;
+        }
         return array_key_exists($field, $this->rec);
     }
 }
