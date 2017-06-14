@@ -1,5 +1,5 @@
 {
-  "name": "castiron/cicbase",
+  "name": "castiron/typo3-plugin-cicbase",
   "type": "typo3-cms-extension",
   "description": "A collection of services, repositories, and tools to be used by Extbase-based extensions in TYPO3.",
   "homepage": "https://github.com/castiron/cicbase",
