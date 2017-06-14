@@ -6,6 +6,9 @@
   "license": ["GPL-2.0+"],
   "keywords": ["TYPO3 CMS"],
   "typo3/cms-core": ">=7.6.0,<9.0",
+  "replace": {
+      "typo3_plugin_cicbase": "self.version"
+  },
   "autoload": {
     "psr-4": {
       "CIC\\Cicbase\\": "Classes"
