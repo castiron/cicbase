@@ -358,12 +358,12 @@ class SolrService {
 	private function executeQuery() {
 		$this->queryExecuted = true;
 
-		$solrConnection = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_solr_ConnectionManager')->getConnection();
-		$search = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_solr_Search', $solrConnection);
+		$solrConnection = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Solr_ConnectionManager')->getConnection();
+		/** @var \Tx_Solr_Search $search */
+		$search = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Solr_Search', $solrConnection);
 		/** @var \Tx_Solr_Query $query */
-		$query = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_solr_Query', $this->getKeywords());
+		$query = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Solr_Query', $this->getKeywords());
 		$solrConfiguration = \tx_solr_Util::getSolrConfiguration();
-
 		$query->setFieldList($this->getFieldList());
         $query->setUserAccessGroups($this->userAccessGroups);
 
