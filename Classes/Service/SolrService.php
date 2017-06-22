@@ -23,6 +23,7 @@ namespace CIC\Cicbase\Service;
 	 *
 	 *  This copyright notice MUST APPEAR in all copies of the script!
 	 ***************************************************************/
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  *
@@ -388,6 +389,13 @@ class SolrService {
 		if($this->boostQuery) {
 			$query->setBoostQuery($this->boostQuery);
 		}
+
+        $searchComponents = GeneralUtility::makeInstance('Tx_Solr_Search_SearchComponentManager')->getSearchComponents();
+		/** @var \Tx_Solr_Search_FacetingComponent $facetingComponent */
+        if ($facetingComponent = $searchComponents['faceting']) {
+            $facetingComponent->setSearchConfiguration($solrConfiguration['search.']);
+            $facetingComponent->initializeSearchComponent();
+        }
 
 
 		// Get default filters from the SOLR search configuration
