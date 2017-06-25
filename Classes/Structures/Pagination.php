@@ -3,6 +3,7 @@
 namespace CIC\Cicbase\Structures;
 
 use CIC\Cicbase\Utility\Arr;
+use TYPO3\CMS\Core\Utility\MathUtility;
 
 class Pagination
 {
@@ -33,8 +34,8 @@ class Pagination
         if ($pageSize == 0) {
             throw new \Exception('Cannot paginate without a $pageSize parameter');
         }
-        $this->current = $currentPage;
         $this->last = ceil($totalItems / $pageSize);
+        $this->current = MathUtility::forceIntegerInRange($currentPage, 1, $this->last);
         $this->pageSize = $pageSize;
         $this->mode = $mode;
     }
@@ -209,7 +210,7 @@ class Pagination
      *
      * Given [1,2,3] & [5,6,7], it'd be a little silly to resolve that to
      * [1,2,3,…,5,6,7]. Don't you agree? Instead, we'll just give you
-     * [1,2,3,4,5,6,7]. 
+     * [1,2,3,4,5,6,7].
      *
      *
      * @param $first
