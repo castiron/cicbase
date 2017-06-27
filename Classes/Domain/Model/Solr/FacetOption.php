@@ -1,6 +1,7 @@
 <?php namespace CIC\Cicbase\Domain\Model\Solr;
 
 use CIC\Cicbase\Traits\ExtbaseInstantiable;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class FacetOption
@@ -56,13 +57,29 @@ class FacetOption {
     }
 
     /**
+     * @return bool
+     */
+    public function getActive() {
+        $solrParams = GeneralUtility::_GP('tx_solr');
+        $activeOptionParams = $solrParams['filter'];
+        return in_array($this->uriParameterValue(), $activeOptionParams);
+    }
+
+    /**
+     * @return string
+     */
+    protected function uriParameterValue() {
+        return $this->facet->getUriParameter($this->getValue());
+    }
+
+    /**
      * @return array
      */
     public function getUriParameter() {
         return array(
             'tx_solr' => array(
                 'filter' => array(
-                    $this->facet->getUriParameter($this->getValue())
+                    $this->uriParameterValue()
                 )
             )
         );
