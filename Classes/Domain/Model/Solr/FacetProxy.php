@@ -47,6 +47,23 @@ class FacetProxy {
     }
 
     /**
+     * @return array
+     */
+    public function getActiveOptions() {
+        return array_values(array_filter($this->getOptions(), function (FacetOption $option) {
+            return $option->getActive();
+        }));
+    }
+
+    /**
+     * @return FacetOption|null
+     */
+    public function getFirstActiveOption() {
+        $options = $this->getActiveOptions();
+        return $options[0];
+    }
+
+    /**
      * @return mixed
      */
     protected function optionClass() {
