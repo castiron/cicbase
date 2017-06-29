@@ -8,6 +8,8 @@ use TYPO3\CMS\Core\Utility\MathUtility;
 class Pagination
 {
     const MODE_SIMPLE = 'simple';
+    const MODE_COMPLEX = 'complex';
+    const ELLIPSIS = '…';
 
     /** @var integer */
     protected $current;
@@ -137,6 +139,9 @@ class Pagination
             case self::MODE_SIMPLE:
                 $this->cachedResult = $this->makeSimpleArray();
                 break;
+            case self::MODE_COMPLEX:
+                $this->cachedResult = $this->makeComplexArray();
+                break;
         }
         return $this->cachedResult;
     }
@@ -155,8 +160,6 @@ class Pagination
      */
     protected function makeSimpleArray()
     {
-        $ellipsis = '…';
-
         if ($this->last == 0) {
             return array();
         }
@@ -181,19 +184,52 @@ class Pagination
         }
 
         // merge the page groupings or put in an ellipsis if we need to
-        $res1 = self::mergeOrEllipsify($firstPages, $middlePages, $ellipsis);
+        $res1 = self::mergeOrEllipsify($firstPages, $middlePages, self::ELLIPSIS);
         $res2 = self::mergeOrEllipsify($res1, $lastPages, 'ellipsis2');
 
         // since merging removes duplicates, our second $ellipsis would be removed
         // to avoid that (or any other solution), we just used a placeholder
         $key = array_search('ellipsis2', $res2);
         if ($key) {
-            $res2[$key] = $ellipsis;
+            $res2[$key] = self::ELLIPSIS;
         }
 
         return $res2;
     }
 
+    /**
+     * Creates an array of pages like
+     *
+     * ['page' => true, 'value' => '1'], ['page' => true, value => '2'], ['page' => true, value => '3'],
+     * ['page' => false', 'value' => '…'], ['page' => true, 'value' => '10'], ['page' => true, 'value' => '11'],
+     * ['page' => true, 'disabled' => true, 'value' => '12'] ...
+     *
+     * where there are 101 pages and the current page is 12.
+     *
+     * Use me in a Fluid template!
+     *
+     * @return array
+     */
+    protected function makeComplexArray() {
+        $simple = $this->makeSimpleArray();
+        $complex = [];
+        foreach($simple as $item) {
+            $value = $item;
+            if($item == $this->getCurrentPage()) {
+                $page = true;
+                $disabled = true;
+            } elseif($item == self::ELLIPSIS) {
+                $page = false;
+                $disabled = true;
+            } else {
+                $page = 'true';
+                $disabled = false;
+            }
+
+            $complex[] = ['page' => $page, 'disabled' => $disabled, 'value' => $value];
+        }
+        return $complex;
+    }
 
     /**
      * If the given two sequences overlap or touch, then we don't join
