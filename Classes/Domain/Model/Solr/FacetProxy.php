@@ -68,7 +68,7 @@ class FacetProxy {
      */
     protected function optionClass() {
         $conf = $this->getConfiguration();
-        return $conf['optionClass'] ?: FacetOption::class;
+        return $conf['optionClass'] ?: 'CIC\Cicbase\Domain\Model\Solr\FacetOption';
     }
 
     /**
@@ -112,7 +112,7 @@ class FacetProxy {
      * @return object
      */
     protected static function _getSearch() {
-        return GeneralUtility::makeInstance(\Tx_Solr_Search::class);
+        return GeneralUtility::makeInstance('Tx_Solr_Search');
     }
 
 }
