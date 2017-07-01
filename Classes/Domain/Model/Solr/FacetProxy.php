@@ -104,7 +104,7 @@ class FacetProxy {
     /**
      * @return array
      */
-    protected function getConfiguration() {
+    public function getConfiguration() {
         return $this->txSolrFacet->getConfiguration();
     }
 
