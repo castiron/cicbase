@@ -57,7 +57,7 @@ class GeolocationQueryUtility {
     public static function getRecordsWithin($tableName, $select = '*', $distance, LatLng $fromLatLng, $addWhere = '', $unitType = 'miles', $groupBy = '', $orderBy = '', $limit = '', $latitudeFieldName = 'latitude', $longitudeFieldName = 'longitude') {
         static::initializeFrontend();
         $addSelect = static::distanceQueryField($latitudeFieldName, $longitudeFieldName, $fromLatLng, $unitType) . ' AS calc_distance';
-        $having = 'calc_distance < ' . $distance;
+        $having = 'calc_distance < ' . intval($distance);
         $q = "SELECT $select, " . $addSelect
             . " FROM $tableName "
             . " HAVING " . $having . $addWhere . static::enableFields($tableName)
