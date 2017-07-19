@@ -409,6 +409,10 @@ class SolrService {
 			$this->setFilters($defaultFilters);
 		}
 
+		if($solrConfiguration['search.']['spellchecking']) {
+            $query->setSpellchecking();
+		}
+
 		foreach($this->filters as $filter) {
 			$query->addFilter($filter);
 		}
@@ -422,12 +426,19 @@ class SolrService {
 
 	/**
 	 *
-	 *
 	 */
 	public function getResultDocuments() {
 		$this->executeQuery();
 		return $this->search->getResultDocuments();
 	}
+
+    /**
+     * Return the response body
+     * @return array
+     */
+	public function getBody() {
+		return $this->body;
+    }
 
     /**
      * @param array $groups
