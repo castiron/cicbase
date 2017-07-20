@@ -28,17 +28,17 @@ class TypolinkService implements SingletonInterface {
      */
     public function initializeObject() {
         /**
+         * Do we have a cObj?
+         */
+        $this->ensureContentObjectRenderer();
+
+        /**
          * Make sure TSFE is fully set up
          */
         static::initializeFrontend();
-
-        /**
-         * Do we have a cObj?
-         */
-        if (!is_object($this->contentObjectRenderer)) {
-            $this->initContentObjectRenderer();
-        }
     }
+
+
 
     /**
      * @param string|int|array $config
@@ -49,6 +49,15 @@ class TypolinkService implements SingletonInterface {
             $config = array('parameter' => $config);
         }
         return $this->contentObjectRenderer->typoLink_URL($config);
+    }
+
+    protected function ensureContentObjectRenderer() {
+        /**
+         * Do we have a cObj?
+         */
+        if (!is_object($this->contentObjectRenderer)) {
+            $this->initContentObjectRenderer();
+        }
     }
 
     /**
