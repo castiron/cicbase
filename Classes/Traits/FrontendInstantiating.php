@@ -86,7 +86,9 @@ trait FrontendInstantiating {
             if (!$GLOBALS['TCA']) {
                 \TYPO3\CMS\Core\Core\Bootstrap::getInstance()->loadCachedTca();
             }
-            $GLOBALS['TSFE']->determineId();
+            if (!$GLOBALS['TSFE']->id) {
+                $GLOBALS['TSFE']->determineId();
+            }
             $GLOBALS['TSFE']->getConfigArray();
         }
 
