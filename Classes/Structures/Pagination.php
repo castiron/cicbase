@@ -37,7 +37,7 @@ class Pagination
             throw new \Exception('Cannot paginate without a $pageSize parameter');
         }
         $this->last = ceil($totalItems / $pageSize);
-        $this->current = MathUtility::forceIntegerInRange($currentPage, 1, $this->last);
+        $this->current = MathUtility::forceIntegerInRange($currentPage, 1, $this->last > 0 ? $this->last : 1);
         $this->pageSize = $pageSize;
         $this->mode = $mode;
     }
