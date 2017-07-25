@@ -1,7 +1,9 @@
 <?php namespace CIC\Cicbase\Proxy\File;
 
 use CIC\Cicbase\Utility\HttpHeaderUtility;
+use CIC\Cicbase\Utility\MimeTypeUtility;
 use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 
 /**
@@ -31,12 +33,27 @@ class FalFileProxyDeliverer extends FileProxyDeliverer {
     }
 
     /**
-     * @param File $file
+     * Use the FAL mime type, but if it looks generic, try to obtain the mime type from the path
+     *
+     * @param FileInterface $file
+     * @return array|string
+     */
+    protected static function getFileMimeWithFallback(FileInterface $file) {
+        $mimeType = $file->getMimeType();
+        if (!$mimeType || $mimeType === 'text/plain') {
+            return MimeTypeUtility::mimeFromPath($file->getPublicUrl()) ?: 'text/plain';
+        }
+
+        return $mimeType;
+    }
+
+    /**
+     * @param FileInterface $file
      * @return array
      */
-    protected static function fileHeaders(File $file) {
+    protected static function fileHeaders(FileInterface $file) {
         return array(
-            'Content-Type: ' . $file->getMimeType(),
+            'Content-Type: ' . static::getFileMimeWithFallback($file),
             'Content-Length: ' . $file->getSize(),
         );
     }
