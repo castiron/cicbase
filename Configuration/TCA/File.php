@@ -100,7 +100,13 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 						'type' => 'popup',
 						'title' => 'Link',
 						'icon' => 'link_popup.gif',
-						'script' => 'browse_links.php?mode=wizard',
+						'module' => array(
+							'name' => 'wizard_element_browser',
+							'urlParameters' => array(
+								'mode' => 'wizard',
+								'act' => 'file'
+							)
+						),
 						'JSopenParams' => 'height=800,width=500,status=0,menubar=0,scrollbars=1'
 					),
 				),
@@ -178,7 +184,3 @@ $TCA['tx_cicbase_domain_model_file'] = array(
 		),
 	),
 );
-
-
-
-?>
