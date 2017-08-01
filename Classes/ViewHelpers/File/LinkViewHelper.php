@@ -40,10 +40,14 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 		}
 
 		if($linkText) {
-			$text = $linkText;
+			if($linkText == '__renderChildren__') {
+				$text = $this->renderChildren();
+			} else {
+				$text = $linkText;
+			}
 		} elseif($file->getTitle()) {
 			$text = $file->getTitle();
-		}else {
+		} else {
 			$text = $file->getOriginalFilename();
 		}
 
@@ -54,5 +58,3 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 		return '<a target="_blank" href="'.$uri.'" '.$classAttr.'>'.$text.'</a>';
 	}
 }
-
-?>
