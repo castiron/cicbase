@@ -85,6 +85,22 @@ trait Database {
     }
 
     /**
+     * @param $table
+     * @param $fields_values
+     * @param bool $no_quote_fields
+     * @param array $excludeFromUpdate
+     * @return $this
+     * @throws Exception
+     */
+    public static function exec_UPSERTquery($table, $fields_values, $no_quote_fields = FALSE, $excludeFromUpdate = array()) {
+        $query = static::UPSERTquery($table, $fields_values, $no_quote_fields, $excludeFromUpdate);
+        static::db()->sql_query($query);
+        if ($err = static::db()->sql_error()) {
+            throw new Exception($err);
+        }
+    }
+
+    /**
      * @param $fieldsValues
      * @return string
      */
