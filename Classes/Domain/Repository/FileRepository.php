@@ -1,8 +1,11 @@
 <?php
+
 namespace CIC\Cicbase\Domain\Repository;
 use CIC\Cicbase\Utility\Arr;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Utility\ArrayUtility;
+use Aws\S3\S3Client;
+use Aws\Credentials\Credentials;
 
 /***************************************************************
  *  Copyright notice
@@ -64,7 +67,6 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 			);
 		}
 	}
-
 
 	/**
 	 * Constructs a new Repository
@@ -208,19 +210,14 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 	 * @return \AmazonS3
 	 */
 	protected function initializeS3() {
-		$extensionPath = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('cicbase');
-		require_once($extensionPath . 'Vendor/awssdk/sdk.class.php');
-		\CFCredentials::set(array(
-			'production' => array(
+		return new S3Client([
+			'version' => 'latest',
+			'region' => 'us-east-2',
+			'credentials' => [
 				'key' => $this->cicbaseConfiguration['AWSKey'],
-				'secret' => $this->cicbaseConfiguration['AWSSecret'],
-				'default_cache_config' => '',
-				'certificate_authority' => true
-			),
-			'@default' => 'production'
-		));
-		$s3 = new \AmazonS3();
-		return $s3;
+				'secret' => $this->cicbaseConfiguration['AWSSecret']
+			]
+		]);
 	}
 
 	/**
@@ -255,34 +252,37 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 		// source path
 		$source = $fileObject->getPath();
 
-		if($fileObject->getAwsbucket()) {
-			// copy it to another bucket
+		if ($fileObject->getAwsbucket()) {
 			$sourceBucket = $fileObject->getAwsbucket();
-			$sourceConfig = array('bucket' => $sourceBucket, 'filename' => $source. '/'. $fileObject->getFilename());
-			$destinationConfig = array('bucket' => $destinationBucket, 'filename' => $relativeDestinationPath . '/' . $destinationFilename);
-			$response = $s3->copy_object(
-				$sourceConfig,
-				$destinationConfig,
-				array('acl' => \AmazonS3::ACL_PUBLIC)
-			);
-			if($response->isOk()) {
-				$deleteResponse = $s3->delete_object($sourceBucket, $source . '/' . $fileObject->getFilename());
-			} else {
+
+			try {
+				$s3->copyObject(array(
+					'Bucket' => $destinationBucket,
+					'Key' => $relativeDestinationPath . '/' . $destinationFilename,
+					'CopySource' => "{$sourceBucket}/" . $source . '/' . $fileObject->getFilename()
+				));
+
+				$s3->deleteObject([
+					'Bucket' => $sourceBucket,
+					'Key' => $source . '/' . $fileObject->getFilename()
+				]);
+			} catch (Exception $e) {
 				return new \TYPO3\CMS\Extbase\Error\Error('Unable to save file to AWS S3', 1336600878);
 			}
 		} else {
-			// create a new object
-			$response = $s3->create_object($destinationBucket, $relativeDestinationPath . '/' . $destinationFilename, array(
-				'fileUpload' => $source,
-				'contentType' => $fileObject->getMimeType()
-			));
-		}
-		if($response->isOK()) {
-			$fileObject->setFilename($destinationFilename);
-			$fileObject->setPath($relativeDestinationPath);
-			$fileObject->setAwsBucket($destinationBucket);
-		} else {
-			return new \TYPO3\CMS\Extbase\Error\Error('Unable to save file to AWS S3', 1336600875);
+			try {
+				$s3->putObject([
+					'Bucket' => $destinationBucket,
+					'Key' => $relativeDestinationPath . '/' . $destinationFilename,
+					'Body' => fopen($source, 'r')
+				]);
+
+				$fileObject->setFilename($destinationFilename);
+				$fileObject->setPath($relativeDestinationPath);
+				$fileObject->setAwsBucket($destinationBucket);
+			} catch (Exception $e) {
+				return new \TYPO3\CMS\Extbase\Error\Error('Unable to save file to AWS S3', 1336600875);
+			}
 		}
 	}
 
@@ -362,10 +362,4 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 			$this->defaultQuerySettings->setStoragePageIds(explode(',', $configuration['storagePids'][$this->objectType]));
 		}
 	}
-
 }
-
-
-
-
-?>
