@@ -62,6 +62,9 @@ class FacetOption {
     public function getActive() {
         $solrParams = GeneralUtility::_GP('tx_solr');
         $activeOptionParams = $solrParams['filter'];
+        if (!is_array($activeOptionParams)) {
+            return false;
+        }
         return in_array($this->uriParameterValue(), $activeOptionParams);
     }
 
