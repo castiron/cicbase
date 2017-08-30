@@ -262,6 +262,10 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 					'CopySource' => "{$sourceBucket}/" . $source . '/' . $fileObject->getFilename()
 				));
 
+				$fileObject->setFilename($destinationFilename);
+				$fileObject->setPath($relativeDestinationPath);
+				$fileObject->setAwsBucket($destinationBucket);
+
 				$s3->deleteObject([
 					'Bucket' => $sourceBucket,
 					'Key' => $source . '/' . $fileObject->getFilename()
