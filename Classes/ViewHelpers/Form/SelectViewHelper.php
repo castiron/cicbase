@@ -46,11 +46,11 @@ class SelectViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Form\SelectViewHelpe
 	public function render() {
 		$name = $this->getName();
 
-		if ($this->hasArgument('dataPlaceholder')) {
+		if ($this->hasArgument('dataPlaceholder') && $this->argument['dataPlaceholder']) {
 			$this->tag->addAttribute('data-placeholder', $this->arguments['dataPlaceholder']);
 		}
 
-		if ($this->hasArgument('multiple')) {
+		if ($this->hasArgument('multiple') && $this->argument['multiple']) {
 			$name .= '[]';
 		}
 
