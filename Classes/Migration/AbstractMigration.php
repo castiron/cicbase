@@ -446,9 +446,10 @@ abstract class AbstractMigration implements MigrationInterface {
      * @param $keyName
      * @param $field
      * @param int $size
+     * @param bool $ignore
      * @throws Exception
      */
-    protected function addUniqueKey($table, $keyName, $field, $size = 200) {
+    protected function addUniqueKey($table, $keyName, $field, $size = 200, $ignore = false) {
         if (!$field) {
             throw new Exception('Please specify the field(s) to use for your key');
         }
@@ -456,7 +457,7 @@ abstract class AbstractMigration implements MigrationInterface {
             $this->log('Nothing to do.');
             return;
         }
-        $q = 'ALTER TABLE ' . static::safeTickQuoteName($table)
+        $q = 'ALTER ' . ($ignore ? 'IGNORE ' : '') . 'TABLE ' . static::safeTickQuoteName($table)
             . ' ADD UNIQUE KEY ' . static::safeTickQuoteName($keyName)
             . '('
                 . static::safeTickQuoteName($field)
