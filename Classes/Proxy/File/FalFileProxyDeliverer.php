@@ -54,8 +54,10 @@ class FalFileProxyDeliverer extends FileProxyDeliverer {
     protected static function fileHeaders(FileInterface $file) {
         return array(
             'Content-Type: ' . static::getFileMimeWithFallback($file),
-            'Content-Length: ' . $file->getSize(),
+            'Content-Length: ' . filesize($file->getForLocalProcessing(false)),
         );
     }
+
+
 
 }

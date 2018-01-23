@@ -39,6 +39,11 @@ class FileProxyDeliverer implements FileProxyDelivererInterface {
         header("Content-Type: $mimeType");
 
         /**
+         * Send content-length header
+         */
+        header('Content-Length: ' . filesize($path));
+
+        /**
          * Send the headers
          */
         if (count($headers)) {
