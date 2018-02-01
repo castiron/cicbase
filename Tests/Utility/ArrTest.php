@@ -439,4 +439,33 @@ class ArrTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
             ['b' => 'sandwich', 'a' => 'whatever'],
         ], 'a', true));
     }
+
+    /**
+     * @test
+     */
+    public function testItRemapsArrayKeys() {
+        $input = [
+            'jimmy' => '123',
+            'sandwich' => 'nodules',
+            'flobber' => 123,
+            'gorf' => '123',
+            'florper' => null,
+            'hands' => ['123', '456', null, '', 13],
+        ];
+        $this->assertEquals($input, Arr::remapKeys($input, []));
+        $this->assertEquals([
+            'nodes' => '123',
+            'sandwich' => 'nodules',
+            'flobber' => 123,
+            'moynihan' => '123',
+            'florper' => null,
+            'hands' => ['123', '456', null, '', 13],
+        ], Arr::remapKeys($input, [
+            'jimmy' => 'nodes',
+            'gorf' => 'moynihan',
+            'bloofer' => 'notfound',
+        ]));
+
+        $this->assertEquals([], Arr::remapKeys([], []));
+    }
 }

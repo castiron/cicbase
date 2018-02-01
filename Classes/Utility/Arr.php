@@ -1,6 +1,7 @@
 <?php
 
 namespace CIC\Cicbase\Utility;
+use TYPO3\CMS\Core\Exception;
 
 /**
  *
@@ -56,6 +57,31 @@ class Arr {
 		}
 		return $new;
 	}
+
+    /**
+     * @param $arr
+     * @param array $mapping
+     * @return mixed
+     * @throws Exception
+     */
+    public static function remapKeys($arr, $mapping = [])
+    {
+        if (!is_array($mapping)) {
+            throw new Exception('You must pass a key mapping to this method');
+        }
+
+        if (count($mapping) === 0) {
+            return $arr;
+        }
+
+        $out = [];
+        foreach($arr as $key => $val) {
+            $newKey = $mapping[$key] ?: $key;
+            $out[$newKey] = $val;
+        }
+
+        return $out;
+    }
 
 
 	/**
