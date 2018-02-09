@@ -21,14 +21,18 @@ trait Database {
     /**
      * @param $table
      * @param string $alias
-     * @return string
+     * @param bool $includeConjuction
+     * @return mixed|string
      */
-    protected static function enableFields($table, $alias = '') {
+    protected static function enableFields($table, $alias = '', $includeConjuction = true) {
         if (static::isBackend()) {
             return static::aliasTableInQuery(BackendUtility::BEenableFields($table), $table, $alias);
         }
         static::initializeFrontend();
         $out = $GLOBALS['TSFE']->sys_page->enableFields($table);
+        if (!$includeConjuction) {
+            $out = preg_replace('~^[\s]+AND~', '', $out);
+        }
         return static::aliasTableInQuery($out, $table, $alias);
     }
 
