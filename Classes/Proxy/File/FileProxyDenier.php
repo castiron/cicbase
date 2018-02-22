@@ -3,6 +3,7 @@
 use CIC\Cicbase\Proxy\File\Contracts\FileProxyDenierInterface;
 use CIC\Cicbase\Proxy\File\Traits\FileAssociable;
 use CIC\Cicbase\Traits\FrontendInstantiating;
+use CIC\Cicbase\Utility\HttpHeaderUtility;
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
@@ -22,6 +23,7 @@ class FileProxyDenier implements FileProxyDenierInterface {
         if (TYPO3_MODE !== 'FE') {
             static::initializeFrontend();
         }
+        HttpHeaderUtility::noCache();
         static::tsfe()->pageNotFoundAndExit('File not found');
     }
 
