@@ -71,7 +71,7 @@ class UploadViewHelper extends AbstractFormFieldViewHelper {
 		$uploadField = $this->tag->render();
 		$valueFields = '';
 
-		$value = $this->getValue(FALSE);
+		$value = $this->getValueAttribute();
 
 		// If we have a value, render hidden input elements to
 		// preserve the value in case nothing is uploaded.

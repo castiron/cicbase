@@ -42,7 +42,7 @@ class SelectWithBodyViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Form\Abstrac
 		}
 		$this->tag->addAttribute('name', $name);
 		$options = $this->renderChildren();
-		$value = $this->getValue();
+		$value = $this->getValueAttribute();
 		if ($value) {
 			if (is_array($value)) {
 				foreach ($value as $val) {

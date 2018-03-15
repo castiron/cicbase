@@ -216,7 +216,7 @@ class ChooseViewHelper extends AbstractFormFieldViewHelper {
 			return $this->selectedValue;
 		}
 
-		$value = $this->getValue();
+		$value = $this->getValueAttribute();
 		if (!$this->hasArgument('optionValueField')) {
 
 			# Handle the situation where we might have more than one value here.

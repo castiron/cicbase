@@ -70,7 +70,7 @@ class TextareaViewHelper extends AbstractFormFieldViewHelper {
 
 		$this->tag->forceClosingTag(TRUE);
 		$this->tag->addAttribute('name', $name);
-		$this->tag->setContent(htmlspecialchars($this->getValue()));
+		$this->tag->setContent(htmlspecialchars($this->getValueAttribute()));
 
 		$this->setErrorClassAttribute();
 

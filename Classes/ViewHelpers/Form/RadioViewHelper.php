@@ -83,7 +83,7 @@ class RadioViewHelper extends AbstractFormFieldViewHelper {
 			}
 			$checked = $propertyValue == $value; // not a type-safe comparison by intention
 		}
-		if($propertyValue == FALSE && ((isset($this->arguments['value']) && $this->arguments['value'] == $value)|| $this->getValue() == $value) ) {
+		if($propertyValue == FALSE && ((isset($this->arguments['value']) && $this->arguments['value'] == $value)|| $this->getValueAttribute() == $value) ) {
 			$checked = TRUE;
 		}
 
