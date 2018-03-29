@@ -79,19 +79,20 @@ class FileProxy implements FileProxyInterface {
             static::getTsfe()->pageNotFoundAndExit('File not found');
         }
 
-        if ($this->fileGateway->isAccessible()) {
-            $headers = array();
-            if ($this->fileGateway->isPublic()) {
-                $headers[] = 'Cache-Control: public';
-            } else {
-                $headers = array_merge($headers, HttpHeaderUtility::noCacheHeaders());
-            }
-            $this->fileDeliverer->respond($headers);
-            die;
+        if (!$this->fileGateway->isAccessible()) {
+            $this->fileDenier->respond();
+            exit;
         }
 
-        $this->fileDenier->respond();
-        die;
+        $headers = array();
+        if ($this->fileGateway->isPublic()) {
+            $headers[] = 'Cache-Control: public';
+        } else {
+            $headers = array_merge($headers, HttpHeaderUtility::noCacheHeaders());
+        }
+        $this->fileDeliverer->respond($headers);
+
+        exit;
     }
 
     /**
