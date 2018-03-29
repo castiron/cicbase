@@ -23,10 +23,10 @@
 	prevent the email from being sent.</p>
 	<f:if condition="{emailTemplate.body}">
 		<f:then>
-			<f:form.textarea id="template-editor" property="body" />
+			<f:form.textarea id="template-editor" property="body" style="width:100%" />
 		</f:then>
 		<f:else>
-			<f:form.textarea id="template-editor" property="body" value="{defaultBody}" />
+			<f:form.textarea id="template-editor" property="body" style="width:100%" value="{defaultBody}" />
 		</f:else>
 	</f:if>
 </div>
