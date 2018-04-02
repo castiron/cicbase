@@ -9,6 +9,20 @@ trait CliReportable {
      * @return bool
      */
     protected static function isCli() {
+        return static::isLegacyCli() || static::isNewCli();
+    }
+
+    /**
+     * @return bool
+     */
+    protected static function isNewCli() {
+        return defined('TYPO3_REQUESTTYPE_CLI') && defined('TYPO3_REQUESTTYPE') && TYPO3_REQUESTTYPE === TYPO3_REQUESTTYPE_CLI;
+    }
+
+    /**
+     * @return bool
+     */
+    protected static function isLegacyCli() {
         return defined('TYPO3_cliMode');
     }
 
