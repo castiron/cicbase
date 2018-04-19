@@ -106,6 +106,10 @@ class GeolocationService {
 		$addressParamValue = urlencode($address);
 		$requestUrl = $urlBase.$addressParamValue;
 
+        if ($key = $this->getApiKey()) {
+            $requestUrl .= '&api_key=' . $key;
+        }
+
 		$cacheKey = 'geolocation_'.md5($requestUrl);
 		if($this->cache->has($cacheKey)) {
 			$out = unserialize($this->cache->get($cacheKey));
