@@ -25,6 +25,7 @@ namespace CIC\Cicbase\Service;
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
+use CIC\Cicbase\Exception\GeolocationError;
 use CIC\Cicbase\Traits\ExtbaseInstantiable;
 
 /**
@@ -63,12 +64,14 @@ class GeolocationService {
 		return $this->apiKey;
 	}
 
-	/**
-	 * Returns Latitude and Longitude for an Address Object
-	 *
-	 * @param \CIC\Cicbase\Domain\Model\Address $address The address to geocode
-	 * @return \CIC\Cicbase\Domain\Model\LatLng
-	 */
+    /**
+     * Returns Latitude and Longitude for an Address Object
+     *
+     * @param $address
+     * @param bool $cacheFailures
+     * @return object
+     * @throws GeolocationError
+     */
 	public function getLatLng($address, $cacheFailures = false) {
 
 		// get the address string
@@ -102,12 +105,12 @@ class GeolocationService {
 	 * @return array The results of the Google geocoding API query
 	 */
 	protected function geocode($address, $cacheFailures = false) {
-		$urlBase = 'http://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=';
+		$urlBase = 'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=';
 		$addressParamValue = urlencode($address);
 		$requestUrl = $urlBase.$addressParamValue;
 
         if ($key = $this->getApiKey()) {
-            $requestUrl .= '&api_key=' . $key;
+            $requestUrl .= '&key=' . $key;
         }
 
 		$cacheKey = 'geolocation_'.md5($requestUrl);
@@ -121,7 +124,9 @@ class GeolocationService {
 				if($resObj->status == 'OK') {
 					$out = $resObj->results[0]->geometry;
 					$out->partial_match = $resObj->results[0]->partial_match;
-				}
+				} else {
+                    throw new GeolocationError("Could not geolocate address: $address. Status: " . $resObj->status);
+                }
 			}
 
 			if($cacheFailures || ($out->location->lat && $out->location->lng)) $this->cache->set($cacheKey, serialize($out), array(), $this->cacheLifetime);
