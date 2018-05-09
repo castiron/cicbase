@@ -62,6 +62,13 @@ class Address {
 	 */
 	protected $zip;
 
+
+    /**
+     * Country code
+     * @var string
+     */
+	protected $countryCode;
+
     /**
      * Address constructor
      */
@@ -69,6 +76,7 @@ class Address {
         $this->address = $args['address'];
         $this->city = $args['city'];
         $this->state = $args['state'];
+        $this->countryCode = $args['country_code'];
         $this->zip = $args['zip'];
     }
 
@@ -91,6 +99,20 @@ class Address {
 		return $this->address;
 	}
 
+    /**
+     * @param $countryCode
+     */
+	public function setCountryCode($countryCode) {
+        $this->countryCode = $countryCode;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCountryCode() {
+        return $this->countryCode;
+    }
+
 	/**
 	 *  Returns the full address all on one line, primarily used for geocoding
 	 *
@@ -110,6 +132,7 @@ class Address {
 		if($this->getCity()) $b[] = $this->getCity();
 		if($this->getState()) $b[] = $this->getState();
 		if($this->getZip()) $b[] = $this->getZip();
+        if($this->getCountryCode()) $b[] = $this->getCountryCode();
 		$a[] = implode(', ',$b);
 		$out = implode(chr(10),$a);
 		return $out;
