@@ -11,6 +11,9 @@ use TYPO3\CMS\Core\Resource\ResourceFactory;
  * @package CIC\Cicbase\Proxy\File
  */
 class FalFileProxyDeliverer extends FileProxyDeliverer {
+
+    const FALLBACK_MIME_TYPE = 'application/octet-stream';
+
     /**
      * @param $path
      * @param array $headers
@@ -71,12 +74,7 @@ class FalFileProxyDeliverer extends FileProxyDeliverer {
      * @return array|string
      */
     protected static function getFileMimeWithFallback(FileInterface $file) {
-        $mimeType = $file->getMimeType();
-        if (!$mimeType || $mimeType === 'text/plain') {
-            return MimeTypeUtility::mimeFromPath($file->getPublicUrl()) ?: 'text/plain';
-        }
-
-        return $mimeType;
+        return MimeTypeUtility::mimeFromPath($file->getPublicUrl()) ?: static::FALLBACK_MIME_TYPE;
     }
 
     /**

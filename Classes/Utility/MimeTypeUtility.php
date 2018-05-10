@@ -494,14 +494,43 @@ class MimeTypeUtility {
         }
 
         /**
-         * If we didn't detect a type, or PHP returned 'text/plain', let's
+         * , let's
          * try to get more detailed using the mapping we've got here.
          */
-        if (!$type || $type === 'text/plain') {
-            $info = pathinfo($path);
-            $type = static::extensionToMimeType($info['extension']);
+        if (static::shouldUseMapping($type, $path)) {
+            $type = static::extensionToMimeType(static::extensionFor($path));
         }
 
         return $type;
+    }
+
+    /**
+     * If we didn't detect a type, or PHP returned 'text/plain', we might need to use our hard-coded mapping here.
+     * Also, sometimes mime_content_type can fail, when default `magic.mime` PHP config doesn't contain a given mapping,
+     * or contains a wrong mapping. In particular this is the case with MS Office MIME types.
+     *
+     * @param $type
+     * @param $path
+     * @return bool
+     */
+    protected static function shouldUseMapping($type, $path) {
+        if (!$type) {
+            return true;
+        }
+
+        if ($type === 'text/plain') {
+            return true;
+        }
+
+        return $type === 'application/zip' // type is determined to be zip
+            && static::extensionFor($path) !== 'zip'; // but file extension is not
+    }
+
+    /**
+     * @param $path
+     * @return mixed
+     */
+    protected static function extensionFor($path) {
+        return pathinfo($path, PATHINFO_EXTENSION);
     }
 }
