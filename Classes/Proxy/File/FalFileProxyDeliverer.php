@@ -41,13 +41,12 @@ class FalFileProxyDeliverer extends FileProxyDeliverer {
      * RE: huge files: PHP handles huge files with `readfile` no problemo, but if output buffering is on you can run
      * into probs.
      *
-     * This wrapper makes sure there is no output buffering going on (which would cause the entire delivered file
-     * to be loaded into the buffer, potentially surpassing memory_limit).
+     * This wrapper makes sure there is no output buffering going on, which would cause the entire delivered file
+     * to be loaded into the buffer, potentially surpassing memory_limit.
      *
      * @param $path
      */
-    protected static function readfile($path)
-    {
+    protected static function readfile($path) {
         static::clearBuffer();
         readfile($path);
     }
@@ -87,7 +86,4 @@ class FalFileProxyDeliverer extends FileProxyDeliverer {
             'Content-Length: ' . filesize($file->getForLocalProcessing(false)),
         );
     }
-
-
-
 }
