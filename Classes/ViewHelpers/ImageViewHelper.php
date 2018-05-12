@@ -1,6 +1,5 @@
-<?php
+<?php namespace CIC\Cicbase\ViewHelpers;
 
-namespace CIC\Cicbase\ViewHelpers;
 use CIC\Cicbase\Utility\File;
 
 /**
