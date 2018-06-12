@@ -4,6 +4,10 @@ namespace CIC\Cicbase\Service;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * Class InjectionService
+ * @package CIC\Cicbase\Service
+ */
 class InjectionService extends \TYPO3\CMS\Extbase\Object\Container\Container {
 
 	/**
@@ -23,10 +27,12 @@ class InjectionService extends \TYPO3\CMS\Extbase\Object\Container\Container {
 	}
 
     /**
-     *
+     * @param object $instance
+     * @param \TYPO3\CMS\Extbase\Object\Container\ClassInfo $classInfo
      */
-	protected function initializeObject() {
-	    /**
+    protected function initializeObject($instance, \TYPO3\CMS\Extbase\Object\Container\ClassInfo $classInfo)
+    {
+        /**
          * Noop
          */
     }
