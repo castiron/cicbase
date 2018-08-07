@@ -39,12 +39,14 @@ class ImageReferenceViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHel
         $this->registerTagAttribute('tableName', 'string', 'The table name on the image reference', false, 'tt_content');
         $this->registerTagAttribute('fieldName', 'string', 'The field name on the image reference', false, 'media');
         $this->registerTagAttribute('fieldIndex', 'string', 'The ordinal index of the item in the relationship', false, '0');
+        $this->registerTagAttribute('urlOnly', 'boolean', 'Just return the URL', false, false);
     }
 
     /**
      * Resizes a given image (if required) and renders the respective img tag
      *
      * @return string
+     * @throws \TYPO3\CMS\Fluid\Core\ViewHelper\Exception
      */
     public function render()
     {
