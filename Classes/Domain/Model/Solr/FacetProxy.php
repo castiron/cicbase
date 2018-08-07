@@ -1,5 +1,7 @@
 <?php namespace CIC\Cicbase\Domain\Model\Solr;
 
+use ApacheSolrForTypo3\Solr\Facet\Facet;
+use ApacheSolrForTypo3\Solr\Search;
 use CIC\Cicbase\Traits\ExtbaseInstantiable;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -11,7 +13,7 @@ class FacetProxy {
     use ExtbaseInstantiable;
 
     /**
-     * @var \Tx_Solr_Facet_Facet
+     * @var Facet
      */
     protected $txSolrFacet;
 
@@ -22,9 +24,9 @@ class FacetProxy {
 
     /**
      * FacetProxy constructor.
-     * @param \Tx_Solr_Facet_Facet $txSolrFacet
+     * @param Facet $txSolrFacet
      */
-    public function __construct(\Tx_Solr_Facet_Facet $txSolrFacet) {
+    public function __construct(Facet $txSolrFacet) {
         $this->txSolrFacet = $txSolrFacet;
     }
 
@@ -112,7 +114,7 @@ class FacetProxy {
      * @return object
      */
     protected static function _getSearch() {
-        return GeneralUtility::makeInstance('Tx_Solr_Search');
+        return GeneralUtility::makeInstance(Search::class);
     }
 
 }

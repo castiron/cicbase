@@ -23,6 +23,10 @@ namespace CIC\Cicbase\Service;
 	 *
 	 *  This copyright notice MUST APPEAR in all copies of the script!
 	 ***************************************************************/
+use ApacheSolrForTypo3\Solr\ConnectionManager;
+use ApacheSolrForTypo3\Solr\Query;
+use ApacheSolrForTypo3\Solr\Search;
+use ApacheSolrForTypo3\Solr\Util;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -68,7 +72,7 @@ class SolrService {
 
 	/**
 	 * Solr search object, set when the query is executed
-	 * @var mixed|\tx_solr_Search|boolean
+	 * @var mixed|Search|boolean
 	 */
 	private $search = false;
 
@@ -359,12 +363,12 @@ class SolrService {
 	private function executeQuery() {
 		$this->queryExecuted = true;
 
-		$solrConnection = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Solr_ConnectionManager')->getConnection();
-		/** @var \Tx_Solr_Search $search */
-		$search = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Solr_Search', $solrConnection);
-		/** @var \Tx_Solr_Query $query */
-		$query = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Solr_Query', $this->getKeywords());
-		$solrConfiguration = \tx_solr_Util::getSolrConfiguration();
+		$solrConnection = GeneralUtility::makeInstance(ConnectionManager::class)->getConnection();
+		/** @var Search $search */
+		$search = GeneralUtility::makeInstance(Search::class, $solrConnection);
+		/** @var Query $query */
+		$query = GeneralUtility::makeInstance(Query::class, $this->getKeywords());
+		$solrConfiguration = Util::getSolrConfiguration();
 		$query->setFieldList($this->getFieldList());
         $query->setUserAccessGroups($this->userAccessGroups);
 
@@ -379,8 +383,9 @@ class SolrService {
 
 			$sorts = array();
 			foreach ($sortArray as $field => $dir) {
-				if ($dir != \tx_solr_Query::SORT_DESC && $dir != \tx_solr_Query::SORT_ASC) {
-					$dir = \tx_solr_Query::SORT_ASC; // an implicit default
+
+				if ($dir != Query::SORT_DESC && $dir != Query::SORT_ASC) {
+					$dir = Query::SORT_ASC; // an implicit default
 				}
 				$sorts[] = "$field ".strtolower($dir);
 			}
@@ -390,18 +395,19 @@ class SolrService {
 			$query->setBoostQuery($this->boostQuery);
 		}
 
-        $searchComponents = GeneralUtility::makeInstance('Tx_Solr_Search_SearchComponentManager')->getSearchComponents();
-		/** @var \Tx_Solr_Search_FacetingComponent $facetingComponent */
+        $searchComponents = GeneralUtility::makeInstance(Search\SearchComponentManager::class)->getSearchComponents();
+		$config = $solrConfiguration->getSearchConfiguration();
+		/** @var Search\FacetingComponent $facetingComponent */
         if ($facetingComponent = $searchComponents['faceting']) {
-            $facetingComponent->setSearchConfiguration($solrConfiguration['search.']);
+            $facetingComponent->setSearchConfiguration($config);
             $facetingComponent->initializeSearchComponent();
         }
 
 
 		// Get default filters from the SOLR search configuration
-		if (isset($solrConfiguration['search.']['query.']['filter.']) && is_array($solrConfiguration['search.']['query.']['filter.'])) {
+		if (isset($config['query.']['filter.']) && is_array($config['query.']['filter.'])) {
 			$defaultFilters = array();
-			foreach ($solrConfiguration['search.']['query.']['filter.'] as $searchFilter) {
+			foreach ($config['query.']['filter.'] as $searchFilter) {
 				$parts = explode(':', $searchFilter);
 				$defaultFilters[$parts[0]] = $parts[1];
 			}
@@ -409,7 +415,7 @@ class SolrService {
 			$this->setFilters($defaultFilters);
 		}
 
-		if($solrConfiguration['search.']['spellchecking']) {
+		if($config['spellchecking']) {
             $query->setSpellchecking();
 		}
 
@@ -429,7 +435,7 @@ class SolrService {
 	 */
 	public function getResultDocuments() {
 		$this->executeQuery();
-		return $this->search->getResultDocuments();
+		return $this->search->getResultDocumentsRaw();
 	}
 
     /**

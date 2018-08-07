@@ -1,5 +1,8 @@
 <?php namespace CIC\Cicbase\Traits\Solr;
 
+use ApacheSolrForTypo3\Solr\Facet\Facet;
+use ApacheSolrForTypo3\Solr\Facet\FacetRendererFactory;
+use ApacheSolrForTypo3\Solr\Util;
 use CIC\Cicbase\Domain\Model\Solr\FacetProxy;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -9,20 +12,20 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 trait Facetable {
     /**
-     * @return array
+     * @return \ApacheSolrForTypo3\Solr\System\Configuration\TypoScriptConfiguration
      */
     protected static function solrConfiguration() {
-        return \tx_solr_Util::getSolrConfiguration();
+        return Util::getSolrConfiguration();
     }
 
     /**
      * @param $configuredFacets
-     * @return \Tx_Solr_Facet_FacetRendererFactory
+     * @return FacetRendererFactory
      */
     protected static function getFacetRendererFactory($configuredFacets) {
-        /** @var \Tx_Solr_Facet_FacetRendererFactory $out */
+        /** @var FacetRendererFactory $out */
         $out = GeneralUtility::makeInstance(
-            'Tx_Solr_Facet_FacetRendererFactory',
+            FacetRendererFactory::class,
             $configuredFacets
         );
         return $out;
@@ -30,12 +33,12 @@ trait Facetable {
 
     /**
      * @param $facetName
-     * @param \Tx_Solr_Facet_FacetRendererFactory $facetRendererFactory
-     * @return \Tx_Solr_Facet_Facet
+     * @param FacetRendererFactory $facetRendererFactory
+     * @return Facet
      */
-    protected static function getFacet($facetName, \Tx_Solr_Facet_FacetRendererFactory $facetRendererFactory) {
-        /** @var \Tx_Solr_Facet_Facet $out */
-        $out = GeneralUtility::makeInstance('Tx_Solr_Facet_Facet',
+    protected static function getFacet($facetName, FacetRendererFactory $facetRendererFactory) {
+        /** @var Facet $out */
+        $out = GeneralUtility::makeInstance(Facet::class,
             $facetName,
             $facetRendererFactory->getFacetInternalType($facetName)
         );
