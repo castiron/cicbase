@@ -5,6 +5,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use TYPO3\CMS\Frontend\Page\PageGenerator;
 use TYPO3\CMS\Frontend\Page\PageRepository;
+use TYPO3\CMS\Frontend\Utility\EidUtility;
 
 /**
  * Class FrontendInstantiating
@@ -33,6 +34,8 @@ trait FrontendInstantiating {
      */
     protected static function initializeFrontend() {
         global $TYPO3_CONF_VARS;
+
+        EidUtility::initTCA();
 
         /**
          * Some frontend classes use this wacky time tracker and expect it to exist :/
@@ -79,7 +82,7 @@ trait FrontendInstantiating {
         /**
          * This is needed if we're trying to use RealURL :(
          */
-        if (!is_array($GLOBALS['TSFE']->config)) {
+        if (!$GLOBALS['TSFE']->config) {
             /**
              * This is needed for one of the subsequent TSFE or RealURL calls
              */
