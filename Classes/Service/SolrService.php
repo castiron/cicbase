@@ -434,10 +434,8 @@ class SolrService {
             foreach ($this->filters as $filter) {
                 $filters->add($filter);
             }
-            $query->addFilters($filters);
+            $query->setFilters($filters);
         }
-
-
 
 		$this->response = $search->search($query, $this->getQueryOffset(), $this->getQueryLimit());
 		$this->body = json_decode($this->response->getRawResponse());

@@ -15,11 +15,20 @@ namespace CIC\Cicbase\ViewHelpers;
  * Public License for more details.                                       *
  *                                                                        */
 
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
+
 /**
  *	Wraps some of the basic Typolink settings in a viewhelper. Good for rendering links to pages and page titles
  *	when all you have is the page id.
  */
-class TypolinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class TypolinkViewHelper extends AbstractTagBasedViewHelper {
+
+    /**
+     * @var bool
+     */
+    protected $escapeChildren = false;
+
+    protected $escapingInterceptorEnabled = false;
 
 	/**
 	 * @param string $parameter
@@ -34,6 +43,7 @@ class TypolinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
 	public function render($parameter, $target='',$noCache=0,$useCacheHash=1,$additionalParams=array(),$ATagParams = '',$extTarget = '') {
 		$typoLinkConf = array(
 			'parameter' => $parameter,
+            'htmlspecialchars' => 0,
 		);
 
 		if($target) {
@@ -66,8 +76,6 @@ class TypolinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
 			'typolink.' => $typoLinkConf,
 			'value' => $linkText
 		);
-
-		return $GLOBALS['TSFE']->cObj->cObjGetSingle('TEXT',$textContentConf);
+        return $GLOBALS['TSFE']->cObj->cObjGetSingle('TEXT', $textContentConf);
 	}
 }
-?>

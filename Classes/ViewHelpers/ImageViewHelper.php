@@ -1,6 +1,7 @@
 <?php namespace CIC\Cicbase\ViewHelpers;
 
 use CIC\Cicbase\Utility\File;
+use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
 
 /**
  * Class ImageViewHelper
@@ -26,42 +27,35 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper {
         return $image->getExtension() !== 'pdf';
     }
 
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument('additionalParameters', 'string', 'Raw imagemagick params to pass to the object');
+    }
+
     /**
      * Resizes a given image (if required) and renders the respective img tag
      *
-     * @see https://docs.typo3.org/typo3cms/TyposcriptReference/ContentObjects/Image/
-     * @param string $src a path to a file, a combined FAL identifier or an uid (integer). If $treatIdAsReference is set, the integer is considered the uid of the sys_file_reference record. If you already got a FAL object, consider using the $image parameter instead
-     * @param string $width width of the image. This can be a numeric value representing the fixed width of the image in pixels. But you can also perform simple calculations by adding "m" or "c" to the value. See imgResource.width for possible options.
-     * @param string $height height of the image. This can be a numeric value representing the fixed height of the image in pixels. But you can also perform simple calculations by adding "m" or "c" to the value. See imgResource.width for possible options.
-     * @param integer $minWidth minimum width of the image
-     * @param integer $minHeight minimum height of the image
-     * @param integer $maxWidth maximum width of the image
-     * @param integer $maxHeight maximum height of the image
-     * @param boolean $treatIdAsReference given src argument is a sys_file_reference record
-     * @param FileInterface|AbstractFileFolder $image a FAL object
-     * @param string $additionalParameters raw imagemagick params to pass to the object
-     *
-     * @throws \TYPO3\CMS\Fluid\Core\ViewHelper\Exception
-     * @return string Rendered tag
+     * @return string
      */
-    public function render($src = NULL, $width = NULL, $height = NULL, $minWidth = NULL, $minHeight = NULL, $maxWidth = NULL, $maxHeight = NULL, $treatIdAsReference = FALSE, $image = NULL, $additionalParameters = '') {
-        if (is_null($src) && is_null($image) || !is_null($src) && !is_null($image)) {
+    public function render() {
+        if (is_null($this->arguments['src']) && is_null($this->arguments['image']) || !is_null($this->arguments['src']) && !is_null($this->arguments['image'])) {
             throw new \TYPO3\CMS\Fluid\Core\ViewHelper\Exception('You must either specify a string src or a File object.', 1382284106);
         }
 
         try {
-            if ($image = $this->imageService->getImage($src, $image, $treatIdAsReference)) {
+            if ($image = $this->imageService->getImage($this->arguments['src'], $this->arguments['image'], $this->arguments['treatIdAsReference'])) {
                 if (!File::isProcessableFile($image)) {
                     return '';
                 }
                 $processingInstructions = array(
-                    'width' => $width,
-                    'height' => $height,
-                    'minWidth' => $minWidth,
-                    'minHeight' => $minHeight,
-                    'maxWidth' => $maxWidth,
-                    'maxHeight' => $maxHeight,
-                    'additionalParameters' => $additionalParameters ? $additionalParameters : $this->getDefaultAdditionalImagemagickParams($image),
+                    'width' => $this->arguments['width'],
+                    'height' => $this->arguments['height'],
+                    'minWidth' => $this->arguments['minWidth'],
+                    'minHeight' => $this->arguments['minHeight'],
+                    'maxWidth' => $this->arguments['maxWidth'],
+                    'maxHeight' => $this->arguments['maxHeight'],
+                    'additionalParameters' => $this->arguments['additionalParameters'] ? $this->arguments['additionalParameters'] : $this->getDefaultAdditionalImagemagickParams($image),
                 );
 
                 $processedImage = $this->imageService->applyProcessingInstructions($image, $processingInstructions);
@@ -95,7 +89,7 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper {
                 }
             }
 
-        } catch (ResourceDoesNotExistException $e) {
+        } catch (FolderDoesNotExistException $e) {
             // thrown if file does not exist
         } catch (\UnexpectedValueException $e) {
             // thrown if a file has been replaced with a folder

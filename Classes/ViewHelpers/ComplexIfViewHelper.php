@@ -3,35 +3,43 @@ namespace CIC\Cicbase\ViewHelpers;
 
 class ComplexIfViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionViewHelper {
 
+    /**
+     * Initialize arguments.
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument('condition1', 'boolean', 'condition1', false, null);
+        $this->registerArgument('condition2', 'boolean', 'condition2', false, null);
+        $this->registerArgument('junction', 'string', '"and" or "or"', false, null);
+        $this->registerArgument('condition3', 'boolean', 'condition3', false, null);
+    }
+
 	/**
-	 * @param boolean $condition1
-	 * @param boolean $condition2
-	 * @param string $junction
-	 * @param boolean $condition3
 	 * @return string
 	 * @throws \Exception
 	 */
-	public function render($condition1, $condition2, $junction, $condition3 = null) {
-		$junction = strtolower($junction);
+	public function render() {
+		$junction = strtolower($this->arguments['junction']);
 		switch($junction) {
 			case 'and':
 			case '&&':
-				if($condition3 === null) {
-					$true = $condition1 && $condition2;
+				if($this->arguments['condition3'] === null) {
+					$true = $this->arguments['condition1'] && $this->arguments['condition2'];
 				} else {
-					$true = $condition1 && $condition2 && $condition3;
+					$true = $this->arguments['condition1'] && $this->arguments['condition2'] && $this->arguments['condition3'];
 				}
 				break;
 			case 'or':
 			case '||':
-				if($condition3 === null) {
-					$true = $condition1 || $condition2;
+				if($this->arguments['condition3'] === null) {
+					$true = $this->arguments['condition1'] || $this->arguments['condition2'];
 				} else {
-					$true = $condition1 || $condition2 || $condition3;
+					$true = $this->arguments['condition1'] || $this->arguments['condition2'] || $this->arguments['condition3'];
 				}
 				break;
 			default:
-				throw new \Exception("The junction '$junction' is not recognized.");
+				throw new \Exception("The junction '${junction}' is not recognized.");
 		}
 
 		if ($true) {
