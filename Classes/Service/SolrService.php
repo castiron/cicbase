@@ -1,40 +1,20 @@
 <?php
 namespace CIC\Cicbase\Service;
 
-	/***************************************************************
-	 *  Copyright notice
-	 *
-	 *  (c) 2013
-	 *  All rights reserved
-	 *
-	 *  This script is part of the TYPO3 project. The TYPO3 project is
-	 *  free software; you can redistribute it and/or modify
-	 *  it under the terms of the GNU General Public License as published by
-	 *  the Free Software Foundation; either version 3 of the License, or
-	 *  (at your option) any later version.
-	 *
-	 *  The GNU General Public License can be found at
-	 *  http://www.gnu.org/copyleft/gpl.html.
-	 *
-	 *  This script is distributed in the hope that it will be useful,
-	 *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-	 *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	 *  GNU General Public License for more details.
-	 *
-	 *  This copyright notice MUST APPEAR in all copies of the script!
-	 ***************************************************************/
 use ApacheSolrForTypo3\Solr\ConnectionManager;
+use ApacheSolrForTypo3\Solr\Domain\Search\Query\ParameterBuilder\Filters;
+use ApacheSolrForTypo3\Solr\Domain\Search\Query\ParameterBuilder\QueryFields;
+use ApacheSolrForTypo3\Solr\Domain\Search\Query\ParameterBuilder\Sorting;
+use ApacheSolrForTypo3\Solr\Domain\Search\Query\QueryBuilder;
 use ApacheSolrForTypo3\Solr\Query;
 use ApacheSolrForTypo3\Solr\Search;
 use ApacheSolrForTypo3\Solr\Util;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+
 /**
- *
- *
- * @package orbest
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
- *
+ * Class SolrService
+ * @package CIC\Cicbase\Service
  */
 class SolrService {
 	/**
@@ -106,7 +86,6 @@ class SolrService {
 	 */
 	protected $boostQuery = false;
 
-
 	/**
 	 * The regex for text cleanup
 	 * @var string
@@ -120,7 +99,7 @@ class SolrService {
 	protected $filters = array();
 
 	/**
-	 * @var TYPO3\CMS\Core\TypoScript\Parser\TypoScriptParser
+	 * @var \TYPO3\CMS\Core\TypoScript\Parser\TypoScriptParser
 	 * @inject
 	 */
 	protected $typoscriptParser;
@@ -356,6 +335,35 @@ class SolrService {
 		return $val;
 	}
 
+    /**
+     * @return QueryBuilder
+     */
+	protected function getQueryBuilder() {
+        $typoscriptConfiguration = Util::getSolrConfiguration();
+        /** @var QueryBuilder $queryBuilder */
+        $queryBuilder = GeneralUtility::makeInstance(QueryBuilder::class, $typoscriptConfiguration);
+        return $queryBuilder
+            ->newSearchQuery($this->getKeywords())
+            ->useReturnFieldsFromTypoScript()
+            ->useQueryFieldsFromTypoScript()
+            ->useInitialQueryFromTypoScript()
+            ->useFiltersFromTypoScript()
+            ->useFacetingFromTypoScript()
+            ->useVariantsFromTypoScript()
+            ->useGroupingFromTypoScript()
+            ->useHighlightingFromTypoScript()
+            ->usePhraseFieldsFromTypoScript()
+            ->useBigramPhraseFieldsFromTypoScript()
+            ->useTrigramPhraseFieldsFromTypoScript();
+    }
+
+    /**
+     * @return \ApacheSolrForTypo3\Solr\Domain\Search\Query\Query
+     */
+	protected function getQuery() {
+        return $this->getQueryBuilder()->getQuery();
+    }
+
 	/**
 	 *
 	 *
@@ -367,11 +375,13 @@ class SolrService {
 		/** @var Search $search */
 		$search = GeneralUtility::makeInstance(Search::class, $solrConnection);
 		/** @var Query $query */
-		$query = GeneralUtility::makeInstance(Query::class, $this->getKeywords());
-		$solrConfiguration = Util::getSolrConfiguration();
-		$query->setFieldList($this->getFieldList());
-        $query->setUserAccessGroups($this->userAccessGroups);
 
+		$queryBuilder = $this->getQueryBuilder();
+        /** @var QueryFields $queryFields */
+
+        $queryBuilder->useUserAccessGroups($this->userAccessGroups);
+
+		$solrConfiguration = Util::getSolrConfiguration();
 
 		if($this->hasSorting()) {
 			$sortArray = $this->sorting;
@@ -384,15 +394,15 @@ class SolrService {
 			$sorts = array();
 			foreach ($sortArray as $field => $dir) {
 
-				if ($dir != Query::SORT_DESC && $dir != Query::SORT_ASC) {
-					$dir = Query::SORT_ASC; // an implicit default
+				if ($dir != Sorting::SORT_DESC && $dir != Sorting::SORT_ASC) {
+					$dir = Sorting::SORT_ASC; // an implicit default
 				}
 				$sorts[] = "$field ".strtolower($dir);
 			}
-			$query->setSorting(implode(',', $sorts));
+			$queryBuilder->useSorting(implode(',', $sorts));
 		}
 		if($this->boostQuery) {
-			$query->setBoostQuery($this->boostQuery);
+            $queryBuilder->useBoostQueries($this->boostQuery);
 		}
 
         $searchComponents = GeneralUtility::makeInstance(Search\SearchComponentManager::class)->getSearchComponents();
@@ -415,13 +425,19 @@ class SolrService {
 			$this->setFilters($defaultFilters);
 		}
 
-		if($config['spellchecking']) {
-            $query->setSpellchecking();
-		}
+        $queryBuilder->useSpellcheckingFromTypoScript();
+        $query = $queryBuilder->getQuery();
 
-		foreach($this->filters as $filter) {
-			$query->addFilter($filter);
-		}
+        if ($this->filters) {
+            /** @var Filters $filters */
+            $filters = GeneralUtility::makeInstance(Filters::class);
+            foreach ($this->filters as $filter) {
+                $filters->add($filter);
+            }
+            $query->addFilters($filters);
+        }
+
+
 
 		$this->response = $search->search($query, $this->getQueryOffset(), $this->getQueryLimit());
 		$this->body = json_decode($this->response->getRawResponse());
@@ -435,7 +451,7 @@ class SolrService {
 	 */
 	public function getResultDocuments() {
 		$this->executeQuery();
-		return $this->search->getResultDocumentsRaw();
+        return $this->search->getResponseBody()->docs;
 	}
 
     /**
