@@ -43,7 +43,15 @@ trait Database {
      * @return mixed|string
      */
     protected static function aliasTableInQuery($query = '', $table = '', $alias = '') {
-        return $alias ? str_replace("$table.", "$alias.", $query) : $query;
+        if (!$alias) {
+            return $query;
+        }
+
+        /**
+         * Cover both quoted and not-quoted scenarios
+         */
+        $temp = str_replace("$table.", "$alias.", $query);
+        return str_replace("`$table`.", "`$alias`.", $temp);
     }
 
     /**
