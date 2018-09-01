@@ -434,7 +434,7 @@ class SolrService {
             foreach ($this->filters as $filter) {
                 $filters->add($filter);
             }
-            $query->setFilters($filters);
+            $query->addFilters($filters);
         }
 
 		$this->response = $search->search($query, $this->getQueryOffset(), $this->getQueryLimit());
