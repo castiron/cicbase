@@ -16,7 +16,7 @@ trait CliReportable {
      * @return bool
      */
     protected static function isNewCli() {
-        return defined('TYPO3_REQUESTTYPE_CLI') && defined('TYPO3_REQUESTTYPE') && TYPO3_REQUESTTYPE === TYPO3_REQUESTTYPE_CLI;
+        return defined('TYPO3_REQUESTTYPE_CLI') && defined('TYPO3_REQUESTTYPE') && (TYPO3_REQUESTTYPE === TYPO3_REQUESTTYPE_CLI || TYPO3_REQUESTTYPE === (TYPO3_REQUESTTYPE_CLI | TYPO3_REQUESTTYPE_BE)) ;
     }
 
     /**
