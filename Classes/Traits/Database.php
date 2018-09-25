@@ -186,7 +186,7 @@ trait Database {
      * @throws Exception
      */
     protected static function buildWhereClause($whereArray = [], $conjunction = 'AND') {
-        $staged = '';
+        $staged = [];
 
         $validConjunction = function($val) {
             return $val === 'AND' || $val === 'OR';
