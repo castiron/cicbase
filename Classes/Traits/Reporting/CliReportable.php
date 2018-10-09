@@ -32,7 +32,7 @@ trait CliReportable {
      */
     protected static function cliMsg($msg, $inPlace = false) {
         if (static::isCli()) {
-            echo $msg . ($inPlace ? "\r" : "\n");
+            fwrite(STDOUT, $msg . ($inPlace ? "\r" : "\n"));
         }
     }
 
