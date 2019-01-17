@@ -10,7 +10,7 @@ namespace CIC\Cicbase\ViewHelpers;
 	 *                                                                        *
 	 * The TYPO3 project - inspiring people to share!                         *
 	 *                                                                        */
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  *
@@ -40,7 +40,7 @@ use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
  *
  *
  */
-class RenderViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\RenderViewHelper {
+class RenderViewHelper extends \TYPO3Fluid\Fluid\ViewHelpers\RenderViewHelper {
 	/**
 	 * Renders the content.
 	 *
@@ -51,22 +51,8 @@ class RenderViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\RenderViewHelper {
 	 */
 	public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
 	{
-
-		$section = $arguments['section'];
-		$partial = $arguments['partial'];
-		$optional = $arguments['optional'];
-		$arguments = static::loadSettingsIntoArguments($arguments['arguments'], $renderingContext);
-
 		$arguments['yield'] = new RenderViewHelperStringObject($renderChildrenClosure());
-
-		$viewHelperVariableContainer = $renderingContext->getViewHelperVariableContainer();
-		if ($partial !== null) {
-			return $viewHelperVariableContainer->getView()->renderPartial($partial, $section, $arguments);
-		} elseif ($section !== null) {
-			return $viewHelperVariableContainer->getView()->renderSection($section, $arguments, $optional);
-		}
-
-		return '';
+		return parent::renderStatic($arguments, $renderChildrenClosure, $renderingContext);
 	}
 }
 
