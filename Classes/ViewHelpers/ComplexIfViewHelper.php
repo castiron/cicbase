@@ -16,37 +16,35 @@ class ComplexIfViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractCondi
     }
 
 	/**
-	 * @return string
+	 * @param null $arguments
+	 * @return bool
 	 * @throws \Exception
 	 */
-	public function render() {
-		$junction = strtolower($this->arguments['junction']);
+	protected static function evaluateCondition($arguments = null)
+	{
+		$junction = strtolower($arguments['junction']);
 		switch($junction) {
 			case 'and':
 			case '&&':
-				if($this->arguments['condition3'] === null) {
-					$true = $this->arguments['condition1'] && $this->arguments['condition2'];
+				if($arguments['condition3'] === null) {
+					$true = $arguments['condition1'] && $arguments['condition2'];
 				} else {
-					$true = $this->arguments['condition1'] && $this->arguments['condition2'] && $this->arguments['condition3'];
+					$true = $arguments['condition1'] && $arguments['condition2'] && $arguments['condition3'];
 				}
 				break;
 			case 'or':
 			case '||':
-				if($this->arguments['condition3'] === null) {
-					$true = $this->arguments['condition1'] || $this->arguments['condition2'];
+				if($arguments['condition3'] === null) {
+					$true = $arguments['condition1'] || $arguments['condition2'];
 				} else {
-					$true = $this->arguments['condition1'] || $this->arguments['condition2'] || $this->arguments['condition3'];
+					$true = $arguments['condition1'] || $arguments['condition2'] || $arguments['condition3'];
 				}
 				break;
 			default:
 				throw new \Exception("The junction '${junction}' is not recognized.");
 		}
 
-		if ($true) {
-			return $this->renderThenChild();
-		} else {
-			return $this->renderElseChild();
-		}
+		return $true;
 	}
 }
-?>
+
