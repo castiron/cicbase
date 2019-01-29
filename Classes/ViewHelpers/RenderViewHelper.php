@@ -34,7 +34,7 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  *
  * <div class="form-input">
  *   <div class="input control-group">
- *     {yield}
+ *     {yield->f:format.raw()}
  *   </div>
  * </div>
  *
@@ -51,28 +51,7 @@ class RenderViewHelper extends \TYPO3Fluid\Fluid\ViewHelpers\RenderViewHelper {
 	 */
 	public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
 	{
-		$arguments['yield'] = new RenderViewHelperStringObject($renderChildrenClosure());
+		$arguments['arguments']['yield'] = $renderChildrenClosure();
 		return parent::renderStatic($arguments, $renderChildrenClosure, $renderingContext);
-	}
-}
-
-/**
- * If we simply pass a string for the value of a view variable, then it would
- * try to escape that string. So passing an object with a __toString() implementation
- * will prevent the string from being escaped.
- *
- */
-class RenderViewHelperStringObject {
-	/**
-	 * @var string
-	 */
-	protected $content = '';
-
-	public function __construct($content = '') {
-		$this->content = $content;
-	}
-
-	public function __toString() {
-		return $this->content;
 	}
 }
