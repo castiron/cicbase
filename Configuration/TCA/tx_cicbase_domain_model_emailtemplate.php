@@ -1,10 +1,30 @@
 <?php
-if (!defined ('TYPO3_MODE')) {
-	die ('Access denied.');
-}
 
-$TCA['tx_cicbase_domain_model_emailtemplate'] = array(
-	'ctrl' => $TCA['tx_cicbase_domain_model_emailtemplate']['ctrl'],
+defined ('TYPO3_MODE') or die ('Access denied.');
+
+return array(
+	'ctrl' => array(
+		'title'	=> 'Email Template',
+		'label' => 'template_key',
+		'tstamp' => 'tstamp',
+		'crdate' => 'crdate',
+		'cruser_id' => 'cruser_id',
+		'dividers2tabs' => TRUE,
+		'versioningWS' => 2,
+		'versioning_followPages' => TRUE,
+		'origUid' => 't3_origuid',
+		'languageField' => 'sys_language_uid',
+		'transOrigPointerField' => 'l10n_parent',
+		'transOrigDiffSourceField' => 'l10n_diffsource',
+		'delete' => 'deleted',
+		'enablecolumns' => array(
+			'disabled' => 'hidden',
+			'starttime' => 'starttime',
+			'endtime' => 'endtime',
+		),
+		'hideTable' => TRUE,
+		'iconfile' => 'EXT:cicbase/Resources/Public/Icons/tx_cicbase_domain_model_emailtemplate.gif'
+	),
 	'interface' => array(
 		'showRecordFieldList' => 'template_key, is_draft, subject, body'
 	),
@@ -99,7 +119,3 @@ $TCA['tx_cicbase_domain_model_emailtemplate'] = array(
 		),
 	),
 );
-
-
-
-?>
