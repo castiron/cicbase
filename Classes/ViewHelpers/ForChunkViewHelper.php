@@ -23,6 +23,10 @@ namespace CIC\Cicbase\ViewHelpers;
  *                                                                        */
 
 class ForChunkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+    /**
+     * @var bool
+     */
+    protected $escapeOutput = false;
 
 	/**
 	 * Chunks each, iterates through chunks of $each and renders child nodes; this is a modified version of the for viewhelper in fluid
