@@ -14,15 +14,11 @@ class UnlessViewHelper extends AbstractConditionViewHelper
 	protected $escapeOutput = false;
 
     /**
-     * @param $condition
-     * @return mixed|string
+     *
+     * @param array $arguments
+     * @return mixed
      */
-    public function render()
-    {
-        if ($this->arguments['condition']) {
-            return $this->renderElseChild();
-        } else {
-            return $this->renderThenChild();
-        }
+    protected static function evaluateCondition($arguments = null) {
+        return !(boolean) $arguments['condition'];
     }
 }
