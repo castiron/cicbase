@@ -38,13 +38,11 @@ class FlexTextViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
 	protected $tsfeBackup;
 
 	/**
-	 * If the escaping interceptor should be disabled inside this ViewHelper, then set this value to FALSE.
-	 * This is internal and NO part of the API. It is very likely to change.
+	 * Don't escape the the output
 	 *
 	 * @var boolean
-	 * @internal
 	 */
-	protected $escapingInterceptorEnabled = FALSE;
+	protected $escapeOutput = false;
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
@@ -116,5 +114,3 @@ class FlexTextViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
 		}
 	}
 }
-
-?>

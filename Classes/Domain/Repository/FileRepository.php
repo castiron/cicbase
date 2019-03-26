@@ -212,11 +212,12 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 	protected function initializeS3() {
 		return new S3Client([
 			'version' => 'latest',
-			'region' => 'us-east-2',
+			'region' => $this->cicbaseConfiguration['AWSRegion'],
 			'credentials' => [
 				'key' => $this->cicbaseConfiguration['AWSKey'],
 				'secret' => $this->cicbaseConfiguration['AWSSecret']
-			]
+			],
+			//'debug' => true
 		]);
 	}
 
@@ -270,7 +271,7 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 					'Bucket' => $sourceBucket,
 					'Key' => $source . '/' . $fileObject->getFilename()
 				]);
-			} catch (Exception $e) {
+			} catch (\Exception $e) {
 				return new \TYPO3\CMS\Extbase\Error\Error('Unable to save file to AWS S3', 1336600878);
 			}
 		} else {
@@ -284,7 +285,7 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 				$fileObject->setFilename($destinationFilename);
 				$fileObject->setPath($relativeDestinationPath);
 				$fileObject->setAwsBucket($destinationBucket);
-			} catch (Exception $e) {
+			} catch (\Exception $e) {
 				return new \TYPO3\CMS\Extbase\Error\Error('Unable to save file to AWS S3', 1336600875);
 			}
 		}

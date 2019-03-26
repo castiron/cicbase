@@ -23,6 +23,11 @@ namespace CIC\Cicbase\ViewHelpers\File;
 
 class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 	/**
+	 * @var bool
+	 */
+	protected $escapeOutput = false;
+
+	/**
 	 * Note: TYPO3 can't validate against multiple objects it seems, so we're just using "mixed"
 	 * @param mixed $file \CIC\Cicbase\Domain\Model\File|\TYPO3\CMS\Extbase\Persistence\Generic\LazyLoadingProxy|\TYPO3\CMS\Extbase\Domain\Model\FileReference
 	 * @param string $class

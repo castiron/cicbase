@@ -8,6 +8,10 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionViewHelper;
  */
 class UnlessViewHelper extends AbstractConditionViewHelper
 {
+	/**
+	 * @var bool
+	 */
+	protected $escapeOutput = false;
 
     /**
      * @param $condition
