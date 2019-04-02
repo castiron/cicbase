@@ -33,7 +33,10 @@ namespace CIC\Cicbase\ViewHelpers;
  */
 
 class JsonBootstrapViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
-
+    /**
+     * @var bool
+     */
+    protected $escapeOutput = false;
 
 	public function initializeArguments() {
 		$this->registerArgument('data', 'array', 'Array of bootstrapped data', FALSE, TRUE);

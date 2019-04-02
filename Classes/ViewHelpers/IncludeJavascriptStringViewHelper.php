@@ -34,6 +34,11 @@ namespace CIC\Cicbase\ViewHelpers;
 
 class IncludeJavascriptStringViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
+    /**
+     * @var bool
+     */
+    protected $escapeOutput = false;
+
 	/**
 	 * @var \TYPO3\CMS\Core\Page\PageRenderer
 	 */
