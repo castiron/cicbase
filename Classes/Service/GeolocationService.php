@@ -27,6 +27,8 @@ namespace CIC\Cicbase\Service;
 ***************************************************************/
 use CIC\Cicbase\Exception\GeolocationError;
 use CIC\Cicbase\Traits\ExtbaseInstantiable;
+use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Controller for the Project object
@@ -91,7 +93,7 @@ class GeolocationService {
 
 	protected function getCache() {
 		try {
-			$cache = $GLOBALS['typo3CacheManager']->getCache('cicbase_cache');
+			$cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('cicbase_cache');
 		} catch (\TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException $e) {
 			// Unable to load
 		}
