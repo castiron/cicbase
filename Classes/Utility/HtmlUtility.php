@@ -132,7 +132,7 @@ class HtmlUtility {
      * @param array $whitelist
      * @return \DOMElement
      */
-    protected function removeAllAttributes(\DOMElement $element, array $whitelist = array()) {
+    protected static function removeAllAttributes(\DOMElement $element, array $whitelist = array()) {
         $attributes = $element->attributes;
         for ($i = $attributes->length; $i > 0; $i--) {
             $name = $attributes->item(0)->name;
