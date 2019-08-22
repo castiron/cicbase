@@ -10,7 +10,7 @@ namespace CIC\Cicbase\View;
  * Class TemplateParser
  * @package CIC\Cicbase\View
  */
-class TemplateParser extends \TYPO3\CMS\Fluid\Core\Parser\TemplateParser {
+class TemplateParser extends \TYPO3Fluid\Fluid\Core\Parser\TemplateParser {
 
 	/** @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface */
 	protected $configurationManager;

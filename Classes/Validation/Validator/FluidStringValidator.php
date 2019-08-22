@@ -9,7 +9,7 @@ namespace CIC\Cicbase\Validation\Validator;
 class FluidStringValidator extends \TYPO3\CMS\Extbase\Validation\Validator\AbstractValidator {
 
 	/**
-	 * @var \TYPO3\CMS\Fluid\Core\Parser\TemplateParser
+	 * @var \TYPO3Fluid\Fluid\Core\Parser\TemplateParser
 	 * @inject
 	 */
 	protected $parser;

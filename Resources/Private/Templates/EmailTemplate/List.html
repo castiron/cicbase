@@ -32,13 +32,13 @@
 				<tr class="db_list_normal {f:if(condition:iter.isLast, then: 'lastcol')} {f:if(condition:iter.isFirst, then: 'firstcol')}">
 					<td nowrap="nowrap" class="col-icon">
 						<f:link.action action="edit" arguments="{emailTemplate: template}">
-							<f:be.buttons.icon icon="actions-document-open" title="Edit this template" />
+							<core:icon identifier="actions-document-open" />
 						</f:link.action>
 					</td>
 
 					<td nowrap="nowrap" class="col-icon">
 						<f:link.action action="delete" arguments="{emailTemplate: template}">
-							<f:be.buttons.icon icon="actions-edit-delete" title="Delete this template" />
+							<core:icon identifier="actions-edit-delete" />
 						</f:link.action>
 					</td>
 
@@ -58,5 +58,7 @@
 </f:section>
 
 <f:section name="menu-primary">
-	<f:be.buttons.icon uri="{f:uri.action(action:'selectTemplate')}" icon="actions-document-new" title="Create New Email Template" />
+	<f:link.action action="selectTemplate">
+		<core:icon identifier="actions-document-new"/>
+	</f:link.action>
 </f:section>
