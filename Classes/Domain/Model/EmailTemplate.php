@@ -8,7 +8,6 @@ class EmailTemplate extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
 	/**
 	 * @var string
-	 * @validate \CIC\Cicbase\Validation\Validator\FluidStringValidator
 	 */
 	protected $body;
 
