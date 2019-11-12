@@ -10,6 +10,7 @@ namespace CIC\Cicbase\ViewHelpers;
 	* @version
 	*/
 class RawViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+    protected $escapeOutput = false;
 
 	/**
 		* Returns a raw value
@@ -22,5 +23,3 @@ class RawViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper 
 		return $value;
 	}
 }
-
-?>
