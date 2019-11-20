@@ -13,12 +13,21 @@ class UnlessViewHelper extends AbstractConditionViewHelper
 	 */
 	protected $escapeOutput = false;
 
-	public function render()
-	{
-		if ($this->arguments['condition']) {
-			return $this->renderElseChild();
-		} else {
-			return $this->renderThenChild();
-		}
-	}
+    /**
+     *
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument('condition', 'boolean', 'Condition expression conforming to Fluid boolean rules', false, false);
+    }
+
+    /**
+     *
+     * @param array $arguments
+     * @return mixed
+     */
+    protected static function evaluateCondition($arguments = null) {
+        return !(boolean) $arguments['condition'];
+    }
 }
