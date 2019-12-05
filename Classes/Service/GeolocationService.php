@@ -25,6 +25,8 @@ namespace CIC\Cicbase\Service;
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
+
+use CIC\Cicbase\Domain\Model\LatLng;
 use CIC\Cicbase\Exception\GeolocationError;
 use CIC\Cicbase\Traits\ExtbaseInstantiable;
 use TYPO3\CMS\Core\Cache\CacheManager;
@@ -50,11 +52,11 @@ class GeolocationService {
      * @param bool $apiKey
      * @param $cacheLifetetime
      */
-	public function __construct($apiKey = false, $cacheLifetetime = null) {
+	public function __construct($apiKey = false, $cacheLifetime = null) {
 		$this->setApiKey($apiKey);
 		$this->cache = $this->getCache();
-        if ($cacheLifetetime) {
-            $this->cacheLifetime = $cacheLifetetime;
+        if ($cacheLifetime) {
+            $this->cacheLifetime = $cacheLifetime;
         }
 	}
 
@@ -80,7 +82,7 @@ class GeolocationService {
 		$addressString = $address->getFullAddressOneLine();
 
 		// construct the latLng object to return
-		$latLng = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('CIC\Cicbase\Domain\Model\LatLng');
+		$latLng = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(LatLng::class);
 
 		// do the query
 		$res = $this->geocode($addressString, $cacheFailures);
