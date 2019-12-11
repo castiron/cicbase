@@ -1,5 +1,5 @@
-<?php
-namespace CIC\Cicbase\Factory;
+<?php namespace CIC\Cicbase\Factory;
+
 use CIC\Cicbase\Domain\Model\FileReference;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
@@ -220,10 +220,10 @@ class FileReferenceFactory implements \TYPO3\CMS\Core\SingletonInterface {
 	 * permanently. At this point, the file will be moved from
 	 * a temporary location to a permanent location.
 	 *
-	 * @param FileReference $fileReference
+	 * @param \CIC\Cicbase\Domain\Model\FileReference $fileReference
 	 * @param string $key
 	 */
-	protected function save(FileReference &$fileReference, $key = '') {
+	protected function save(\CIC\Cicbase\Domain\Model\FileReference &$fileReference, $key = '') {
 		if ($fileReference->getUid()) {
 			return;
 		}

@@ -1,5 +1,4 @@
-<?php
-namespace CIC\Cicbase\Domain\Model;
+<?php namespace CIC\Cicbase\Domain\Model;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -62,9 +61,9 @@ class FileReference extends \TYPO3\CMS\Extbase\Domain\Model\FileReference implem
 
 
 	/**
-	 * @param \TYPO3\CMS\Core\Resource\FileReference $originalResource
+	 * @param \TYPO3\CMS\Core\Resource\ResourceInterface $originalResource
 	 */
-	public function setOriginalResource(\TYPO3\CMS\Core\Resource\FileReference $originalResource) {
+	public function setOriginalResource(\TYPO3\CMS\Core\Resource\ResourceInterface $originalResource) {
 		$this->originalResource = $originalResource;
 
 		# Absorb properties from original resource, because otherwise we'll get an empty sys_file_reference row.
