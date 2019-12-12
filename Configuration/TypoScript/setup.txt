@@ -7,38 +7,6 @@ tx_cicbase_pi1 {
 	}
 }
 
-config.tx_extbase{
-	objects {
-		TYPO3\CMS\Extbase\Persistence\Generic\QueryFactory {
-			className = CIC\Cicbase\Persistence\QueryFactory
-		}
-		TYPO3\CMS\Extbase\Persistence\Generic\QueryFactoryInterface {
-			className = CIC\Cicbase\Persistence\QueryFactory
-		}
-		TYPO3\CMS\Extbase\Validation\Validator\EmailAddressValidator {
-			className = CIC\Cicbase\Validation\Validator\EmailAddressValidator
-		}
-		TYPO3\CMS\Fluid\Core\Parser\TemplateParser {
-			className = CIC\Cicbase\View\TemplateParser
-		}
-		TYPO3\CMS\Extbase\Validation\ValidatorResolver {
-			className = CIC\Cicbase\Validation\ValidatorResolver
-		}
-
-    # File proxying-related classes
-    # NOTE: this doesn't work in eID contexts
-    CIC\Cicbase\Proxy\File\Contracts\FileProxyDelivererInterface {
-      className = CIC\Cicbase\Proxy\File\FileProxyDeliverer
-    }
-    CIC\Cicbase\Proxy\File\Contracts\FileProxyDenierInterface {
-      className = CIC\Cicbase\Proxy\File\FileProxyDenier
-    }
-    CIC\Cicbase\Proxy\File\Contracts\FileProxyGatewayInterface {
-      className = CIC\Cicbase\Proxy\File\FileProxyGateway
-    }
-	}
-}
-
 plugin.tx_cicbase.settings {
 	recaptcha {
 		public_key = {$plugin.tx_cicbase.settings.recaptcha.public_key}
