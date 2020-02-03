@@ -1,6 +1,6 @@
 <?php namespace CIC\Cicbase\ViewHelpers;
 
-use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractConditionViewHelper;
 
 /**
  * Class UnlessViewHelper
@@ -13,12 +13,12 @@ class UnlessViewHelper extends AbstractConditionViewHelper
 	 */
 	protected $escapeOutput = false;
 
-    /**
-     *
-     * @param array $arguments
-     * @return mixed
-     */
-    protected static function evaluateCondition($arguments = null) {
-        return !(boolean) $arguments['condition'];
-    }
+	public function render()
+	{
+		if ($this->arguments['condition']) {
+			return $this->renderElseChild();
+		} else {
+			return $this->renderThenChild();
+		}
+	}
 }
