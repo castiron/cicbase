@@ -19,7 +19,10 @@ class UnlessViewHelper extends AbstractConditionViewHelper
     public function initializeArguments()
     {
         parent::initializeArguments();
-        $this->registerArgument('condition', 'boolean', 'Condition expression conforming to Fluid boolean rules', false, false);
+        // Check is needed due to different behavior between local and staging/prod environments.
+        if(!array_key_exists('condition', $this->argumentDefinitions)) {
+            $this->registerArgument('condition', 'boolean', 'Condition expression conforming to Fluid boolean rules', false, false);
+        }
     }
 
     /**
