@@ -25,12 +25,12 @@ class UnlessViewHelper extends AbstractConditionViewHelper
         }
     }
 
-    /**
-     *
-     * @param array $arguments
-     * @return mixed
-     */
-    protected static function evaluateCondition($arguments = null) {
-        return !(boolean) $arguments['condition'];
-    }
+	public function render()
+	{
+		if ($this->arguments['condition']) {
+			return $this->renderElseChild();
+		} else {
+			return $this->renderThenChild();
+		}
+	}
 }
