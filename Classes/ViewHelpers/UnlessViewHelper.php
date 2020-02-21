@@ -1,5 +1,6 @@
 <?php namespace CIC\Cicbase\ViewHelpers;
 
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractConditionViewHelper;
 
 /**
@@ -25,12 +26,17 @@ class UnlessViewHelper extends AbstractConditionViewHelper
         }
     }
 
-	public function render()
+	/**
+	 * @param array $arguments
+	 * @param RenderingContextInterface $renderingContext
+	 * @return bool
+	 */
+	public static function verdict(array $arguments, RenderingContextInterface $renderingContext)
 	{
-		if ($this->arguments['condition']) {
-			return $this->renderElseChild();
-		} else {
-			return $this->renderThenChild();
+		if($arguments['condition']) {
+			return false;
 		}
+		return true;
 	}
+
 }
