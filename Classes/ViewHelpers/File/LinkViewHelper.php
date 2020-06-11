@@ -28,13 +28,21 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 	protected $escapeOutput = false;
 
 	/**
-	 * Note: TYPO3 can't validate against multiple objects it seems, so we're just using "mixed"
-	 * @param mixed $file \CIC\Cicbase\Domain\Model\File|\TYPO3\CMS\Extbase\Persistence\Generic\LazyLoadingProxy|\TYPO3\CMS\Extbase\Domain\Model\FileReference
-	 * @param string $class
-	 * @param string $linkText
+	 * Initialize arguments
+	 */
+	public function initializeArguments() {
+		parent::initializeArguments();
+		$this->registerArgument('file', 'object', 'File reference', true);
+		$this->registerArgument('class', 'string', 'HTML class', false, null);
+		$this->registerArgument('linkText', 'string', 'Link text', false, null);
+	}
+
+	/**
 	 * @return string
 	 */
-	public function render($file, $class = null, $linkText = null) {
+	public function render() {
+		extract($this->arguments);
+
 		if ($file instanceof \TYPO3\CMS\Extbase\Domain\Model\FileReference) {
 			$uri = $file->getOriginalResource()->getPublicUrl();
 		} elseif ($file) {

@@ -2,6 +2,8 @@
 
 namespace CIC\Cicbase\ViewHelpers\Link;
 
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
+
 
 /**
  * Class GoogleMapsViewHelper
@@ -20,7 +22,21 @@ namespace CIC\Cicbase\ViewHelpers\Link;
  * stays the same, but it's unclickable.
  *
  */
-class GoogleMapsViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\ExternalViewHelper {
+class GoogleMapsViewHelper extends AbstractTagBasedViewHelper {
+
+	/**
+	 * @var string
+	 */
+	protected $tagName = 'a';
+
+	/**
+	 * Initialize arguments
+	 */
+	public function initializeArguments() {
+		parent::initializeArguments();
+		$this->registerArgument('address', 'string', 'The address to render a map for', true);
+		$this->registerUniversalTagAttributes();
+	}
 
 	/**
 	 * @param string $address
