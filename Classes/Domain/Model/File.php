@@ -405,6 +405,11 @@ class File extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 			case 'xlsm':
 				$out = 'excel';
 				break;
+			case 'ppt':
+			case 'pptm':
+			case 'pptx':
+				$out = 'powerpoint';
+				break;
 		}
 		return $out;
 	}
