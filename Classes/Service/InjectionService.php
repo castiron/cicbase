@@ -28,9 +28,8 @@ class InjectionService extends \TYPO3\CMS\Extbase\Object\Container\Container {
 
     /**
      * @param object $instance
-     * @param \TYPO3\CMS\Extbase\Object\Container\ClassInfo $classInfo
      */
-    protected function initializeObject($instance, \TYPO3\CMS\Extbase\Object\Container\ClassInfo $classInfo)
+    protected function initializeObject($instance)
     {
         /**
          * Noop
@@ -45,7 +44,7 @@ class InjectionService extends \TYPO3\CMS\Extbase\Object\Container\Container {
 	 * @param array $givenConstructorArguments
 	 * @return mixed|object
 	 */
-	protected function getInstanceInternal($className, $givenConstructorArguments = array()) {
+	protected function getInstanceInternal($className, ...$givenConstructorArguments) {
 		if (!$this->objectManager) {
 			$this->objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		}

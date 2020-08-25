@@ -1,7 +1,10 @@
-<?php
-namespace CIC\Cicbase\Scheduler;
+<?php namespace CIC\Cicbase\Scheduler;
+use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 /**
  * Scheduler task to execute CommandController commands
@@ -13,6 +16,7 @@ class AbstractTask extends \TYPO3\CMS\Extbase\Scheduler\Task {
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+	 * @inject
 	 */
 	protected $objectManager;
 
@@ -23,19 +27,33 @@ class AbstractTask extends \TYPO3\CMS\Extbase\Scheduler\Task {
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
+	 * @inject
 	 */
 	protected $persistenceManager;
 
 	/**
+	 *
 	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
+	 * @inject
 	 */
 	protected $configurationManager;
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Service\TypoScriptService
+	 * @inject
 	 */
 	protected $typoscriptService;
 
+	/**
+	 * AbstractTask constructor.
+	 */
+	public function __construct() {
+		parent::__construct();
+		$this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+		$this->configurationManager = $this->objectManager->get(ConfigurationManager::class);
+		$this->persistenceManager = $this->objectManager->get(PersistenceManager::class);
+		$this->typoscriptService = $this->objectManager->get(TypoScriptService::class);
+	}
 
 	/**
 	 * inject the persistenceManager
@@ -76,19 +94,15 @@ class AbstractTask extends \TYPO3\CMS\Extbase\Scheduler\Task {
 	 * @param $pluginName
 	 */
 	protected function initialize($extensionName, $pluginName) {
-		$injectionService = GeneralUtility::makeInstance('CIC\Cicbase\Service\InjectionService');
-		$injectionService->doInjection($this);
-
-		// Grab the settings array
-		$this->configurationManager->setConfiguration(array('extensionName' => $extensionName, 'pluginName' => $pluginName));
+		$this->configurationManager = $this->objectManager->get(ConfigurationManager::class);
+		$this->persistenceManager = $this->objectManager->get(PersistenceManager::class);
+		$this->typoscriptService = $this->objectManager->get(TypoScriptService::class);		$this->configurationManager->setConfiguration(array('extensionName' => $extensionName, 'pluginName' => $pluginName));
 		$this->settings = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
 		if(!$this->settings) {
 			$configuration = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
 			$settings = $configuration['plugin.']['tx_'.strtolower($extensionName).'.']['settings.'];
 			$this->settings = $this->typoscriptService->convertTypoScriptArrayToPlainArray($settings);
 		}
-
 	}
 }
 
-?>
