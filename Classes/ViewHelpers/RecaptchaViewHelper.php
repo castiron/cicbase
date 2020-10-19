@@ -35,6 +35,10 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
  * @version
  */
 class RecaptchaViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+	/**
+	 * @var bool
+	 */
+	protected $escapeOutput = false;
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
