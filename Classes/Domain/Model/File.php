@@ -239,7 +239,9 @@ class File extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 		} else {
 			$pathAndFile = $this->getFileName();
 		}
-		return 'http://'.$bucket.'.'.$domain.'/'.$pathAndFile;
+
+		$scheme = $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
+		return $scheme.'://'.$bucket.'.'.$domain.'/'.$pathAndFile;
 	}
 
 
