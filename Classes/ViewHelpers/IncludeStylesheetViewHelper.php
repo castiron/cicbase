@@ -2,6 +2,8 @@
 
 namespace CIC\Cicbase\ViewHelpers;
 
+use TYPO3\CMS\Core\Core\Environment;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -50,22 +52,23 @@ class IncludeStylesheetViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstr
 	}
 
 	public function initializeArguments() {
-		$this->registerArgument('rel', 'string', 'Rel argument - see PageRenderer documentation', FALSE, 'stylesheet');
-		$this->registerArgument('media', 'strong', 'Media argument - see PageRenderer documentation', FALSE, 'all');
-		$this->registerArgument('title', 'string', 'Title argument - see PageRenderer documentation', FALSE, '');
-		$this->registerArgument('compress', 'boolean', 'Compress argument - see PageRenderer documentation', FALSE, TRUE);
-		$this->registerArgument('forceOnTop', 'boolean', 'ForceOnTop argument - see PageRenderer documentation', FALSE, FALSE);
-		$this->registerArgument('allWrap', 'string', 'AllWrap argument - see PageRenderer documentation', FALSE, '');
-		$this->registerArgument('excludeFromConcatenation', 'string', 'ExcludeFromConcatenation argument - see PageRenderer documentation', FALSE, FALSE);
+		$this->registerArgument('file', 'string', 'Path to file', true);
+		$this->registerArgument('rel', 'string', 'Rel argument - see PageRenderer documentation', false, 'stylesheet');
+		$this->registerArgument('media', 'strong', 'Media argument - see PageRenderer documentation', false, 'all');
+		$this->registerArgument('title', 'string', 'Title argument - see PageRenderer documentation', false, '');
+		$this->registerArgument('compress', 'boolean', 'Compress argument - see PageRenderer documentation', false, true);
+		$this->registerArgument('forceOnTop', 'boolean', 'ForceOnTop argument - see PageRenderer documentation', false, false);
+		$this->registerArgument('allWrap', 'string', 'AllWrap argument - see PageRenderer documentation', false, '');
+		$this->registerArgument('excludeFromConcatenation', 'string', 'ExcludeFromConcatenation argument - see PageRenderer documentation', false, false);
 	}
 
 	/**
 	 * @param string $file
 	 */
-	public function render($file = NULL) {
+	public function render() {
 		// TODO: Would be nice if the file could begin with EXT:Sumpsink/ and return a relative path
-		$this->pageRenderer->addCssFile(
-			$file,
+		$this->pageRenderer->addcssfile(
+			$this->arguments['file'],
   			$this->arguments['rel'],
   			$this->arguments['media'],
   			$this->arguments['title'],
