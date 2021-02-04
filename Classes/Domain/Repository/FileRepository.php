@@ -3,7 +3,7 @@
 namespace CIC\Cicbase\Domain\Repository;
 use CIC\Cicbase\Utility\Arr;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Utility\ArrayUtility;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 use Aws\S3\S3Client;
 use Aws\Credentials\Credentials;
 
@@ -59,7 +59,7 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 		$this->configurationManager = $configurationManager;
 		$settings = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
 		if (isset($settings['document']['awsConfs'])) {
-			$this->cicbaseConfiguration = ArrayUtility::arrayMergeRecursiveOverrule(
+			$this->cicbaseConfiguration = ArrayUtility::mergeRecursiveWithOverrule(
 				$this->cicbaseConfiguration,
 				$settings['document']['awsConfs'],
 				FALSE,
@@ -78,7 +78,7 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 
 		$overrides = Arr::safePath($GLOBALS, 'TYPO3_CONF_VARS.EXTCONF.cicbase.document.awsConfs');
 		if ($overrides) {
-			$this->cicbaseConfiguration = ArrayUtility::arrayMergeRecursiveOverrule(
+			$this->cicbaseConfiguration = ArrayUtility::mergeRecursiveWithOverrule(
 				$this->cicbaseConfiguration, $overrides, FALSE, FALSE
 			);
 		}
