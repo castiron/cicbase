@@ -1,6 +1,4 @@
-<?php
-
-namespace CIC\Cicbase\ViewHelpers;
+<?php namespace CIC\Cicbase\ViewHelpers;
 
 /*                                                                        *
  * This script belongs to the FLOW3 package "Cicregister".                      *
@@ -36,8 +34,7 @@ class IfFormWasSubmittedViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abst
 	 * @author Zach Davis <zach@castironcoding.com>
 	 */
 	public function render() {
-		return ($this->controllerContext->getRequest()->getOriginalRequest() !== NULL);
+		return $this->renderingContext->getControllerContext()->getRequest()->getOriginalRequest() !== NULL;
 	}
 }
 
-?>
