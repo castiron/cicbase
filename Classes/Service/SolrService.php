@@ -371,7 +371,7 @@ class SolrService {
 	private function executeQuery() {
 		$this->queryExecuted = true;
 
-		$solrConnection = GeneralUtility::makeInstance(ConnectionManager::class)->getConnection();
+		$solrConnection = GeneralUtility::makeInstance(ConnectionManager::class)->getConnectionByRootPageId(1);
 		/** @var Search $search */
 		$search = GeneralUtility::makeInstance(Search::class, $solrConnection);
 		/** @var Query $query */
@@ -391,15 +391,13 @@ class SolrService {
 				$sortArray = array($sortArray[0] => $sortArray[1]);
 			}
 
-			$sorts = array();
 			foreach ($sortArray as $field => $dir) {
-
 				if ($dir != Sorting::SORT_DESC && $dir != Sorting::SORT_ASC) {
 					$dir = Sorting::SORT_ASC; // an implicit default
 				}
-				$sorts[] = "$field ".strtolower($dir);
+				$sorting = GeneralUtility::makeInstance(Sorting::class, true, $field, $dir);
+				$queryBuilder->useSorting($sorting);
 			}
-			$queryBuilder->useSorting(implode(',', $sorts));
 		}
 		if($this->boostQuery) {
             $queryBuilder->useBoostQueries($this->boostQuery);
@@ -428,13 +426,10 @@ class SolrService {
         $queryBuilder->useSpellcheckingFromTypoScript();
         $query = $queryBuilder->getQuery();
 
-        if ($this->filters) {
-            /** @var Filters $filters */
-            $filters = GeneralUtility::makeInstance(Filters::class);
+        if (is_array($this->filters) && count($this->filters) > 0) {
             foreach ($this->filters as $filter) {
-                $filters->add($filter);
+				$query->addFilterQuery(['key' => md5($filter), 'query' => $filter]);
             }
-            $query->addFilters($filters);
         }
 
 		$this->response = $search->search($query, $this->getQueryOffset(), $this->getQueryLimit());
