@@ -1,6 +1,7 @@
 <?php
 namespace CIC\Cicbase\Service;
 use CIC\Cicbase\Utility\Arr;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MailUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
@@ -582,17 +583,10 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 			!empty($extbaseFrameworkConfiguration['view']['templateRootPaths'])
 			&& is_array($extbaseFrameworkConfiguration['view']['templateRootPaths'])
 		) {
-			$rootPaths = \TYPO3\CMS\Extbase\Utility\ArrayUtility::sortArrayWithIntegerKeys($extbaseFrameworkConfiguration['view']['templateRootPaths']);
+			$rootPaths = ArrayUtility::sortArrayWithIntegerKeys($extbaseFrameworkConfiguration['view']['templateRootPaths']);
 			$rootPaths = array_reverse($rootPaths, TRUE);
 		}
 
-		// @todo remove handling of deprecatedSetting two versions after 6.2
-		if (
-			isset($extbaseFrameworkConfiguration['view']['templateRootPath'])
-			&& strlen($extbaseFrameworkConfiguration['view']['templateRootPath']) > 0
-		) {
-			$rootPaths[] = $extbaseFrameworkConfiguration['view']['templateRootPath'];
-		}
 		return $rootPaths;
 	}
 
