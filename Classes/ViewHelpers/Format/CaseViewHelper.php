@@ -1,5 +1,4 @@
-<?php
-namespace CIC\Cicbase\ViewHelpers\Format;
+<?php namespace CIC\Cicbase\ViewHelpers\Format;
 
 /*                                                                        *
  * This script belongs to the TYPO3 Flow package "Fluid".                 *
@@ -11,6 +10,7 @@ namespace CIC\Cicbase\ViewHelpers\Format;
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
 
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3\Fluid\Core\ViewHelper\Exception\InvalidVariableException;
 
 /**
@@ -64,7 +64,7 @@ use TYPO3\Fluid\Core\ViewHelper\Exception\InvalidVariableException;
  *
  * @api
  */
-class CaseViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+class CaseViewHelper extends AbstractViewHelper {
 
 	/**
 	 * Directs the input string being converted to "lowercase"
@@ -91,7 +91,14 @@ class CaseViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 	 */
 	const CASE_CAPITAL_WORDS = 'capitalWords';
 
-	/**
+	public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument('value', 'string', 'The value to transform', false);
+        $this->registerArgument('mode', 'string', 'Transformation to apply', false);
+    }
+
+    /**
 	 * Changes the case of the input string
 	 *
 	 * @param string $value The input value. If not given, the evaluated child nodes will be used
@@ -100,7 +107,10 @@ class CaseViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 	 * @throws \TYPO3\Fluid\Core\ViewHelper\Exception\InvalidVariableException
 	 * @api
 	 */
-	public function render($value = NULL, $mode = self::CASE_UPPER) {
+	public function render() {
+	    $value = $this->arguments['value'];
+	    $mode = $this->arguments['mode'] ?: self::CASE_UPPER;
+
 		if ($value === NULL) {
 			$value = $this->renderChildren();
 		}
@@ -133,4 +143,3 @@ class CaseViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 		return $output;
 	}
 }
-?>
