@@ -209,9 +209,9 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 
 
 	/**
-		 * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager
-		 * @return void
-		 */
+     * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager
+     * @return void
+     */
 	public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
 		$allSettings = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
@@ -271,7 +271,7 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param array $templateVariables  Variables to pass to the template view.
 	 * @param array $sender             array(email => name, email => name)
 	 * @throws \Exception
-	 * @returns \TYPO3\CMS\Core\Mail\MailMessage
+	 * @return \TYPO3\CMS\Core\Mail\MailMessage
 	 */
 	public function createMessage($templateName, array $recipients, array $templateVariables = NULL, array $sender = NULL) {
 		if(!$this->templateExists($templateName)) {
