@@ -1,17 +1,24 @@
-<?php
-
-namespace CIC\Cicbase\ViewHelpers\Format;
+<?php namespace CIC\Cicbase\ViewHelpers\Format;
 
 class ImplodeViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
+    /**
+     *
+     */
+    public function initializeArguments() {
+        parent::initializeArguments();
+        $this->registerArgument('array', 'array', 'An array', true);
+        $this->registerArgument('separator', 'string', 'A separator', false, ', ');
+        $this->registerArgument('prependToLast', 'string', 'Use if you need to add something like \'and\' before the last element in the list. Spaces added for you. Assumes oxford comma.', false, '');
+    }
 
-
-	/**
-	 * @param array $array
-	 * @param string $separator
-	 * @param string $prependToLast Use if you need to add something like 'and' before the last element in the list. Spaces added for you. Assumes oxford comma.
+    /**
 	 * @return string
 	 */
-	public function render($array, $separator = ', ', $prependToLast = '') {
+	public function render() {
+	    $array = $this->arguments['array'];
+	    $separator = $this->arguments['separator'];
+	    $prependToLast = $this->arguments['prependToLast'];
+
 		if ($prependToLast) {
 			$len = count($array);
 			$vals = array_values($array);
@@ -29,4 +36,3 @@ class ImplodeViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHel
 		return implode($separator, $array);
 	}
 }
-?>

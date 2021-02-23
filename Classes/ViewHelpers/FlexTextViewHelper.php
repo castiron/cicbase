@@ -49,14 +49,21 @@ class FlexTextViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHe
 	 */
 	protected $configurationManager;
 
+	public function initializeArguments() {
+        parent::initializeArguments();
+        $this->registerArgument('field', 'string', 'The field', true);
+        $this->registerArgument('parseFuncTSPath', 'string', 'The path to the parsefunc config', false, 'lib.parseFunc_RTE');
+        $this->registerArgument('raw', 'bool', 'Raw', false, false);
+    }
 
-	/**
-	 * @param string $field
-	 * @param string $parseFuncTSPath
-	 * @param bool $raw
+    /**
 	 * @return string
 	 */
-	public function render($field, $parseFuncTSPath = 'lib.parseFunc_RTE', $raw = FALSE) {
+	public function render() {
+	    $field = $this->arguments['field'];
+        $parseFuncTSPath = $this->arguments['parseFuncTSPath'];
+	    $raw = $this->arguments['raw'];
+
 		if (!$this->templateVariableContainer->exists('settings')) {
 			return $this->renderChildren();
 		}
