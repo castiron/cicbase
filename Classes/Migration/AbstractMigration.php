@@ -46,6 +46,13 @@ abstract class AbstractMigration implements MigrationInterface {
     }
 
     /**
+     * @return bool
+     */
+    public function getForgiving() {
+        return $this->forgiving;
+    }
+
+    /**
      * Copies the data from one table to another.
      * If the source table has more columns than the destination table,
      * the copy still happens just without that data being transferred.

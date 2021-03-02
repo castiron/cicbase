@@ -213,8 +213,12 @@ class MigrationRunner {
         $migrationObject = $this->getMigrationObject($migration);
         try {
             $migrationObject->run();
-            if($GLOBALS['TYPO3_DB']->sql_error()) {
-                throw new \Exception('SQL Error');
+            if($sqlError = $GLOBALS['TYPO3_DB']->sql_error()) {
+                if($migrationObject->getForgiving()) {
+                    $this->handleMigrationSuccess($migration, $migrationObject, true);
+                } else {
+                    throw new \Exception("SQL Error: $sqlError");
+                }
             } else {
                 $this->handleMigrationSuccess($migration, $migrationObject);
             }
@@ -255,11 +259,12 @@ class MigrationRunner {
     /**
      * @param string $migration
      * @param AbstractMigration $migrationObject
+     * @param boolean $errorForgiven
      * @return bool
      */
-    protected function handleMigrationSuccess($migration, AbstractMigration $migrationObject) {
+    protected function handleMigrationSuccess($migration, AbstractMigration $migrationObject, $errorForgiven = false) {
         $this->saveVersion($migration);
-        $this->messages[] = $migration.' ran successfully';
+        $this->messages[] = $migration.' ran '. ($errorForgiven ? 'with forgiven errors' : 'successfully');
         return true;
     }
 
