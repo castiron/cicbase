@@ -2,6 +2,7 @@
 namespace CIC\Cicbase\Migration;
 
 use CIC\Cicbase\Migration\Exception\MigrationFailureException;
+use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -301,8 +302,28 @@ class MigrationRunner {
      */
     protected function getMigrationObject($migrationName) {
         $ext = ucfirst($this->currentRunExtKey);
-        return $this->objectManager->get("CIC\\$ext\\Migration\\$migrationName");
+        $vendorName = $this->getVendorName($ext) ?: 'CIC';
+        return $this->objectManager->get("$vendorName\\$ext\\Migration\\$migrationName");
     }
+
+    /**
+     * A crude way to get the vendor name for an extension. This will likely need to be improved down the road.
+     * @param $ext
+     * @return mixed|string|null
+     */
+    protected function getVendorName($ext) {
+        $package = $this->objectManager->get(PackageManager::class)->getPackage(strtolower($ext));
+        if(!is_object($package)) return null;
+        $autoload = $package->getValueFromComposerManifest('autoload');
+        if(!is_object($autoload)) return null;
+        $psr4 = get_object_vars($autoload)['psr-4'];
+        if(!is_object($psr4)) return null;
+        $entries = get_object_vars($psr4);
+        if(!is_array($entries)) return null;
+        $key = key($entries);
+        return explode('\\', $key)[0];
+    }
+
 
     /**
      * @param string $migration
