@@ -2,6 +2,8 @@
 
 namespace CIC\Cicbase\Factory;
 
+use CIC\Cicbase\Domain\Model\File;
+
 /***************************************************************
  *  Copyright notice
  *  (c) 2012 Peter Soots <peter@castironcoding.com>, Cast Iron Coding
@@ -238,7 +240,7 @@ class FileFactory implements \TYPO3\CMS\Core\SingletonInterface {
 		} else {
 			// ok to make a file object
 			$pathInfo = pathinfo($uploadedFileData['tmp_name']);
-			$fileObject = $this->objectManager->get('CIC\Cicbase\Domain\Model\File');
+			$fileObject = $this->objectManager->get(File::class);
 			$fileObject->setTitle($sourceData['title']);
 
 			// TODO: Set a default title if it's not provided.

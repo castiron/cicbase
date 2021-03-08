@@ -18,3 +18,5 @@ if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations
 if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cicbase']['enableSQLLogging']) {
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'][] = 'CIC\Cicbase\Persistence\SQLLogger';
 }
+
+\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerTypeConverter(\CIC\Cicbase\Property\TypeConverter\File::class);

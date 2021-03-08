@@ -13,6 +13,9 @@ AWSKey =
  	# cat=basic/enable/101; type=input; label=AWS Secret
 AWSSecret =
 
+ 	# cat=basic/enable/101; type=input; label=AWS Region
+AWSRegion =
+
  	# cat=basic/enable/101; type=input; label=AWS Cache Config String
 AWSCacheConfig =
 

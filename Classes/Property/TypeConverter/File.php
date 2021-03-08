@@ -1,6 +1,4 @@
-<?php
-
-namespace CIC\Cicbase\Property\TypeConverter;
+<?php namespace CIC\Cicbase\Property\TypeConverter;
 
 class File extends \TYPO3\CMS\Extbase\Property\TypeConverter\PersistentObjectConverter {
 
@@ -161,7 +159,4 @@ class File extends \TYPO3\CMS\Extbase\Property\TypeConverter\PersistentObjectCon
 			return $result;
 		}
 	}
-
 }
-
-?>
