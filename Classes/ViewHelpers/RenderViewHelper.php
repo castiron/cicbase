@@ -42,6 +42,13 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
  */
 class RenderViewHelper extends \TYPO3Fluid\Fluid\ViewHelpers\RenderViewHelper {
 	/**
+	 * As this ViewHelper renders HTML, the output must not be escaped.
+	 *
+	 * @var bool
+	 */
+	protected $escapeOutput = false;
+
+	/**
 	 * Renders the content.
 	 *
 	 * @param array $arguments
