@@ -1,5 +1,4 @@
-<?php
-namespace CIC\Cicbase\ViewHelpers;
+<?php namespace CIC\Cicbase\ViewHelpers;
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
  *                                                                        *
@@ -32,21 +31,27 @@ namespace CIC\Cicbase\ViewHelpers;
  */
 
 
-
 class TitleViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
-	/**
-	 * @param string $mode Method for adding the new title to the existing one.
-	 * @param string $glue Glue the new title to the old title with this string.
-	 * @param string $display If render, this tag displays it's children. By default it doesn't display anything.
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument('mode', 'string', 'Method for adding the new title to the existing one (prepend, append, or replace)', false, 'replace');
+        $this->registerArgument('glue', 'string', 'Glue the new title to the old title with this string.', false, ' - ');
+        $this->registerArgument('display', 'string', 'If render, this tag displays it\'s children. By default it doesn\'t display anything.', false, 'none');
+    }
+
+    /**
 	 * @return string Rendered content or blank depending on display mode.
 	 * @author Nathan Lenz <nathan.lenz@organicvalley.coop>
 	 */
 	public function render($mode = 'replace', $glue = ' - ', $display = 'none') {
+	    $mode = $this->arguments['mode'];
+	    $glue = $this->arguments['glue'];
+	    $display = $this->arguments['display'];
 		$renderedContent = $this->renderChildren();
 
 		$existingTitle = empty($GLOBALS['TSFE']->page['tx_seo_titletag']) ? $GLOBALS['TSFE']->page['title'] : $GLOBALS['TSFE']->page['tx_seo_titletag'];
-
 
 		if ($mode === 'prepend' && !empty($existingTitle)) {
 			$newTitle = $renderedContent.$glue.$existingTitle;
