@@ -36,7 +36,7 @@ return array(
 	'columns' => array(
 		'sys_language_uid' => array(
 			'exclude' => 1,
-			'label' => 'LLL:EXT:lang/locallang_general.xml:LGL.language',
+			'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.language',
 			'config' => array(
 				'type' => 'select',
 				'foreign_table' => 'sys_language',
@@ -75,7 +75,7 @@ return array(
 		),
 		'hidden' => array(
 			'exclude' => 1,
-			'label' => 'LLL:EXT:lang/locallang_general.xml:LGL.hidden',
+			'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
 			'config' => array(
 				'type' => 'check',
 			),
@@ -139,7 +139,7 @@ return array(
 				'readOnly' => 1,
 				'type' => 'user',
 				'size' => '30',
-				'userFunc' => 'EXT:cicbase/Classes/Factory/FileFactory.php:CIC\Cicbase\Factory\FileFactory->generateLink',
+				'userFunc' => 'CIC\Cicbase\Factory\FileFactory->generateLink',
 			),
 		),
 		'mime_type' => array(
