@@ -7,6 +7,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * Class InjectionService
  * @package CIC\Cicbase\Service
+ * @deprecated Can get rid of this maybe in v9?
  */
 class InjectionService extends \TYPO3\CMS\Extbase\Object\Container\Container {
 

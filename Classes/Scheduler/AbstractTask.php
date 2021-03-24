@@ -96,7 +96,8 @@ class AbstractTask extends \TYPO3\CMS\Extbase\Scheduler\Task {
 	protected function initialize($extensionName, $pluginName) {
 		$this->configurationManager = $this->objectManager->get(ConfigurationManager::class);
 		$this->persistenceManager = $this->objectManager->get(PersistenceManager::class);
-		$this->typoscriptService = $this->objectManager->get(TypoScriptService::class);		$this->configurationManager->setConfiguration(array('extensionName' => $extensionName, 'pluginName' => $pluginName));
+		$this->typoscriptService = $this->objectManager->get(TypoScriptService::class);
+		$this->configurationManager->setConfiguration(array('extensionName' => $extensionName, 'pluginName' => $pluginName));
 		$this->settings = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
 		if(!$this->settings) {
 			$configuration = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
