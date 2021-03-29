@@ -35,13 +35,17 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 		$this->registerArgument('file', 'object', 'File reference', true);
 		$this->registerArgument('class', 'string', 'HTML class', false, null);
 		$this->registerArgument('linkText', 'string', 'Link text', false, null);
+		$this->registerArgument('https', 'boolean', 'Change http to https?', false, true);
 	}
 
 	/**
 	 * @return string
 	 */
 	public function render() {
-		extract($this->arguments);
+		$file = $this->arguments['file'];
+		$class = $this->arguments['class'];
+		$linkText = $this->arguments['linkText'];
+		$https = $this->arguments['https'];
 
 		if ($file instanceof \TYPO3\CMS\Extbase\Domain\Model\FileReference) {
 			$uri = $file->getOriginalResource()->getPublicUrl();
@@ -63,10 +67,13 @@ class LinkViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
 			$text = $file->getOriginalFilename();
 		}
 
-		if($class)
-			$classAttr = 'class="'.$class.'"';
-		else
-			$classAttr = '';
+		if($class) $classAttr = 'class="'.$class.'"';
+		else $classAttr = '';
+
+		if($https) {
+		    $uri = preg_replace('~^http://~i', 'https://', $uri);
+        }
+
 		return '<a target="_blank" href="'.$uri.'" '.$classAttr.'>'.$text.'</a>';
 	}
 }
