@@ -103,27 +103,17 @@ abstract class AbstractFormFieldViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\
 			$cssClass .= 'error';
 		}
 
-		if ($this->configurationManager->isFeatureEnabled('rewrittenPropertyMapper')) {
-
-			// Check if this is a property that has errors
-			$mappingResultsForProperty = $this->getMappingResultsForProperty();
-			if ($mappingResultsForProperty->hasErrors()) {
-				$this->tag->addAttribute('class', $cssClass);
+		// Check if this is a property that has errors
+		$mappingResultsForProperty = $this->getMappingResultsForProperty();
+		if ($mappingResultsForProperty->hasErrors()) {
+			$this->tag->addAttribute('class', $cssClass);
 
 			// Check if this is a named field that has errors
-			} else if(isset($this->arguments['name'])) {
-				$originalRequestMappingResults = $this->controllerContext->getRequest()->getOriginalRequestMappingResults();
-				$property = str_replace('[]', '', $this->arguments['name']);
-				$mappingResultsForName = $originalRequestMappingResults->forProperty($property);
-				if($mappingResultsForName->hasErrors()){
-					$this->tag->addAttribute('class', $cssClass);
-				}
-
-			}
-		} else {
-			// @deprecated since Extbase 1.4.0, will be removed in Extbase 1.6.0.
-			$errors = $this->getErrorsForProperty();
-			if (count($errors) > 0) {
+		} else if (isset($this->arguments['name'])) {
+			$originalRequestMappingResults = $this->renderingContext->getControllerContext()->getRequest()->getOriginalRequestMappingResults();
+			$property = str_replace('[]', '', $this->arguments['name']);
+			$mappingResultsForName = $originalRequestMappingResults->forProperty($property);
+			if ($mappingResultsForName->hasErrors()) {
 				$this->tag->addAttribute('class', $cssClass);
 			}
 		}
@@ -148,24 +138,11 @@ abstract class AbstractFormFieldViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\
 			$property .= '.0';
 		}
 
-		$controllerName = lcfirst($this->controllerContext->getRequest()->getControllerName());
-		$extensionName = lcfirst($this->controllerContext->getRequest()->getControllerExtensionName());
+		$controllerName = lcfirst($this->renderingContext->getControllerContext()->getRequest()->getControllerName());
+		$extensionName = lcfirst($this->renderingContext->getControllerContext()->getRequest()->getControllerExtensionName());
 
-		// This has been tested with new property mapper enabled and disabled, but it's been _more_ tested
-		// with the property mapper enabled --ZD
-		if ($this->configurationManager->isFeatureEnabled('rewrittenPropertyMapper')) {
-			$validationResults = $this->controllerContext->getRequest()->getOriginalRequestMappingResults();
-			$errors = $validationResults->forProperty($property)->getErrors();
-		} else {
-			// @deprecated since Extbase 1.4.0, will be removed in Extbase 1.6.0.
-			$validationResults = $this->controllerContext->getRequest()->getErrors();
-			$allErrors = $validationResults[$objectName]->getErrors();
-			if(array_key_exists($this->arguments['property'], $allErrors) && is_object($allErrors[$this->arguments['property']])) {
-				$errors = $allErrors[$this->arguments['property']]->getErrors();
-			} else {
-				$errors = array();
-			}
-		}
+		$validationResults = $this->renderingContext->getControllerContext()->getRequest()->getOriginalRequestMappingResults();
+		$errors = $validationResults->forProperty($property)->getErrors();
 
 		$content = '';
 		foreach($errors as $error) {
