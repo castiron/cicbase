@@ -20,3 +20,17 @@ if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['cicbase']['enableSQLLogging']) {
 }
 
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerTypeConverter(\CIC\Cicbase\Property\TypeConverter\File::class);
+
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\CMS\Extbase\Persistence\Generic\QueryFactory'] = ['className' => 'CIC\Cicbase\Persistence\QueryFactory'];
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\CMS\Extbase\Persistence\Generic\QueryFactoryInterface'] = ['className' => 'CIC\Cicbase\Persistence\QueryFactory'];
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\CMS\Extbase\Validation\Validator\EmailAddressValidator'] = ['className' => 'CIC\Cicbase\Validation\Validator\EmailAddressValidator'];
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3Fluid\Fluid\Core\Parser\TemplateParser'] = ['className' => 'CIC\Cicbase\View\TemplateParser'];
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\CMS\Extbase\Validation\ValidatorResolver'] = ['className' => 'CIC\Cicbase\Validation\ValidatorResolver'];
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['CIC\Cicbase\Proxy\File\Contracts\FileProxyDelivererInterface'] = ['className' => 'CIC\Cicbase\Proxy\File\FileProxyDeliverer'];
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['CIC\Cicbase\Proxy\File\Contracts\FileProxyDenierInterface'] = ['className' => 'CIC\Cicbase\Proxy\File\FileProxyDenier'];
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['CIC\Cicbase\Proxy\File\Contracts\FileProxyGatewayInterface'] = ['className' => 'CIC\Cicbase\Proxy\File\FileProxyGateway'];
+
+
+# TODO: does this cause problems? Appears to have been commented out after v8 upgrade
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/class.db_list_extra.inc']['getTable'][] =
+	\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($_EXTKEY) . 'Classes/Hooks/DatabaseRecordList.php:CIC\Cicbase\Hooks\DatabaseRecordList';
