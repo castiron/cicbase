@@ -30,7 +30,5 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['CIC\Cicbase\Proxy\File\Contracts\
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['CIC\Cicbase\Proxy\File\Contracts\FileProxyDenierInterface'] = ['className' => 'CIC\Cicbase\Proxy\File\FileProxyDenier'];
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['CIC\Cicbase\Proxy\File\Contracts\FileProxyGatewayInterface'] = ['className' => 'CIC\Cicbase\Proxy\File\FileProxyGateway'];
 
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/class.db_list_extra.inc']['getTable'][] = \CIC\Cicbase\Hooks\DatabaseRecordList::class;
 
-# TODO: does this cause problems? Appears to have been commented out after v8 upgrade
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/class.db_list_extra.inc']['getTable'][] =
-	\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($_EXTKEY) . 'Classes/Hooks/DatabaseRecordList.php:CIC\Cicbase\Hooks\DatabaseRecordList';
