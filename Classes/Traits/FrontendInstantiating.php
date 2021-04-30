@@ -41,7 +41,7 @@ trait FrontendInstantiating {
          * Some frontend classes use this wacky time tracker and expect it to exist :/
          */
         if (!$GLOBALS['TT']) {
-            $GLOBALS['TT'] = new \TYPO3\CMS\Core\TimeTracker\NullTimeTracker();
+            $GLOBALS['TT'] = new \TYPO3\CMS\Core\TimeTracker\TimeTracker(false);
         }
 
         /**
@@ -98,7 +98,7 @@ trait FrontendInstantiating {
         /**
          * Make sure absRefPrefix is set
          */
-        PageGenerator::pagegenInit();
+        $GLOBALS['TSFE']->preparePageContentGeneration();
         $GLOBALS['TSFE']->setAbsRefPrefix();
     }
 
