@@ -151,7 +151,7 @@ abstract class AbstractFormFieldViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\
 			$key = 'LLL:EXT:'.$extensionName.'/Resources/Private/Language/locallang.xml:'.$path;
 			$message = LocalizationUtility::translate($key, $extensionName);
 			if(!$message) {
-				$message = $error->getMessage()." [$path]";
+				$message = $error->getMessage();
 			}
 			$content .= $this->createTag('div', NULL, $message);
 		}
