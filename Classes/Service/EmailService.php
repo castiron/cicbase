@@ -231,6 +231,19 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 		$this->objectManager = $objectManager;
 	}
 
+    /**
+     * This is a workaround for when createMessage() gets called, but the configuration
+     * is not present. TODO: There's likely a better way to fix this, but I'll have to do
+     * that another day.
+     */
+    protected function maybeReinitializeObject() {
+        if(empty($this->settings)) {
+            $settings = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
+            $this->settings = (array) @$settings['email'];
+            $this->initializeObject();
+        }
+    }
+
 	/**
 	 * Gets called after dependency injections.
 	 */
@@ -275,6 +288,8 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @returns \TYPO3\CMS\Core\Mail\MailMessage
 	 */
 	public function createMessage($templateName, array $recipients, array $templateVariables = NULL, array $sender = NULL) {
+	    $this->maybeReinitializeObject();
+
 		if(!$this->templateExists($templateName)) {
 			throw new \Exception("You need to add $templateName name to the email templates in typoscript. See CIC\\Cicbase\\Service\\EmailService for more details.");
 		}
@@ -310,8 +325,7 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @return \Swift_Mime_Attachment
 	 */
 	public function createAttachment($path, $contentType = NULL) {
-		$attachment = \Swift_Attachment::fromPath($path, $contentType);
-		return $attachment;
+		return \Swift_Attachment::fromPath($path, $contentType);
 	}
 
 	/**
