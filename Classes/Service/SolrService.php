@@ -371,7 +371,7 @@ class SolrService {
 	private function executeQuery() {
 		$this->queryExecuted = true;
 
-		$solrConnection = GeneralUtility::makeInstance(ConnectionManager::class)->getConnectionByRootPageId(1);
+		$solrConnection = GeneralUtility::makeInstance(ConnectionManager::class)->getAllConnections()[0];
 		/** @var Search $search */
 		$search = GeneralUtility::makeInstance(Search::class, $solrConnection);
 		/** @var Query $query */
