@@ -35,11 +35,11 @@ class ImageReferenceViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHel
     public function initializeArguments()
     {
         parent::initializeArguments();
-        $this->registerTagAttribute('uid', 'string', 'uid of the referenced element', true);
-        $this->registerTagAttribute('tableName', 'string', 'The table name on the image reference', false, 'tt_content');
-        $this->registerTagAttribute('fieldName', 'string', 'The field name on the image reference', false, 'media');
-        $this->registerTagAttribute('fieldIndex', 'string', 'The ordinal index of the item in the relationship', false, '0');
-        $this->registerTagAttribute('urlOnly', 'boolean', 'Just return the URL', false, false);
+        $this->registerArgument('uid', 'string', 'uid of the referenced element', true);
+        $this->registerArgument('tableName', 'string', 'The table name on the image reference', false, 'tt_content');
+        $this->registerArgument('fieldName', 'string', 'The field name on the image reference', false, 'media');
+        $this->registerArgument('fieldIndex', 'string', 'The ordinal index of the item in the relationship', false, '0');
+        $this->registerArgument('urlOnly', 'boolean', 'Just return the URL', false, false);
     }
 
     /**
