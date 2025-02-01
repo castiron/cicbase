@@ -106,7 +106,7 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 
 	protected function getCacheKey($key = '')
 	{
-		return 'heldFile_' . $GLOBALS['TSFE']->fe_user->id . $key;
+		return 'heldFile_'.$GLOBALS['TSFE']->fe_user->user['uid'].$key;
 	}
 
 	/**
@@ -131,7 +131,7 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 	public function clearHeld($key = '')
 	{
 		$cache = $this->getCache();
-		$cache->remove($this->getCacheKey($key));
+		if($this->getHeld($key)) $cache->remove($this->getCacheKey($key));
 	}
 
 	/**
