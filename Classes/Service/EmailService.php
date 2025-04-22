@@ -239,17 +239,17 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface
 	 */
 	public function initializeObject()
 	{
-		# TODO: specify actual TYPO3_CONF_VARS path
 		$allowedList = $this->settings['allowedList'] ?: Arr::safePath($GLOBALS, 'TYPO3_CONF_VARS.EXTCONF.cicbase.email.allowedList');
 		if ($allowedList) {
-			foreach ($allowedList as $allowListConf) {
+			$allowedListArray = GeneralUtility::trimExplode(';', $allowedList);
+			foreach ($allowedListArray as $allowListConf) {
 				$parts = GeneralUtility::trimExplode(':', $allowListConf);
 				if (count($parts) != 2) continue;
 				$this->addToAllowedList($parts[1], $parts[0]);
 			}
 		}
-		$this->alwaysOverrideWithAllowedList = (bool)$this->settings['alwaysOverrideWithAllowedList'] ?:
-			Arr::safePath($GLOBALS, 'TYPO3_CONF_VARS.EXTCONF.cicbase.email.alwaysOverrideWithAllowedList');
+		$this->alwaysOverrideWithAllowedList = (bool) ($this->settings['alwaysOverrideWithAllowedList'] ?:
+			Arr::safePath($GLOBALS, 'TYPO3_CONF_VARS.EXTCONF.cicbase.email.alwaysOverrideWithAllowedList'));
 
 		if (isset($this->settings['defaultSender'])) {
 			$this->defaultSender = array($this->settings['defaultSender']['email'] => $this->settings['defaultSender']['name']);
@@ -433,7 +433,8 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface
 	protected function cleanRecipients(array $recipients)
 	{
 		if ($this->hasAllowedList()) {
-			if ($this->alwaysOverrideWithAllowedlist) {
+
+			if ($this->alwaysOverrideWithAllowedList) {
 				return $this->allowedList;
 			} else {
 				return array_intersect_assoc($this->allowedList, $recipients);
@@ -635,7 +636,7 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface
 	 */
 	public function hasAllowedList()
 	{
-		return (bool) count($this->allowedList);
+		return count($this->allowedList) > 0;
 	}
 
 	/**
@@ -643,7 +644,7 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface
 	 */
 	public function hasDefaultSender()
 	{
-		return (bool) count($this->defaultSender);
+		return count($this->defaultSender) > 0;
 	}
 
 	/**
