@@ -7,6 +7,8 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use Aws\S3\S3Client;
 use Aws\Credentials\Credentials;
+use \TYPO3\CMS\Core\Core\ApplicationContext;
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /***************************************************************
  *  Copyright notice
@@ -36,7 +38,6 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 
 	protected $baseStoragePath = 'fileadmin/cicbase/documents';
 	protected $holdStoragePath = 'typo3temp/cicbase/documents';
-	protected $AWSEnabled = true;
 	protected $cicbaseConfiguration = [];
 
 	/**
@@ -119,7 +120,7 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 		try {
 			$cache = $this->cacheManager->getCache('cicbase_cache');
 		} catch (\TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException $e) {
-			throw new \Exception ('Unable to load the cicbase cache.');
+			throw new \Exception ($this->getExceptionMessage($e, 'Unable to load the cicbase cache.'));
 		}
 		return $cache;
 	}
@@ -220,15 +221,21 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 	 */
 	protected function initializeS3()
 	{
-		return new S3Client([
+		$args = [
 			'version' => 'latest',
 			'region' => $this->cicbaseConfiguration['AWSRegion'],
-			'credentials' => [
+			//'debug' => true
+		];
+
+		// Credentials are optional, access could be set by IAM roles
+		if($this->cicbaseConfiguration['AWSKey'] || $this->cicbaseConfiguration['AWSSecret']) {
+			$args['credentials'] = [
 				'key' => $this->cicbaseConfiguration['AWSKey'],
 				'secret' => $this->cicbaseConfiguration['AWSSecret']
-			],
-			//'debug' => true
-		]);
+			];
+		}
+		
+		return new S3Client($args);
 	}
 
 	/**
@@ -244,8 +251,6 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 		// make sure we have adequate configuration.
 		if (!$this->cicbaseConfiguration['AWSTemporaryBucketName'] ||
 			!$this->cicbaseConfiguration['AWSPermanentBucketName'] ||
-			!$this->cicbaseConfiguration['AWSKey'] ||
-			!$this->cicbaseConfiguration['AWSSecret'] ||
 			!$this->cicbaseConfiguration['AWSRegion']
 		) {
 			throw new \Exception ('AWS File Storage is enabled, yet it is not properly configured in the extension manager');
@@ -283,7 +288,10 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 					'Key' => $source . '/' . $fileObject->getFilename()
 				]);
 			} catch (\Exception $e) {
-				return new \TYPO3\CMS\Extbase\Error\Error('Unable to save file to AWS S3', 1336600878);
+				return new \TYPO3\CMS\Extbase\Error\Error(
+					$this->getExceptionMessage($e, 'Unable to save file to AWS S3'),
+					1336600878
+				);
 			}
 		} else {
 			try {
@@ -297,7 +305,10 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 				$fileObject->setPath($relativeDestinationPath);
 				$fileObject->setAwsBucket($destinationBucket);
 			} catch (\Exception $e) {
-				return new \TYPO3\CMS\Extbase\Error\Error('Unable to save file to AWS S3', 1336600875);
+				return new \TYPO3\CMS\Extbase\Error\Error(
+					$this->getExceptionMessage($e, 'Unable to save file to AWS S3'),
+					1336600875
+				);
 			}
 		}
 	}
@@ -322,7 +333,9 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 				} catch (\Exception $e) {
 					// This is a 'compile-time' error, not a run-time one.
 					// Throwing an exception is appropriate.
-					throw new \Exception ('Cannot create directory for storing files: ' . $absoluteDestinationPath);
+					throw new \Exception (
+						$this->getExceptionMessage($e, 'Cannot create directory for storing files: ' . $absoluteDestinationPath)
+					);
 				}
 			}
 			$source = $fileObject->getPath();
@@ -380,5 +393,23 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 			$this->defaultQuerySettings = $this->objectManager->get('TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings');
 			$this->defaultQuerySettings->setStoragePageIds(explode(',', $configuration['storagePids'][$this->objectType]));
 		}
+	}
+
+	/**
+	 * Get the exception message along with additional message, if in testing or development context
+	 *
+	 * @param \Exception $exception The exception object
+	 * @param string $message Additional message to be appended
+	 * @return string The combined message if in testing or development context, otherwise just the additional message
+	 */
+	private function getExceptionMessage(\Exception $exception, string $message)
+	{
+		$applicationContext = GeneralUtility::getApplicationContext();
+		if($applicationContext->isTesting() || $applicationContext->isDevelopment()) {
+			$exceptionMessage = $exception->getMessage();
+			return $message . " Exception message: ". $exceptionMessage;
+		}
+
+		return $message;
 	}
 }

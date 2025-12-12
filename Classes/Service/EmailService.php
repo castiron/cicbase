@@ -1,5 +1,6 @@
 <?php
 namespace CIC\Cicbase\Service;
+
 use CIC\Cicbase\Utility\Arr;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -39,15 +40,15 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  * EXAMPLE:
  * plugin.tx_ext.settings.email {
  *
- *   # Whitelist useful for debugging.
- *   whitelist = teaching.bites@springfield.edu : Edna Krabappel , school.rocks@springfield.edu : Lisa Simpson
+ *   # allowedList useful for debugging.
+ *   allowedList = teaching.bites@springfield.edu : Edna Krabappel , school.rocks@springfield.edu : Lisa Simpson
  *
- *   # If there's a whitelist, then you can
+ *   # If there's a allowedList, then you can
  *   # specify that it always be used as the
  *   # email recipients. Otherwise, if emails
- *   # don't match the whitelist, no email would
+ *   # don't match the allowedList, no email would
  *   # be sent.
- *   alwaysOverrideWithWhitelist = 1
+ *   alwaysOverrideWithAllowedList = 1
  *
  *
  *   # Specify all templates here
@@ -81,8 +82,8 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  *   #   $TYPO3_CONF_VARS['MAIL']['defaultMailFromAddress']
  *   #   $TYPO3_CONF_VARS['MAIL']['defaultMailFromName']
  *   defaultSender {
- *     name = Oregon Best
- *     email = info@oregonbest.org
+ *     name = Cast Iron Coding
+ *     email = contact@castironcodingemail.ai
  *   }
  * }
  *
@@ -99,7 +100,8 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  * Class EmailService
  * @package CIC\Cicbase\Service
  */
-class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
+class EmailService implements \TYPO3\CMS\Core\SingletonInterface
+{
 
 
 	/**
@@ -115,29 +117,29 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	/**
 	 * @var array
 	 */
-	protected $settings = array();
+	protected $settings = [];
 
 	/**
 	 * A list of the only addresses this service will
 	 * send emails to. Can be set up in typoscript:
 	 *
-	 * plugin.tx_ext.settings.email.whitelist = teaching.bites@springfield.edu : Edna Krabappel , school.rocks@springfield.edu : Lisa Simpson
+	 * plugin.tx_ext.settings.email.allowedList = teaching.bites@springfield.edu : Edna Krabappel , school.rocks@springfield.edu : Lisa Simpson
 	 *
 	 *
 	 * @var array
 	 */
-	protected $whitelist = array();
+	protected $allowedList = [];
 
 	/**
 	 * Instead of just checking that emails are listed in the
-	 * whitelist, replace all emails with the whitelist no
+	 * allowedList, replace all emails with the allowedList no
 	 * matter what. This can be set in typoscript:
 	 *
-	 * plugin.tx_ext.settings.email.alwaysOverrideWithWhitelist = 1
+	 * plugin.tx_ext.settings.email.alwaysOverrideWithAllowedList = 1
 	 *
 	 * @var bool
 	 */
-	protected $alwaysOverrideWithWhitelist = FALSE;
+	protected $alwaysOverrideWithAllowedList = FALSE;
 
 	/**
 	 * If no sender is provided in template settings or when creating
@@ -152,7 +154,7 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 *
 	 * @var array
 	 */
-	protected $defaultSender = array();
+	protected $defaultSender = [];
 
 	/**
 	 * A list of template configurations as
@@ -208,15 +210,15 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 */
 	protected $emailTemplateRepository;
 
-
 	/**
-     * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager
-     * @return void
-     */
-	public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager) {
+	 * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager
+	 * @return void
+	 */
+	public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager)
+	{
 		$this->configurationManager = $configurationManager;
 		$allSettings = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
-		if(isset($allSettings['email'])) {
+		if (isset($allSettings['email'])) {
 			$this->settings = $allSettings['email'];
 		}
 	}
@@ -227,32 +229,34 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager
 	 * @return void
 	 */
-	public function injectObjectManager(ObjectManagerInterface $objectManager) {
+	public function injectObjectManager(ObjectManagerInterface $objectManager)
+	{
 		$this->objectManager = $objectManager;
 	}
 
 	/**
 	 * Gets called after dependency injections.
 	 */
-	public function initializeObject() {
-		// Build whitelist
-		if(isset($this->settings['whitelist'])) {
-			$whitelist = GeneralUtility::trimExplode(',', $this->settings['whitelist']);
-			foreach($whitelist as $whitelistConf) {
-				$parts = GeneralUtility::trimExplode(':', $whitelistConf);
+	public function initializeObject()
+	{
+		$allowedList = $this->settings['allowedList'] ?: Arr::safePath($GLOBALS, 'TYPO3_CONF_VARS.EXTCONF.cicbase.email.allowedList');
+		if ($allowedList) {
+			$allowedListArray = GeneralUtility::trimExplode(';', $allowedList);
+			foreach ($allowedListArray as $allowListConf) {
+				$parts = GeneralUtility::trimExplode(':', $allowListConf);
 				if (count($parts) != 2) continue;
-				$this->addToWhitelist($parts[1], $parts[0]);
+				$this->addToAllowedList($parts[1], $parts[0]);
 			}
 		}
-		if(isset($this->settings['alwaysOverrideWithWhitelist'])) {
-			$this->alwaysOverrideWithWhitelist = $this->settings['alwaysOverrideWithWhitelist'];
-		}
-		if(isset($this->settings['defaultSender'])) {
+		$this->alwaysOverrideWithAllowedList = (bool) ($this->settings['alwaysOverrideWithAllowedList'] ?:
+			Arr::safePath($GLOBALS, 'TYPO3_CONF_VARS.EXTCONF.cicbase.email.alwaysOverrideWithAllowedList'));
+
+		if (isset($this->settings['defaultSender'])) {
 			$this->defaultSender = array($this->settings['defaultSender']['email'] => $this->settings['defaultSender']['name']);
 		}
-		if(isset($this->settings['templates'])) {
-			foreach($this->settings['templates'] as $templateName => $templateConfig) {
-				if(isset($templateConfig['templateFile']) && isset($templateConfig['subject'])) {
+		if (isset($this->settings['templates'])) {
+			foreach ($this->settings['templates'] as $templateName => $templateConfig) {
+				if (isset($templateConfig['templateFile']) && isset($templateConfig['subject'])) {
 					$this->templates[$templateName] = $templateConfig;
 				} else {
 					throw new \Exception("All email templates need a 'subject' and a 'templateFile' field at a minimum. See CIC\\Cicbase\\Service\\EmailService for more details.");
@@ -267,26 +271,27 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * set already. Exceptions are thrown if we can't find some of these
 	 * variables, which usually means there's an error with the typoscript.
 	 *
-	 * @param string $templateName      As written in typoscript. Must exist in typoscript.
-	 * @param array $recipients         array(email => name, email => name)
-	 * @param array $templateVariables  Variables to pass to the template view.
-	 * @param array $sender             array(email => name, email => name)
-	 * @throws \Exception
+	 * @param string $templateName As written in typoscript. Must exist in typoscript.
+	 * @param array $recipients array(email => name, email => name)
+	 * @param array $templateVariables Variables to pass to the template view.
+	 * @param array $sender array(email => name, email => name)
 	 * @return \TYPO3\CMS\Core\Mail\MailMessage
+	 * @throws \Exception
 	 */
-	public function createMessage($templateName, array $recipients, array $templateVariables = NULL, array $sender = NULL) {
-		if(!$this->templateExists($templateName)) {
+	public function createMessage(string $templateName, array $recipients, array $templateVariables = NULL, array $sender = NULL)
+	{
+		if (!$this->templateExists($templateName)) {
 			throw new \Exception("You need to add $templateName name to the email templates in typoscript. See CIC\\Cicbase\\Service\\EmailService for more details.");
 		}
 
 		$recipients = $this->cleanRecipients($recipients);
 		$sender = $this->cleanSender($templateName, $sender);
-		if(!$sender) {
+		if (!$sender) {
 			throw new \Exception("Can't send an email without it being from someone. Please provide a sender. See CIC\\Cicbase\\Service\\EmailService for more details.");
 		}
 
 		$body = $this->buildMessageBody($templateName, $templateVariables);
-		if($body == '') {
+		if ($body == '') {
 			throw new \Exception("Can't send an email without a body. Please check your typoscript and template path. See CIC\\Cicbase\\Service\\EmailService for more details.");
 		}
 		$subject = $this->getTemplateSubject($templateName);
@@ -309,7 +314,8 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param string $contentType
 	 * @return \Swift_Mime_Attachment
 	 */
-	public function createAttachment($path, $contentType = NULL) {
+	public function createAttachment(string $path, string $contentType = NULL)
+	{
 		$attachment = \Swift_Attachment::fromPath($path, $contentType);
 		return $attachment;
 	}
@@ -319,12 +325,13 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 *
 	 * Gets the raw file string for a template key "{ext}.{templateKey}"
 	 *
-	 * @see getAvailableTemplateKeys()
-	 *
 	 * @param string $templateKey
 	 * @return string
+	 * @see getAvailableTemplateKeys()
+	 *
 	 */
-	public function getTemplateBodyFromKey($templateKey) {
+	public function getTemplateBodyFromKey(string $templateKey)
+	{
 		$parts = explode('.', $templateKey);
 		$ext = $parts[0];
 		$key = $parts[1];
@@ -350,12 +357,13 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 *
 	 * Gets the email subject for a template key "{ext}.{templateKey}"
 	 *
-	 * @see getAvailableTemplateKeys()
-	 *
 	 * @param string $templateKey
 	 * @return string
+	 * @see getAvailableTemplateKeys()
+	 *
 	 */
-	public function getSubjectFromKey($templateKey) {
+	public function getSubjectFromKey(string $templateKey)
+	{
 		$parts = explode('.', $templateKey);
 		$ext = $parts[0];
 		$key = $parts[1];
@@ -373,7 +381,8 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 *
 	 * @return array
 	 */
-	public function getAvailableTemplateKeys() {
+	public function getAvailableTemplateKeys()
+	{
 		$exts = array();
 		$keys = array();
 
@@ -391,7 +400,9 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 		$whereAllowed = function ($templateDefinition, $templateKey) {
 			return !isset($templateDefinition['noOverride']) || !$templateDefinition['noOverride'];
 		};
-		$keyTrimmer = function ($key) { return rtrim($key, '.'); };
+		$keyTrimmer = function ($key) {
+			return rtrim($key, '.');
+		};
 		foreach ($exts as $extKey) {
 			$extConf = $this->getTyposcriptForExtension($extKey);
 			if (!is_array($extConf)) continue;
@@ -414,17 +425,19 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	}
 
 	/**
-	 * Checks whitelist settings to determine appropriate recipients
+	 * Checks allowedList settings to determine appropriate recipients
 	 *
 	 * @param array $recipients
 	 * @return array
 	 */
-	protected function cleanRecipients(array $recipients) {
-		if($this->hasWhitelist()) {
-			if($this->alwaysOverrideWithWhitelist) {
-				return $this->whitelist;
+	protected function cleanRecipients(array $recipients)
+	{
+		if ($this->hasAllowedList()) {
+
+			if ($this->alwaysOverrideWithAllowedList) {
+				return $this->allowedList;
 			} else {
-				return array_intersect_assoc($this->whitelist, $recipients);
+				return array_intersect_assoc($this->allowedList, $recipients);
 			}
 		} else {
 			return $recipients;
@@ -436,19 +449,20 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param array $sender
 	 * @return bool|array
 	 */
-	protected function cleanSender($templateName, array $sender = NULL) {
-		if($sender) {
+	protected function cleanSender(string $templateName, array $sender = NULL)
+	{
+		if ($sender) {
 			return $sender;
 		}
-		if(isset($this->settings['templates'][$templateName]) && isset($this->settings['templates'][$templateName]['sender'])) {
+		if (isset($this->settings['templates'][$templateName]) && isset($this->settings['templates'][$templateName]['sender'])) {
 			$senderInfo = $this->settings['templates'][$templateName]['sender'];
 			return array($senderInfo['email'] => $senderInfo['name']);
 		}
-		if($this->hasDefaultSender()) {
+		if ($this->hasDefaultSender()) {
 			return $this->defaultSender;
 		}
 		$systemDefault = MailUtility::getSystemFrom();
-		if($systemDefault) {
+		if ($systemDefault) {
 			return $systemDefault;
 		}
 		return FALSE;
@@ -457,12 +471,13 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	/**
 	 * Renders the message using the template specified in typoscript.
 	 *
-	 * @param $templateName
+	 * @param string $templateName
 	 * @param array $templateVariables
 	 * @return string
 	 */
-	protected function buildMessageBody($templateName, array $templateVariables = NULL) {
-		if(!$this->templateExists($templateName)) return '';
+	protected function buildMessageBody(string $templateName, array $templateVariables = NULL)
+	{
+		if (!$this->templateExists($templateName)) return '';
 
 		/** @var \TYPO3\CMS\Fluid\View\StandaloneView $emailView */
 		$emailView = $this->objectManager->get('TYPO3\CMS\Fluid\View\StandaloneView');
@@ -475,7 +490,7 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 			$templatePathAndFilename = $this->getTemplatePath($templateName);
 			$emailView->setTemplatePathAndFilename($templatePathAndFilename);
 		}
-		if($templateVariables) {
+		if ($templateVariables) {
 			$emailView->assignMultiple($templateVariables);
 		}
 		return $emailView->render();
@@ -488,8 +503,9 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param string $templateName
 	 * @return string
 	 */
-	protected function getTemplatePath($templateName) {
-		return isset($this->foundTemplatePaths[$templateName]) ? $this->foundTemplatePaths[$templateName] : '';
+	protected function getTemplatePath(string $templateName)
+	{
+		return $this->foundTemplatePaths[$templateName] ?? '';
 	}
 
 	/**
@@ -500,9 +516,10 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param $templateName
 	 * @return string
 	 */
-	protected function getTemplateSubject($templateName) {
-		if($this->templateExists($templateName)) {
-			if(array_key_exists($templateName, $this->foundSubjectOverrides)) {
+	protected function getTemplateSubject(string $templateName)
+	{
+		if ($this->templateExists($templateName)) {
+			if (array_key_exists($templateName, $this->foundSubjectOverrides)) {
 				return $this->foundSubjectOverrides[$templateName];
 			} else {
 				return $this->templates[$templateName]['subject'];
@@ -515,7 +532,8 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param string $templateName
 	 * @return bool
 	 */
-	protected function templateExists($templateName) {
+	protected function templateExists(string $templateName)
+	{
 		if (!isset($this->templates[$templateName])) return FALSE;
 		if (!isset($this->templates[$templateName]['templateFile'])) return FALSE;
 		if (isset($this->foundTemplateOverrides[$templateName])) return TRUE;
@@ -528,7 +546,7 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 
 		if ($record) {
 			$overrideSubject = $record->getSubject();
-			if(strlen($overrideSubject) != 0) $this->foundSubjectOverrides[$templateName] = $overrideSubject;
+			if (strlen($overrideSubject) != 0) $this->foundSubjectOverrides[$templateName] = $overrideSubject;
 			$this->foundTemplateOverrides[$templateName] = $record->getBody();
 			return TRUE;
 		}
@@ -550,7 +568,8 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 *
 	 * @return array
 	 */
-	protected function getTemplateRootPaths() {
+	protected function getTemplateRootPaths()
+	{
 		return self::grabRootPathsFromExtConf($this->configurationManager->getConfiguration(
 			ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK
 		));
@@ -561,7 +580,8 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param array $templateDefinition
 	 * @return bool|string
 	 */
-	protected static function findRealTemplateFile(array $rootPaths, array $templateDefinition) {
+	protected static function findRealTemplateFile(array $rootPaths, array $templateDefinition)
+	{
 		$templateFile = $templateDefinition['templateFile'];
 		foreach ($rootPaths as $possiblePath) {
 			$rootPath = GeneralUtility::getFileAbsFileName($possiblePath);
@@ -577,7 +597,8 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @param array $extbaseFrameworkConfiguration
 	 * @return array
 	 */
-	protected static function grabRootPathsFromExtConf(array $extbaseFrameworkConfiguration) {
+	protected static function grabRootPathsFromExtConf(array $extbaseFrameworkConfiguration)
+	{
 		$rootPaths = array();
 		if (
 			!empty($extbaseFrameworkConfiguration['view']['templateRootPaths'])
@@ -591,16 +612,19 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	}
 
 	/**
-	 * @param $ext
+	 * @param string $ext
 	 * @return array
 	 */
-	protected function getTyposcriptForExtension($ext) {
+	protected function getTyposcriptForExtension(string $ext)
+	{
 		$allTyposcript = $this->configurationManager->getConfiguration(
 			ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
 		);
 
 		if (!isset($allTyposcript['plugin.']["tx_$ext."])) return FALSE;
-		$keyTrimmer = function ($key) { return rtrim($key, '.'); };
+		$keyTrimmer = function ($key) {
+			return rtrim($key, '.');
+		};
 		$extConf = $allTyposcript['plugin.']["tx_$ext."];
 		Arr::walkKeysRecursive($extConf, $keyTrimmer);
 		return $extConf;
@@ -610,45 +634,50 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	/**
 	 * @return bool
 	 */
-	public function hasWhitelist() {
-		return (bool) count($this->whitelist);
+	public function hasAllowedList()
+	{
+		return count($this->allowedList) > 0;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function hasDefaultSender() {
-		return (bool) count($this->defaultSender);
+	public function hasDefaultSender()
+	{
+		return count($this->defaultSender) > 0;
 	}
 
 	/**
-	 * Adds an email to the whitelist.
+	 * Adds an email to the allowedList.
 	 *
 	 * @param string $name
 	 * @param string $email
 	 */
-	public function addToWhitelist($name, $email) {
-		$this->whitelist[$email] = $name;
+	public function addToAllowedList(string $name, string $email)
+	{
+		$this->allowedList[$email] = $name;
 	}
 
 	/**
-	 * @param array $whitelist
+	 * @param array $allowedList
 	 */
-	public function setWhitelist($whitelist) {
-		$this->whitelist = $whitelist;
+	public function setAllowedList(array $allowedList)
+	{
+		$this->allowedList = $allowedList;
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getWhitelist() {
-		return $this->whitelist;
+	public function getAllowedList(): array
+	{
+		return $this->allowedList;
 	}
 
 	/**
 	 * This method sends an email without using much of the typoscript configurations.
 	 *
-	 * It only checks the whitelist really and doesn't use template configurations in typoscript.
+	 * It only checks the allowedList really and doesn't use template configurations in typoscript.
 	 *
 	 * @param array $recipients recipient of the email in the format array('recipient@domain.tld' => 'Recipient Name')
 	 * @param array $sender sender of the email in the format array('sender@domain.tld' => 'Sender Name')
@@ -659,8 +688,8 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @return boolean TRUE on success, otherwise false
 	 * @deprecated For all new T3 6.x extensions, you should not use this method anymore.
 	 */
-	public function sendTemplateEmail(array $recipients, array $sender, $subject, $templateName, array $templateVariables = null, array $attachments = null) {
-
+	public function sendTemplateEmail(array $recipients, array $sender, string $subject, string $templateName, array $templateVariables = null, array $attachments = null)
+	{
 		$recipients = $this->cleanRecipients($recipients);
 		$sender = $this->cleanSender($sender);
 
@@ -671,7 +700,7 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 		$templateRootPath = GeneralUtility::getFileAbsFileName($extbaseFrameworkConfiguration['view']['templateRootPath']);
 		$templatePathAndFilename = $templateRootPath . '/Email/' . $templateName;
 		$emailView->setTemplatePathAndFilename($templatePathAndFilename);
-		if($templateVariables) {
+		if ($templateVariables) {
 			$emailView->assignMultiple($templateVariables);
 		}
 		$emailBody = $emailView->render();
@@ -682,7 +711,7 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 			->setSubject($subject);
 
 		if ($attachments) {
-			foreach($attachments as $att) {
+			foreach ($attachments as $att) {
 				$message->attach($att);
 			}
 		}
@@ -695,10 +724,6 @@ class EmailService implements \TYPO3\CMS\Core\SingletonInterface {
 
 		$message->send();
 
-
 		return $message->isSent();
 	}
 }
-
-
-?>
