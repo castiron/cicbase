@@ -38,7 +38,6 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 
 	protected $baseStoragePath = 'fileadmin/cicbase/documents';
 	protected $holdStoragePath = 'typo3temp/cicbase/documents';
-	protected $AWSEnabled = true;
 	protected $cicbaseConfiguration = [];
 
 	/**
@@ -222,15 +221,21 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 	 */
 	protected function initializeS3()
 	{
-		return new S3Client([
+		$args = [
 			'version' => 'latest',
 			'region' => $this->cicbaseConfiguration['AWSRegion'],
-			'credentials' => [
+			//'debug' => true
+		];
+
+		// Credentials are optional, access could be set by IAM roles
+		if($this->cicbaseConfiguration['AWSKey'] || $this->cicbaseConfiguration['AWSSecret']) {
+			$args['credentials'] = [
 				'key' => $this->cicbaseConfiguration['AWSKey'],
 				'secret' => $this->cicbaseConfiguration['AWSSecret']
-			],
-			//'debug' => true
-		]);
+			];
+		}
+		
+		return new S3Client($args);
 	}
 
 	/**
@@ -246,8 +251,6 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 		// make sure we have adequate configuration.
 		if (!$this->cicbaseConfiguration['AWSTemporaryBucketName'] ||
 			!$this->cicbaseConfiguration['AWSPermanentBucketName'] ||
-			!$this->cicbaseConfiguration['AWSKey'] ||
-			!$this->cicbaseConfiguration['AWSSecret'] ||
 			!$this->cicbaseConfiguration['AWSRegion']
 		) {
 			throw new \Exception ('AWS File Storage is enabled, yet it is not properly configured in the extension manager');
