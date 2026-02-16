@@ -49,6 +49,13 @@ class RenderViewHelper extends \TYPO3Fluid\Fluid\ViewHelpers\RenderViewHelper {
 	protected $escapeOutput = false;
 
 	/**
+	 * Children (yield content) should not be escaped either.
+	 *
+	 * @var bool
+	 */
+	protected $escapeChildren = false;
+
+	/**
 	 * Renders the content.
 	 *
 	 * @param array $arguments
