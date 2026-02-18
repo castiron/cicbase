@@ -31,6 +31,8 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper {
     {
         parent::initializeArguments();
         $this->registerArgument('additionalParameters', 'string', 'Raw imagemagick params to pass to the object');
+        $this->registerArgument('quality', 'int', 'Image quality for lossy formats (0-100). Passed as -quality flag to ImageMagick.');
+        $this->registerArgument('fileExtension', 'string', 'Force output file extension (e.g. "jpg", "png", "webp")');
     }
 
     /**
@@ -48,6 +50,11 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper {
                 if (!File::isProcessableFile($image)) {
                     return '';
                 }
+                $additionalParams = $this->arguments['additionalParameters'] ? $this->arguments['additionalParameters'] : $this->getDefaultAdditionalImagemagickParams($image);
+                if ($this->arguments['quality']) {
+                    $additionalParams = trim($additionalParams . ' -quality ' . (int)$this->arguments['quality']);
+                }
+
                 $processingInstructions = array(
                     'width' => $this->arguments['width'],
                     'height' => $this->arguments['height'],
@@ -55,7 +62,8 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper {
                     'minHeight' => $this->arguments['minHeight'],
                     'maxWidth' => $this->arguments['maxWidth'],
                     'maxHeight' => $this->arguments['maxHeight'],
-                    'additionalParameters' => $this->arguments['additionalParameters'] ? $this->arguments['additionalParameters'] : $this->getDefaultAdditionalImagemagickParams($image),
+                    'fileExtension' => $this->arguments['fileExtension'],
+                    'additionalParameters' => $additionalParams,
                 );
 
                 $processedImage = $this->imageService->applyProcessingInstructions($image, $processingInstructions);
