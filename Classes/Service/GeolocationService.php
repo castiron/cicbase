@@ -129,7 +129,8 @@ class GeolocationService {
 					$out = $resObj->results[0]->geometry;
 					$out->partial_match = $resObj->results[0]->partial_match;
 				} else {
-                    throw new GeolocationError("Could not geolocate address: $address. Status: " . $resObj->status);
+				    $errorDetail = $resObj->error_message ? ' - ' . $resObj->error_message : '';
+                    throw new GeolocationError("Could not geolocate address: $address. Status: " . $resObj->status . $errorDetail);
                 }
 			}
 
