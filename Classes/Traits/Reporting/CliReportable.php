@@ -1,5 +1,8 @@
 <?php namespace CIC\Cicbase\Traits\Reporting;
 
+use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Class CliReportable
  * @package CIC\Cicbase\Traits\Reporting
@@ -27,12 +30,19 @@ trait CliReportable {
     }
 
     /**
+     * Writes the message to STDOUT in a CLI context, and to the using class's logger at INFO level in any
+     * context. In-place messages (progress and memory readouts that overwrite each other on the terminal)
+     * are not logged.
+     *
      * @param $msg
      * @param bool $inPlace
      */
     protected static function cliMsg($msg, $inPlace = false) {
         if (static::isCli()) {
             fwrite(STDOUT, $msg . ($inPlace ? "\r" : "\n"));
+        }
+        if (!$inPlace) {
+            GeneralUtility::makeInstance(LogManager::class)->getLogger(static::class)->info(trim($msg));
         }
     }
 
