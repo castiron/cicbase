@@ -1,6 +1,6 @@
 ## Migrations
 
-CICBase ships with a migration runner object that can be called from the command line. It also creates a migrations database table with two columns: version and extension key. Any TYPO3 extension can include migrations in Classes/Migration, and the CICBase migration runner will run those migrations in order and make sure they are not run more than once.
+CICBase ships with a migration runner object that can be called from the command line. It also creates a migrations database table with three columns: version, extension key, and the time the migration was run (`tstamp`; rows recorded before this column existed read 0). Any TYPO3 extension can include migrations in Classes/Migration, and the CICBase migration runner will run those migrations in order and make sure they are not run more than once.
 
 For CICBase to see your migrations, some conventions must be followed:
 

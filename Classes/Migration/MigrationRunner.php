@@ -281,7 +281,8 @@ class MigrationRunner {
     protected function saveVersion($migration) {
         $this->dbExec('insertMigration', array(
             ':version' => self::getTimestampFromMigration($migration),
-            ':ext_key' => $this->currentRunExtKey
+            ':ext_key' => $this->currentRunExtKey,
+            ':tstamp' => $GLOBALS['EXEC_TIME'],
         ));
     }
 
