@@ -268,7 +268,6 @@ class FileFactory implements \TYPO3\CMS\Core\SingletonInterface {
 	 */
 	public function generateLink($PA, $t3lib_tceforms) {
 		$row = $PA['row'];
-		$domain = 's3.amazonaws.com';
 		$bucket = $row['awsbucket'];
 		$path = $row['path'];
 		$filename = $row['filename'];
@@ -278,7 +277,7 @@ class FileFactory implements \TYPO3\CMS\Core\SingletonInterface {
 			return '<div>There is no link available until the file is saved.</div>';
 		}
 
-		$url = "http://$bucket.$domain/$pathAndFilename";
+		$url = \CIC\Cicbase\Utility\S3Url::forObject($bucket, $pathAndFilename);
 		return "<a href=\"$url\" target=\"_blank\" style=\"text-decoration: underline; color: blue;\">$url</a>";
 	}
 

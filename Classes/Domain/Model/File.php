@@ -231,15 +231,12 @@ class File extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	}
 
 	protected function getAwsPathAndFileName() {
-		$bucket = $this->getAwsbucket();
-		$domain = 's3.amazonaws.com';
-
 		if($this->getPath()) {
 			$pathAndFile = $this->getPath() . '/' . $this->getFileName();
 		} else {
 			$pathAndFile = $this->getFileName();
 		}
-		return 'http://'.$bucket.'.'.$domain.'/'.$pathAndFile;
+		return \CIC\Cicbase\Utility\S3Url::forObject($this->getAwsbucket(), $pathAndFile);
 	}
 
 

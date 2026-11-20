@@ -234,6 +234,15 @@ class FileRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 				'secret' => $this->cicbaseConfiguration['AWSSecret']
 			];
 		}
+
+		// Optional: an S3-compatible store such as MinIO instead of AWS. Its
+		// public URLs are configured separately; see \CIC\Cicbase\Utility\S3Url.
+		if (!empty($this->cicbaseConfiguration['AWSEndpoint'])) {
+			$args['endpoint'] = $this->cicbaseConfiguration['AWSEndpoint'];
+		}
+		if (!empty($this->cicbaseConfiguration['AWSUsePathStyle'])) {
+			$args['use_path_style_endpoint'] = true;
+		}
 		
 		return new S3Client($args);
 	}
